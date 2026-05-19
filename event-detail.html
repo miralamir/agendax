@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Evento - BAMARTE</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Lato -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&amp;display=swap" rel="stylesheet">
+    
+    <!-- SwiperJS for Carousel -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <!-- basicLightbox for Image Viewer -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f8fafc;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #a855f7;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .prose p {
+            margin-bottom: 1em;
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: #a855f7;
+        }
+        .swiper-pagination-bullet-active {
+            background: #a855f7;
+        }
+        .mySwiper {
+            position: relative;
+            padding-bottom: 40px;
+        }
+        .clickable-image {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Contenedor Principal -->
+    <div class="container mx-auto px-4">
+
+        <!-- Header y Navegación -->
+        <header class="py-6">
+            <nav class="flex justify-between items-center">
+                <a href="index.html" class="text-3xl font-black text-black leading-none">BAMARTE</a>
+                <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
+                    <li><a href="arte.html" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300">Arte</a></li>
+                    <li><a href="musica.html" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300">Música</a></li>
+                    <li><a href="teatro.html" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300">Teatro</a></li>
+                    <li><a href="cine.html" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300">Cine</a></li>
+                    <li><a href="literatura.html" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300">Literatura</a></li>
+                </ul>
+                <a href="index.html#mapa" class="hidden md:flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span class="text-sm font-bold">Mapa Cultural</span>
+                </a>
+            </nav>
+        </header>
+
+        <!-- Contenido del Evento -->
+        <main id="event-detail-container" class="py-8">
+            <div id="loader-container" class="flex justify-center items-center h-64">
+                <div class="loader"></div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Firebase SDK Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWlNhxc1smYH8szpjpXLMbjPXHIts-nMc",
+            authDomain: "zumaq-8bcaa.firebaseapp.com",
+            projectId: "zumaq-8bcaa",
+            storageBucket: "zumaq-8bcaa.firebasestorage.app", 
+            messagingSenderId: "812019183354",
+            appId: "1:812019183354:web:05a6904d4c5491c4fb2343",
+            measurementId: "G-DJJS3XS1RL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const eventDetailContainer = document.getElementById('event-detail-container');
+        const loaderContainer = document.getElementById('loader-container');
+
+        function formatUrl(url) {
+            if (!url) return '';
+            url = url.trim();
+            if (!url.startsWith('http://') && !url.startsWith('https://')) return 'https://' + url;
+            return url;
+        }
+
+        async function fetchAndDisplayEventDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const eventId = params.get('id');
+
+            if (!eventId) {
+                loaderContainer.style.display = 'none';
+                eventDetailContainer.innerHTML = `<p class="text-center text-red-500 font-bold uppercase tracking-widest py-10">ID de evento no válido.</p>`;
+                return;
+            }
+
+            try {
+                const eventRef = doc(db, "events", eventId);
+                const docSnap = await getDoc(eventRef);
+                loaderContainer.style.display = 'none';
+
+                if (docSnap.exists()) {
+                    const event = docSnap.data();
+                    const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+                    
+                    // --- NUEVA LÓGICA DE FECHAS FLEXIBLES ---
+                    let dateRangeHTML = '';
+                    if (event.startDate && event.endDate) {
+                        const startDate = event.startDate.toDate();
+                        const endDate = event.endDate.toDate();
+                        dateRangeHTML = `<p class="text-slate-600">Del ${startDate.toLocaleDateString('es-ES', dateOptions)} al ${endDate.toLocaleDateString('es-ES', dateOptions)}</p>`;
+                    }
+
+                    let singleDateHTML = '';
+                    if (event.singleDate) {
+                        const sDate = event.singleDate.toDate();
+                        singleDateHTML = `<p class="text-purple-600 font-black uppercase tracking-tight">Evento Único: ${sDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })} hs</p>`;
+                    }
+
+                    let recurringHTML = '';
+                    if (event.recurringSchedule) {
+                        recurringHTML = `<p class="text-slate-700 font-bold uppercase text-sm tracking-tighter italic">Funciones: ${event.recurringSchedule}</p>`;
+                    }
+                    
+                    const inaugurationString = event.inaugurationDate 
+                        ? event.inaugurationDate.toDate().toLocaleString('es-ES', { 
+                            weekday: 'long', 
+                            day: 'numeric', 
+                            month: 'long',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) + ' hs'
+                        : null;
+
+                    // Lógica para cambiar la etiqueta según la categoría
+                    const inaugurationLabel = (event.category === 'cine' || event.category === 'teatro') ? 'Estreno:' : 'Inauguración:';
+
+                    let artistsHTML = '';
+                    let artistTitleForBio = 'Biografía';
+                    if (event.artists && Array.isArray(event.artists) && event.artists.length > 0) {
+                        artistsHTML = event.artists.map(artist => 
+                            `<a href="artist-detail.html?name=${encodeURIComponent(artist)}" class="text-2xl font-black text-gray-800 mb-1 hover:text-purple-600 transition-colors uppercase block leading-tight">${artist}</a>`
+                        ).join('');
+                        artistTitleForBio = event.artists.join(', ');
+                    } else if (event.artist) {
+                        artistsHTML = `<a href="artist-detail.html?name=${encodeURIComponent(event.artist)}" class="text-2xl font-black text-gray-800 mb-1 hover:text-purple-600 transition-colors uppercase block leading-tight">${event.artist}</a>`;
+                        artistTitleForBio = event.artist;
+                    }
+
+                    let curatorsHTML = '';
+                    if (event.curators && Array.isArray(event.curators) && event.curators.length > 0) {
+                        curatorsHTML = `<p class="text-base text-gray-500 mt-2 font-bold uppercase tracking-tight">Curador(es): ${event.curators.join(', ')}</p>`;
+                    } else if (event.curator && typeof event.curator === 'string' && event.curator.trim() !== '') {
+                        curatorsHTML = `<p class="text-base text-gray-500 mt-2 font-bold uppercase tracking-tight">Curador(es): ${event.curator}</p>`;
+                    }
+
+                    let galleryHTML = '';
+                    if (event.gallery && Array.isArray(event.gallery) && event.gallery.length > 0) {
+                        const slidesHTML = event.gallery.map(item => {
+                            const imgUrl = typeof item === 'string' ? item : item.url;
+                            const imgDesc = typeof item === 'string' ? '' : (item.description || '');
+                            return `
+                                <div class="swiper-slide flex flex-col items-center justify-start">
+                                    <img src="${imgUrl}" alt="Galería" class="w-full h-80 object-contain clickable-image rounded-xl" onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=Sin+Imagen';">
+                                    <p class="text-xs text-gray-500 text-center px-6 pt-3 italic font-bold uppercase tracking-tight leading-tight">${imgDesc}</p>
+                                </div>`;
+                        }).join('');
+
+                        galleryHTML = `
+                            <div class="mt-12 bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-inner">
+                                <div class="swiper-container mySwiper">
+                                    <div class="swiper-wrapper">${slidesHTML}</div>
+                                    <div class="swiper-button-next"></div>
+                                    <div class="swiper-button-prev"></div>
+                                    <div class="swiper-pagination"></div>
+                                </div>
+                            </div>`;
+                    }
+                    
+                    let catalogHTML = '';
+                    if (event.catalogPdfUrl) {
+                        catalogHTML = `<div class="my-10 text-center"><button id="view-catalog-btn" class="bg-purple-600 text-white font-black py-4 px-10 rounded-xl hover:bg-purple-700 shadow-lg transition-all transform hover:scale-105 uppercase tracking-widest text-[10px]">Ver Catálogo de la Muestra</button></div>`;
+                    }
+
+                    // --- NUEVO: Función INTELIGENTE para detectar links, dominios y emails ---
+                    function linkify(text) {
+                        if (!text) return '';
+                        
+                        // Busca: 1. Emails | 2. URLs con http/www | 3. Dominios terminados en .com, .com.ar, .gob.ar, etc.
+                        const regex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)|((?:https?:\/\/|www\.)[^\s<]+)|([a-zA-Z0-9.-]+\.(?:com|com\.ar|gob\.ar|net|org|info|edu|ar)(?:\/[^\s<]*)?)/gi;
+
+                        return text.replace(regex, function(match, email, urlWithPrefix, nakedDomain) {
+                            // Separar puntuación al final (por si escriben "sitio.com.") para no romper el link
+                            let cleanText = match;
+                            let trail = '';
+                            if (/[.,;!?]$/.test(match)) {
+                                trail = match.slice(-1);
+                                cleanText = match.slice(0, -1);
+                            }
+
+                            if (email) { // Si es correo electrónico
+                                return `<a href="mailto:${cleanText}" class="text-purple-600 font-bold hover:underline break-all">${cleanText}</a>${trail}`;
+                            }
+                            if (urlWithPrefix) { // Si tiene http://, https:// o www.
+                                let href = cleanText;
+                                if (href.toLowerCase().startsWith('www.')) {
+                                    href = 'https://' + href; // Agrega https si solo pusieron www.
+                                }
+                                return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-purple-600 font-bold hover:underline break-all">${cleanText}</a>${trail}`;
+                            }
+                            if (nakedDomain) { // Si es un dominio suelto tipo "palacio.gob.ar"
+                                return `<a href="https://${cleanText}" target="_blank" rel="noopener noreferrer" class="text-purple-600 font-bold hover:underline break-all">${cleanText}</a>${trail}`;
+                            }
+                            return match;
+                        });
+                    }
+
+                    let descriptionStr = '';
+                    if (event.description) {
+                        // 1. Convertimos los links y emails 
+                        // 2. Convertimos los saltos de línea a párrafos
+                        descriptionStr = linkify(event.description).replace(/\n/g, '<p class="mb-4">');
+                    }
+
+                    let artistBioStr = '';
+                    if (event.artistBio) {
+                        artistBioStr = linkify(event.artistBio).replace(/\n/g, '<p class="mb-4">');
+                    }
+                    // --------------------------------------------------------
+
+                    // Lógica de Imagen de Transición (Flyer): Si no hay, usa la principal
+                    const secondaryImgUrl = event.secondaryImageUrl || event.mainImageUrl;
+
+                    const eventHTML = `
+                        <article class="max-w-4xl mx-auto bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-100">
+                            <!-- A. Imagen Principal (Portada) -->
+                            <img src="${event.mainImageUrl || 'https://placehold.co/1200x500?text=BAMARTE'}" alt="${event.title}" class="w-full h-[450px] object-cover clickable-image" onerror="this.onerror=null;this.src='https://placehold.co/1200x500?text=BAMARTE';">
+                            
+                            <div class="p-8 md:p-12">
+                                <div class="mb-8">
+                                    <h1 class="text-4xl font-black mb-4 uppercase tracking-tighter leading-tight text-black">${event.title || 'Exposición'}</h1>
+                                    <div class="space-y-1">${artistsHTML}</div>
+                                    ${curatorsHTML}
+                                </div>
+
+                                <!-- Bloque de Datos Vertical (Ajustado para fechas flexibles) -->
+                                <div class="grid grid-cols-1 gap-6 mb-10 bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                                    <div class="space-y-2">
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Cuándo</p>
+                                        <div class="text-lg font-bold text-slate-800 leading-snug">
+                                            ${inaugurationString ? `<p class="mb-1 text-purple-600"><span class="font-black italic underline decoration-2 underline-offset-4">${inaugurationLabel}</span> ${inaugurationString}</p>` : ''}
+                                            ${singleDateHTML}
+                                            ${dateRangeHTML}
+                                            ${recurringHTML}
+                                            ${event.priceInfo ? `<p class="text-slate-500 mt-1 text-xs uppercase font-black tracking-widest">${event.priceInfo}</p>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 pt-4 border-t border-slate-200/60">
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Dónde</p>
+                                        <div class="text-lg font-bold text-slate-800 leading-snug">
+                                            <p class="text-purple-600 font-black uppercase tracking-tight">${event.locationName || 'Sin ubicación'}</p>
+                                            <p class="text-slate-600 font-medium">${event.room || ''}</p>
+                                            <p class="text-slate-500 text-sm font-medium mt-1">${event.venueAddress || ''}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- C. IMAGEN DE TRANSICIÓN / FLYER -->
+                                <div class="mb-10 w-full h-72 bg-white rounded-2xl overflow-hidden flex items-center justify-center border border-slate-100 shadow-sm">
+                                    <img src="${secondaryImgUrl}" alt="Flyer del evento" class="w-full h-full object-contain clickable-image" onerror="this.onerror=null;this.src='https://placehold.co/1200x400?text=BAMARTE';">
+                                </div>
+                                
+                                <!-- D. Descripción -->
+                                <div class="prose prose-slate max-w-none text-slate-600 text-lg leading-relaxed mb-12 font-medium">
+                                    ${descriptionStr}
+                                </div>
+
+                                ${galleryHTML}
+                                ${catalogHTML}
+
+                                <!-- E. Artista -->
+                                ${event.artistBio ? `
+                                <div class="bg-slate-50 p-8 rounded-2xl my-12 border border-slate-100 shadow-sm">
+                                    <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+                                        ${event.artistImageUrl ? `<img src="${event.artistImageUrl}" alt="${artistTitleForBio}" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg">` : ''}
+                                        <div class="flex-1 text-center md:text-left">
+                                            <h3 class="text-2xl font-black mb-4 uppercase tracking-tight text-slate-800 underline decoration-purple-500 decoration-4 underline-offset-4">${artistTitleForBio}</h3>
+                                            <div class="text-slate-600 leading-relaxed font-bold text-base italic">
+                                                ${artistBioStr}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>` : ''}
+
+                                <!-- F. FOOTER DEL LUGAR (Actualizado) -->
+                                <div class="border-t border-slate-100 pt-8">
+                                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Información del Espacio</h4>
+                                    <p class="text-2xl font-black mb-4 uppercase text-slate-800 tracking-tighter">${event.locationName || ''}</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-500 font-bold uppercase text-[10px] tracking-widest">
+                                        <div class="space-y-1">
+                                            <p>${event.venuePhone || ''}</p>
+                                            <p class="text-slate-400">${event.venueHours || ''}</p>
+                                        </div>
+                                        <div class="flex flex-wrap gap-3 items-center md:justify-end">
+                                            ${event.venueWebsite ? `<a href="${formatUrl(event.venueWebsite)}" target="_blank" class="px-5 py-2 bg-slate-100 rounded-lg text-purple-600 font-black hover:bg-slate-200 transition-all">Sitio Web</a>` : ''}
+                                            ${event.venueEmail ? `<a href="mailto:${event.venueEmail}" class="px-5 py-2 bg-slate-100 rounded-lg text-purple-600 font-black hover:bg-slate-200 transition-all">Email</a>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>`;
+                    
+                    eventDetailContainer.innerHTML = eventHTML;
+
+                    if (event.gallery && event.gallery.length > 0) {
+                        new Swiper(".mySwiper", {
+                            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                            pagination: { el: ".swiper-pagination", clickable: true },
+                            autoplay: { delay: 4000, disableOnInteraction: false },
+                            loop: true
+                        });
+                    }
+
+                    if (catalogHTML) {
+                        document.getElementById('view-catalog-btn').addEventListener('click', () => {
+                            basicLightbox.create(`<iframe src="${formatUrl(event.catalogPdfUrl)}" width="100%" height="100%" frameborder="0" style="background:white"></iframe>`).show();
+                        });
+                    }
+
+                    eventDetailContainer.querySelectorAll('.clickable-image').forEach(img => {
+                        img.addEventListener('click', () => basicLightbox.create(`<img src="${img.src}" style="max-height:90vh; border-radius:1rem;">`).show());
+                    });
+
+                } else {
+                    eventDetailContainer.innerHTML = `<p class="text-center text-xl text-slate-300 font-black uppercase py-20">Evento no encontrado.</p>`;
+                }
+            } catch (error) {
+                console.error(error);
+                loaderContainer.style.display = 'none';
+                eventDetailContainer.innerHTML = `<div class="bg-red-50 p-10 rounded-2xl text-center"><p class="text-red-500 font-black uppercase tracking-widest text-xs">Error al cargar datos.</p></div>`;
+            }
+        }
+
+        fetchAndDisplayEventDetail();
+    </script>
+
+</body>
+</html>

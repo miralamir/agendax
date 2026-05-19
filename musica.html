@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Música - BAMARTE</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Lato -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f8fafc;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #a855f7;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Contenedor Principal -->
+    <div class="container mx-auto px-4">
+
+        <!-- Header y Navegación -->
+        <header class="py-6">
+            <nav class="flex justify-between items-center">
+                <a href="index.html" class="text-3xl font-black text-black">BAMARTE</a>
+                <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
+                    <li><a href="arte.html" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300">Arte</a></li>
+                    <li><a href="musica.html" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300">Música</a></li>
+                    <li><a href="teatro.html" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300">Teatro</a></li>
+                    <li><a href="cine.html" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300">Cine</a></li>
+                    <li><a href="literatura.html" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300">Literatura</a></li>
+                </ul>
+                <a href="index.html#mapa" class="hidden md:flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span>Mapa Cultural</span>
+                </a>
+            </nav>
+        </header>
+
+        <!-- Contenido Principal de la Página de Música -->
+        <main class="py-16">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-black text-orange-500">Agenda de Música</h1>
+                <p class="text-lg text-gray-600 mt-2">Todos los conciertos y eventos musicales.</p>
+            </div>
+            
+            <div id="events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div id="loader-container" class="col-span-full flex justify-center items-center h-40">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Firebase SDK Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWlNhxc1smYH8szpjpXLMbjPXHIts-nMc",
+            authDomain: "zumaq-8bcaa.firebaseapp.com",
+            projectId: "zumaq-8bcaa",
+            storageBucket: "zumaq-8bcaa.firebasestorage.app", 
+            messagingSenderId: "812019183354",
+            appId: "1:812019183354:web:05a6904d4c5491c4fb2343",
+            measurementId: "G-DJJS3XS1RL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const eventsContainer = document.getElementById('events-container');
+        const loaderContainer = document.getElementById('loader-container');
+
+        async function fetchAndDisplayMusicEvents() {
+            try {
+                const eventsRef = collection(db, "events");
+                const q = query(
+                    eventsRef, 
+                    where("isPublished", "==", true),
+                    where("category", "==", "musica")
+                );
+                const querySnapshot = await getDocs(q);
+                
+                loaderContainer.style.display = 'none';
+                eventsContainer.innerHTML = '';
+
+                const events = [];
+                querySnapshot.forEach((doc) => {
+                    events.push({ id: doc.id, ...doc.data() });
+                });
+
+                const now = new Date();
+                
+                // 1. Filtrar y ordenar con SEGURIDAD EXTREMA
+                const upcomingEvents = events
+                    .filter(event => {
+                        const hasEnd = event.endDate && typeof event.endDate.toDate === 'function';
+                        const hasSingle = event.singleDate && typeof event.singleDate.toDate === 'function';
+                        const hasStart = event.startDate && typeof event.startDate.toDate === 'function';
+
+                        if (hasEnd) return event.endDate.toDate() >= now;
+                        if (hasSingle) return event.singleDate.toDate() >= now;
+                        if (hasStart) return event.startDate.toDate() >= now;
+                        
+                        return true; 
+                    })
+                    .sort((a, b) => {
+                        const timeA = (a.startDate && typeof a.startDate.toMillis === 'function') ? a.startDate.toMillis() : 
+                                      ((a.singleDate && typeof a.singleDate.toMillis === 'function') ? a.singleDate.toMillis() : 0);
+                        const timeB = (b.startDate && typeof b.startDate.toMillis === 'function') ? b.startDate.toMillis() : 
+                                      ((b.singleDate && typeof b.singleDate.toMillis === 'function') ? b.singleDate.toMillis() : 0);
+                        return timeA - timeB;
+                    });
+
+                if (upcomingEvents.length === 0) {
+                    eventsContainer.innerHTML = `<p class="col-span-full text-center text-gray-500 font-bold uppercase tracking-widest py-10">No hay eventos próximos en esta categoría.</p>`;
+                    return;
+                }
+                
+                // 2. Mostrar las tarjetas (UN SOLO BUCLE)
+                upcomingEvents.forEach((event) => {
+                    let dateString = 'Próximamente';
+                    
+                    const hasStart = event.startDate && typeof event.startDate.toDate === 'function';
+                    const hasEnd = event.endDate && typeof event.endDate.toDate === 'function';
+                    const hasSingle = event.singleDate && typeof event.singleDate.toDate === 'function';
+                    
+                    if (hasStart && hasEnd) {
+                        const startDate = event.startDate.toDate();
+                        const endDate = event.endDate.toDate();
+                        dateString = `${startDate.getDate()} ${startDate.toLocaleString('es-ES', { month: 'short' })} - ${endDate.getDate()} ${endDate.toLocaleString('es-ES', { month: 'short' })}`;
+                    } else if (hasSingle) {
+                        const sDate = event.singleDate.toDate();
+                        dateString = `${sDate.getDate()} ${sDate.toLocaleString('es-ES', { month: 'short' })}`;
+                    } else if (hasStart && !hasEnd) {
+                        const startDate = event.startDate.toDate();
+                        dateString = `${startDate.getDate()} ${startDate.toLocaleString('es-ES', { month: 'short' })}`;
+                    } else if (event.recurringSchedule) {
+                        dateString = 'Recurrente';
+                    }
+
+                    const eventCard = `
+                        <a href="event-detail.html?id=${event.id}" class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col group">
+                            <div class="relative">
+                                <img src="${event.mainImageUrl || 'https://placehold.co/400x250/e9d5ff/a855f7?text=BAMARTE'}" alt="${event.title}" class="w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x250/e9d5ff/a855f7?text=BAMARTE';">
+                                <div class="absolute top-2 right-2 bg-white bg-opacity-90 text-purple-700 font-black text-xs px-3 py-1 rounded-full shadow-sm uppercase tracking-widest">${dateString}</div>
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h4 class="text-xl font-bold mb-2 group-hover:text-purple-600 transition-colors">${event.title}</h4>
+                                <p class="text-gray-500 text-sm mb-4"><span class="font-semibold">Lugar:</span> ${event.locationName || 'A confirmar'}</p>
+                                <p class="text-gray-600 text-sm flex-grow">${(event.description || '').substring(0, 100)}...</p>
+                            </div>
+                        </a>`;
+                    eventsContainer.innerHTML += eventCard;
+                });
+
+            } catch (error) {
+                console.error("Error al obtener los eventos de música: ", error);
+                loaderContainer.style.display = 'none';
+                eventsContainer.innerHTML = `<p class="col-span-full text-center text-red-500 p-4 bg-red-100 rounded-lg">Ocurrió un error al cargar los eventos. Es posible que necesites crear un índice en Firestore. Revisa la consola del navegador para ver el enlace de creación.</p>`;
+            }
+        }
+
+        fetchAndDisplayMusicEvents();
+    </script>
+
+</body>
+</html>
