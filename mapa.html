@@ -36,11 +36,66 @@
             <nav class="flex justify-between items-center">
                 <a href="index.html" class="text-3xl font-black text-black">BAMARTE</a>
                 <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
-                    <li><a href="arte.html" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300">Arte</a></li>
-                    <li><a href="musica.html" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300">Música</a></li>
-                    <li><a href="teatro.html" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300">Teatro</a></li>
-                    <li><a href="cine.html" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300">Cine</a></li>
-                    <li><a href="literatura.html" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300">Literatura</a></li>
+                    <!-- Artes Visuales -->
+                    <li class="relative group z-50">
+                        <a href="arte.html" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                            Artes Visuales
+                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </a>
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                            <li><a href="arte-agenda.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
+                            <li><a href="arte-novedades.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="arte-ferias.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
+                        </ul>
+                    </li>
+                    <!-- Música -->
+                    <li class="relative group z-50">
+                        <a href="musica.html" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                            Música
+                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </a>
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                            <li><a href="musica-agenda.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
+                            <li><a href="musica-novedades.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="musica-festivales.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
+                        </ul>
+                    </li>
+                    <!-- Teatro -->
+                    <li class="relative group z-50">
+                        <a href="teatro.html" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                            Teatro
+                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </a>
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                            <li><a href="teatro-agenda.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
+                            <li><a href="teatro-novedades.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="teatro-festivales.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
+                        </ul>
+                    </li>
+                    <!-- Cine -->
+                    <li class="relative group z-50">
+                        <a href="cine.html" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                            Cine
+                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </a>
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                            <li><a href="cine-agenda.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
+                            <li><a href="cine-novedades.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="cine-festivales.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
+                        </ul>
+                    </li>
+                    <!-- Literatura -->
+                    <li class="relative group z-50">
+                        <a href="literatura.html" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                            Literatura
+                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </a>
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                            <li><a href="literatura-agenda.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
+                            <li><a href="literatura-novedades.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="literatura-ferias.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
+                        </ul>
+                    </li>
                 </ul>
                 <a href="mapa.html" class="hidden md:flex items-center space-x-2 bg-purple-600 text-white rounded-lg px-4 py-2 hover:bg-purple-700 transition-all duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
