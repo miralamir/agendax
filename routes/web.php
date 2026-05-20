@@ -20,12 +20,3 @@ Route::middleware("auth")->group(function () {
 require __DIR__."/auth.php";
 
 
-Route::get("/run-migrations-a7b3c9d8", function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call("migrate:fresh", ["--seed" => true]);
-        return "<h1>DONE: Migrations and seeding completed successfully!</h1>";
-    } catch (\Exception $e) {
-        return "<h1>ERROR:</h1><pre>" . $e->getMessage() . "</pre>";
-    }
-});
-
