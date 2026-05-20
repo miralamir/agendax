@@ -40,7 +40,7 @@
             </div>
             <div class="flex flex-col flex-grow p-4">
                 <nav class="flex-grow space-y-2">
-                    <a href="admin-dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                    <a href="/admin/dashboard" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                         Eventos
                     </a>

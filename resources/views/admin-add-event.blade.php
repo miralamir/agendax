@@ -28,7 +28,7 @@
                 <h1 class="text-2xl font-black text-purple-600">BAMARTE</h1>
             </div>
             <nav class="p-4 space-y-2">
-                <a href="admin-dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-bold uppercase text-xs">
+                <a href="/admin/dashboard" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-bold uppercase text-xs">
                     ← Volver al Dashboard
                 </a>
             </nav>
@@ -227,7 +227,7 @@
                     </div>
 
                     <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                        <a href="admin-dashboard.html" class="px-8 py-3 border rounded-xl font-black text-gray-600 hover:bg-gray-50 transition-colors uppercase text-xs">Cancelar</a>
+                        <a href="/admin/dashboard" class="px-8 py-3 border rounded-xl font-black text-gray-600 hover:bg-gray-50 transition-colors uppercase text-xs">Cancelar</a>
                         <button type="submit" id="save-btn" class="px-12 py-3 bg-purple-600 text-white font-black rounded-xl hover:bg-purple-700 shadow-xl transition-all transform hover:scale-105 uppercase text-xs">
                             GUARDAR CAMBIOS DEFINITIVOS
                         </button>

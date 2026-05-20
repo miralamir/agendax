@@ -83,7 +83,7 @@
 
             <!-- Botones de Acción -->
             <div class="flex justify-end space-x-4 pt-6">
-                <a href="admin-dashboard.html" class="bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded-lg hover:bg-gray-300">Cancelar</a>
+                <a href="/admin/dashboard" class="bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded-lg hover:bg-gray-300">Cancelar</a>
                 <button type="submit" class="bg-cyan-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-cyan-600">Guardar Novedad</button>
             </div>
             <div id="success-message" class="text-green-600 font-bold text-center mt-4"></div>

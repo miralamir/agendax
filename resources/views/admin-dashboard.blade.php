@@ -56,7 +56,7 @@
                 <h1 class="text-2xl font-black text-purple-600 tracking-tighter">BAMARTE</h1>
             </div>
             <nav class="flex-grow p-6 space-y-3">
-                <a href="admin-dashboard.html" class="flex items-center px-4 py-3 text-white bg-purple-600 rounded-xl font-bold shadow-md shadow-purple-100 transition-all">
+                <a href="/admin/dashboard" class="flex items-center px-4 py-3 text-white bg-purple-600 rounded-xl font-bold shadow-md shadow-purple-100 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     Eventos
                 </a>
