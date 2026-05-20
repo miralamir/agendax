@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - BAMARTE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Lato', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <h1 class="text-3xl font-black text-center text-purple-600 mb-2">BAMARTE</h1>
+        <h2 class="text-xl font-bold text-center text-gray-700 mb-6">Panel de Administración</h2>
+        
+        <form id="login-form">
+            <div class="mb-4">
+                <label for="email" class="block text-gray-600 mb-2 font-bold">Correo Electrónico</label>
+                <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+            </div>
+            
+            <div class="mb-6">
+                <label for="password" class="block text-gray-600 mb-2 font-bold">Contraseña</label>
+                <input type="password" id="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+            </div>
+            
+            <button type="submit" id="submit-btn" class="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-300">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div id="error-message" class="mt-4 text-center text-red-500 font-semibold text-sm"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWlNhxc1smYH8szpjpXLMbjPXHIts-nMc",
+            authDomain: "zumaq-8bcaa.firebaseapp.com",
+            projectId: "zumaq-8bcaa",
+            storageBucket: "zumaq-8bcaa.firebasestorage.app",
+            messagingSenderId: "812019183354",
+            appId: "1:812019183354:web:05a6904d4c5491c4fb2343",
+            measurementId: "G-DJJS3XS1RL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginForm = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            
+            errorMessage.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Verificando...';
+            submitBtn.classList.add('opacity-50');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Login exitoso
+                window.location.href = 'admin-dashboard.html'; 
+            } catch (error) {
+                console.error("Error completo:", error); // Para ver en la consola (F12)
+                
+                let msg = 'Ocurrió un error desconocido. Revisa la consola.';
+                
+                // Traducción de errores comunes de Firebase
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = 'El correo o la contraseña son incorrectos.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    msg = 'Demasiados intentos fallidos. Intenta más tarde.';
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    msg = 'Error de configuración: El inicio de sesión por correo/contraseña no está habilitado en Firebase.';
+                } else if (error.code.includes('requests-from-referer')) {
+                    msg = 'Dominio no autorizado. Agrega este dominio en Firebase Authentication > Settings > Authorized Domains.';
+                }
+
+                errorMessage.textContent = msg;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Iniciar Sesión';
+                submitBtn.classList.remove('opacity-50');
+            }
+        });
+    </script>
+
+</body>
+</html>
