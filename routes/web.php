@@ -28,3 +28,5 @@ Route::get("/teatro/agenda", function () { return view("teatro-agenda"); });
 Route::get("/teatro/festivales", function () { return view("teatro-festivales"); });
 Route::get("/teatro/novedades", function () { return view("teatro-novedades"); });
 
+Route::get("/admin/dashboard", function () { return view("admin-dashboard"); });
+Route::get("/mapa", function () { return view("mapa"); });
