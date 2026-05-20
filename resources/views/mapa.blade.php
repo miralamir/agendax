@@ -42,7 +42,7 @@
                             Artes Visuales
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
-                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40">
                             <li><a href="/arte/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="/arte/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
                             <li><a href="/arte/ferias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
@@ -54,7 +54,7 @@
                             Música
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
-                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40">
                             <li><a href="/musica/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="/musica/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
                             <li><a href="/musica/festivales" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
@@ -66,7 +66,7 @@
                             Teatro
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
-                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40">
                             <li><a href="/teatro/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="/teatro/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
                             <li><a href="/teatro/festivales" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
@@ -78,7 +78,7 @@
                             Cine
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
-                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40">
                             <li><a href="/cine/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="/cine/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
                             <li><a href="/cine/festivales" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
@@ -90,7 +90,7 @@
                             Literatura
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
-                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40 mt-1">
+                        <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-40">
                             <li><a href="/literatura/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="/literatura/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
                             <li><a href="/literatura/ferias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
