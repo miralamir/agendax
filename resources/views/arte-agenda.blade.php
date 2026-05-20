@@ -40,7 +40,7 @@
         <!-- Header y Navegación -->
         <header class="py-6">
             <nav class="flex justify-between items-center">
-                <a href="/index" class="text-3xl font-black text-black">BAMARTE</a>
+                <a href="/" class="text-3xl font-black text-black">BAMARTE</a>
                 <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
                     <!-- Artes Visuales -->
                     <li class="relative group z-50">

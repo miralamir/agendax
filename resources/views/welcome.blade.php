@@ -48,7 +48,7 @@
         <!-- Header y Navegación -->
         <header class="py-6">
             <nav class="flex justify-between items-center">
-                <a href="/index" class="text-3xl font-black text-black">BAMARTE</a>
+                <a href="/" class="text-3xl font-black text-black">BAMARTE</a>
                 <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
                     <!-- Artes Visuales -->
                     <li class="relative group z-50">
@@ -60,7 +60,7 @@
                             <li><a href="/arte/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Creadores</a></li>
                             <li><a href="/arte/ferias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
-                            <li><a href="/arte/noticias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
+                            <li><a href="/arte/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
                         </ul>
                     </li>
                     <!-- Música -->
@@ -73,7 +73,7 @@
                             <li><a href="/musica/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Lanzamientos</a></li>
                             <li><a href="/musica/festivales" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
-                            <li><a href="/musica/noticias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
+                            <li><a href="/musica/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
                         </ul>
                     </li>
                     <!-- Teatro -->
@@ -85,7 +85,7 @@
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
                             <li><a href="/teatro/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Cartelera</a></li>
                             <li><a href="/teatro/festivales" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
-                            <li><a href="/teatro/noticias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
+                            <li><a href="/teatro/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
                         </ul>
                     </li>
                     <!-- Cine -->
@@ -97,7 +97,7 @@
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
                             <li><a href="/cine/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Estrenos</a></li>
                             <li><a href="/cine/festivales" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales / Ciclos</a></li>
-                            <li><a href="/cine/noticias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
+                            <li><a href="/cine/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
                         </ul>
                     </li>
                     <!-- Literatura -->
@@ -109,7 +109,7 @@
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
                             <li><a href="/literatura/agenda" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="/literatura/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades Editoriales</a></li>
-                            <li><a href="/literatura/noticias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
+                            <li><a href="/literatura/novedades" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
                             <li><a href="/literatura/ferias" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
                         </ul>
                     </li>
