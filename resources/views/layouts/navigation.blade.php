@@ -75,7 +75,7 @@ $themeColors = [
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
                             <li><a href="{{ route('literatura.agenda') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                             <li><a href="{{ route('literatura.novedades-editoriales') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades Editoriales</a></li>
-                            <li><a href="{{ route('literatura.novedades') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Noticias</a></li>
+                            <li><a href="{{ route('literatura.novedades') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
                             <li><a href="{{ route('literatura.ferias') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
                         </ul>
                     </li>
