@@ -13,12 +13,22 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-n                    <x-nav-link :href="route('dashboard.arte')" :active="request()->routeIs('dashboard.arte')">{{ __('Arte') }}</x-nav-link>
-                    <x-nav-link :href="route('dashboard.musica')" :active="request()->routeIs('dashboard.musica')">{{ __('Musica') }}</x-nav-link>
-                    <x-nav-link :href="route('dashboard.teatro')" :active="request()->routeIs('dashboard.teatro')">{{ __('Teatro') }}</x-nav-link>
-                    <x-nav-link :href="route('dashboard.cine')" :active="request()->routeIs('dashboard.cine')">{{ __('Cine') }}</x-nav-link>
-                    <x-nav-link :href="route('dashboard.literatura')" :active="request()->routeIs('dashboard.literatura')">{{ __('Literatura') }}</x-nav-link>
                         {{ __('Dashboard') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('arte')" :active="request()->routeIs('arte')">
+                        {{ __('Arte') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('musica')" :active="request()->routeIs('musica')">
+                        {{ __('Musica') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('teatro')" :active="request()->routeIs('teatro')">
+                        {{ __('Teatro') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('cine')" :active="request()->routeIs('cine')">
+                        {{ __('Cine') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('literatura')" :active="request()->routeIs('literatura')">
+                        {{ __('Literatura') }}
                     </x-nav-link>
                 </div>
             </div>
