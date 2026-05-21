@@ -6,5 +6,8 @@ use Illuminate\Http\Request;
 
 class ArteController extends Controller
 {
-    //
+    public function index()
+    {
+        return view('arte.index');
+    }
 }

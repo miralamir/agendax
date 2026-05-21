@@ -6,5 +6,8 @@ use Illuminate\Http\Request;
 
 class LiteraturaController extends Controller
 {
-    //
+    public function index()
+    {
+        return view('literatura.index');
+    }
 }

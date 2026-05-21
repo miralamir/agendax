@@ -6,5 +6,8 @@ use Illuminate\Http\Request;
 
 class MusicaController extends Controller
 {
-    //
+    public function index()
+    {
+        return view('musica.index');
+    }
 }
