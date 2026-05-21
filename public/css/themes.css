@@ -1,0 +1,31 @@
+/* public/css/themes.css */
+
+/* Define theme variables for reusability */
+:root {
+    --color-arte: #06b6d4;       /* cyan-500 */
+    --color-musica: #f97316;    /* orange-500 */
+    --color-teatro: #ec4899;    /* pink-500 */
+    --color-cine: #3b82f6;      /* blue-500 */
+    --color-literatura: #10b981; /* emerald-500 */
+}
+
+/* Helper class to apply theme color to text */
+.theme-arte .text-theme { color: var(--color-arte); }
+.theme-arte .border-theme { border-color: var(--color-arte); }
+.theme-arte .bg-theme { background-color: var(--color-arte); }
+
+.theme-musica .text-theme { color: var(--color-musica); }
+.theme-musica .border-theme { border-color: var(--color-musica); }
+.theme-musica .bg-theme { background-color: var(--color-musica); }
+
+.theme-teatro .text-theme { color: var(--color-teatro); }
+.theme-teatro .border-theme { border-color: var(--color-teatro); }
+.theme-teatro .bg-theme { background-color: var(--color-teatro); }
+
+.theme-cine .text-theme { color: var(--color-cine); }
+.theme-cine .border-theme { border-color: var(--color-cine); }
+.theme-cine .bg-theme { background-color: var(--color-cine); }
+
+.theme-literatura .text-theme { color: var(--color-literatura); }
+.theme-literatura .border-theme { border-color: var(--color-literatura); }
+.theme-literatura .bg-theme { background-color: var(--color-literatura); }

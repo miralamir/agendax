@@ -1,3 +1,4 @@
+<x-slot name="theme">theme-arte</x-slot>
 <x-app-layout>
     {{-- Inyectamos los estilos y fuentes del diseño estático. Idealmente, esto se compilaría en el futuro. --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
