@@ -12,7 +12,7 @@ $themeColors = [
     <div class="container mx-auto px-4">
         <header class="py-6">
             <nav class="flex justify-between items-center">
-                <a href="{{ route('dashboard') }}" class="text-3xl font-black text-black">BAMARTE</a>
+                <a href="{{ url('/') }}" class="text-3xl font-black text-black">BAMARTE</a>
                 
                 {{-- Desktop Menu --}}
                 <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
