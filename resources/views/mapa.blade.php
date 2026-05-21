@@ -37,7 +37,7 @@
                 <a href="/" class="text-3xl font-black text-black">BAMARTE</a>
                 <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
                     <!-- Artes Visuales -->
-                    <li class="relative group z-50">
+                    <li class="relative group z-50 pb-4">
                         <a href="/arte" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Artes Visuales
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -49,7 +49,7 @@
                         </ul>
                     </li>
                     <!-- Música -->
-                    <li class="relative group z-50">
+                    <li class="relative group z-50 pb-4">
                         <a href="/musica" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Música
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -61,7 +61,7 @@
                         </ul>
                     </li>
                     <!-- Teatro -->
-                    <li class="relative group z-50">
+                    <li class="relative group z-50 pb-4">
                         <a href="/teatro" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Teatro
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -73,7 +73,7 @@
                         </ul>
                     </li>
                     <!-- Cine -->
-                    <li class="relative group z-50">
+                    <li class="relative group z-50 pb-4">
                         <a href="/cine" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Cine
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -85,7 +85,7 @@
                         </ul>
                     </li>
                     <!-- Literatura -->
-                    <li class="relative group z-50">
+                    <li class="relative group z-50 pb-4">
                         <a href="/literatura" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Literatura
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
