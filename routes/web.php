@@ -24,6 +24,37 @@ Route::get("/cine", [CineController::class, "index"])->name("cine");
 Route::get("/teatro", [TeatroController::class, "index"])->name("teatro");
 Route::get("/literatura", [LiteraturaController::class, "index"])->name("literatura");
 
+
+// Sub-routes for main sections
+Route::prefix("arte")->name("arte.")->group(function () {
+    Route::get("agenda", [ArteController::class, "agenda"])->name("agenda");
+    Route::get("creadores", [ArteController::class, "creadores"])->name("creadores");
+    Route::get("ferias", [ArteController::class, "ferias"])->name("ferias");
+    Route::get("novedades", [ArteController::class, "novedades"])->name("novedades");
+});
+Route::prefix("musica")->name("musica.")->group(function () {
+    Route::get("agenda", [MusicaController::class, "agenda"])->name("agenda");
+    Route::get("lanzamientos", [MusicaController::class, "lanzamientos"])->name("lanzamientos");
+    Route::get("festivales", [MusicaController::class, "festivales"])->name("festivales");
+    Route::get("novedades", [MusicaController::class, "novedades"])->name("novedades");
+});
+Route::prefix("teatro")->name("teatro.")->group(function () {
+    Route::get("cartelera", [TeatroController::class, "cartelera"])->name("cartelera");
+    Route::get("festivales", [TeatroController::class, "festivales"])->name("festivales");
+    Route::get("novedades", [TeatroController::class, "novedades"])->name("novedades");
+});
+Route::prefix("cine")->name("cine.")->group(function () {
+    Route::get("estrenos", [CineController::class, "estrenos"])->name("estrenos");
+    Route::get("festivales-ciclos", [CineController::class, "festivalesCiclos"])->name("festivales-ciclos");
+    Route::get("novedades", [CineController::class, "novedades"])->name("novedades");
+});
+Route::prefix("literatura")->name("literatura.")->group(function () {
+    Route::get("agenda", [LiteraturaController::class, "agenda"])->name("agenda");
+    Route::get("novedades-editoriales", [LiteraturaController::class, "novedadesEditoriales"])->name("novedades-editoriales");
+    Route::get("ferias", [LiteraturaController::class, "ferias"])->name("ferias");
+    Route::get("novedades", [LiteraturaController::class, "novedades"])->name("novedades");
+});
+
 Route::get("/dashboard", function () {
     return view("dashboard");
 })->middleware(["auth", "verified"])->name("dashboard");

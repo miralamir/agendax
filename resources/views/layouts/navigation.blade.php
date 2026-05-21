@@ -11,25 +11,98 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-2 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('arte')" :active="request()->routeIs('arte')">
-                        {{ __('Arte') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('musica')" :active="request()->routeIs('musica')">
-                        {{ __('Musica') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('teatro')" :active="request()->routeIs('teatro')">
-                        {{ __('Teatro') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('cine')" :active="request()->routeIs('cine')">
-                        {{ __('Cine') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('literatura')" :active="request()->routeIs('literatura')">
-                        {{ __('Literatura') }}
-                    </x-nav-link>
+
+                    <!-- Arte Dropdown -->
+                    <div class="relative flex items-center">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                    <div>Arte</div>
+                                    <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('arte.agenda')">{{ __('Agenda') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('arte.creadores')">{{ __('Creadores') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('arte.ferias')">{{ __('Ferias') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('arte.novedades')">{{ __('Novedades') }}</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+
+                    <!-- Musica Dropdown -->
+                    <div class="relative flex items-center">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                    <div>Música</div>
+                                    <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('musica.agenda')">{{ __('Agenda') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('musica.lanzamientos')">{{ __('Lanzamientos') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('musica.festivales')">{{ __('Festivales') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('musica.novedades')">{{ __('Novedades') }}</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+                    
+                    <!-- Teatro Dropdown -->
+                    <div class="relative flex items-center">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                    <div>Teatro</div>
+                                    <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('teatro.cartelera')">{{ __('Cartelera') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('teatro.festivales')">{{ __('Festivales') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('teatro.novedades')">{{ __('Novedades') }}</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+
+                    <!-- Cine Dropdown -->
+                    <div class="relative flex items-center">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                    <div>Cine</div>
+                                    <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('cine.estrenos')">{{ __('Estrenos') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('cine.festivales-ciclos')">{{ __('Festivales y Ciclos') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('cine.novedades')">{{ __('Novedades') }}</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+
+                    <!-- Literatura Dropdown -->
+                    <div class="relative flex items-center">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                    <div>Literatura</div>
+                                    <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('literatura.agenda')">{{ __('Agenda') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('literatura.novedades-editoriales')">{{ __('Novedades Editoriales') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('literatura.ferias')">{{ __('Ferias') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('literatura.novedades')">{{ __('Novedades') }}</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                 </div>
             </div>
 
