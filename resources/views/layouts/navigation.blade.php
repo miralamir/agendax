@@ -18,7 +18,7 @@ $themeColors = [
                 <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
                     <!-- Artes Visuales -->
                     <li class="relative group z-50">
-                        <a href="{{ route('arte') }}" class="uppercase {{ request()->routeIs('arte.*') ? $themeColors['arte'] : 'text-black' }} hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('arte') }}" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Artes Visuales
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
@@ -31,7 +31,7 @@ $themeColors = [
                     </li>
                     <!-- Música -->
                     <li class="relative group z-50">
-                        <a href="{{ route('musica') }}" class="uppercase {{ request()->routeIs('musica.*') ? $themeColors['musica'] : 'text-black' }} hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('musica') }}" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Música
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
@@ -44,7 +44,7 @@ $themeColors = [
                     </li>
                     <!-- Teatro -->
                     <li class="relative group z-50">
-                        <a href="{{ route('teatro') }}" class="uppercase {{ request()->routeIs('teatro.*') ? $themeColors['teatro'] : 'text-black' }} hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('teatro') }}" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Teatro
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
@@ -56,7 +56,7 @@ $themeColors = [
                     </li>
                     <!-- Cine -->
                     <li class="relative group z-50">
-                        <a href="{{ route('cine') }}" class="uppercase {{ request()->routeIs('cine.*') ? $themeColors['cine'] : 'text-black' }} hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('cine') }}" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Cine
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
@@ -68,7 +68,7 @@ $themeColors = [
                     </li>
                     <!-- Literatura -->
                     <li class="relative group z-50">
-                        <a href="{{ route('literatura') }}" class="uppercase {{ request()->routeIs('literatura.*') ? $themeColors['literatura'] : 'text-black' }} hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('literatura') }}" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Literatura
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
