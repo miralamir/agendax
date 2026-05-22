@@ -83,7 +83,7 @@ $themeColors = [
 
                 <div class="hidden md:flex items-center space-x-4">
                     {{-- Mapa Cultural Button --}}
-                    <a href="#" class="flex items-center space-x-2 bg-purple-600 text-white rounded-lg px-4 py-2 hover:bg-purple-700 transition-all duration-300 text-sm font-bold">
+                    <a href="{{ url('/#mapa') }}" class="flex items-center space-x-2 bg-purple-600 text-white rounded-lg px-4 py-2 hover:bg-purple-700 transition-all duration-300 text-sm font-bold">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                         <span>Mapa Cultural</span>
                     </a>
