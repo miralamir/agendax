@@ -1,62 +1,318 @@
 <x-app-layout>
-    {{-- La Home no tiene un tema de color específico, se mantiene neutral. --}}
+    {{-- Dependencias y estilos específicos de la Home --}}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        .hero-text-gradient {
+            background: linear-gradient(to right, #a855f7, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #a855f7;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
+    {{-- Contenido de la Home --}}
     <div class="container mx-auto px-4">
         <!-- Sección Hero -->
         <main class="text-center py-16 md:py-24">
             <h2 class="text-4xl md:text-6xl font-black mb-4">
-                Descubrí el <span style="background: linear-gradient(to right, #a855f7, #d946ef); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Arte que te Rodea</span> con BAMARTE
+                Descubrí el <span class="hero-text-gradient">Arte que te Rodea</span> con BAMARTE
             </h2>
             <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
                 Tu guía completa para inauguraciones, muestras actuales, noticias y todos los eventos culturales en tu ciudad.
             </p>
         </main>
 
-        <!-- Sección Mapa Cultural Interactivo (estructura estática) -->
+        <!-- Sección Mapa Cultural Interactivo -->
         <section id="mapa" class="py-16 bg-white rounded-2xl shadow-lg mb-16 relative z-0">
             <div class="text-center mb-6 px-4">
                 <h3 class="text-3xl font-bold">Mapa Cultural Interactivo</h3>
                 <p class="text-gray-500 mt-2 mb-6">Encuentra la ubicación de cada evento y descubre qué hay cerca de ti.</p>
-                
                 <div class="flex flex-col md:flex-row justify-center items-center gap-4 max-w-4xl mx-auto">
                     <button id="btn-locate" class="w-full md:w-auto inline-flex justify-center items-center space-x-2 px-6 py-3 bg-purple-100 text-purple-700 font-bold rounded-full hover:bg-purple-200 transition-colors shadow-sm text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.242-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.242-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         <span>Mi Ubicación</span>
                     </button>
-
                     <div class="relative w-full md:w-[450px]">
                         <svg class="w-5 h-5 text-gray-400 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         <input type="text" id="map-search-input" placeholder="Buscar artista, lugar u obra..." class="w-full pl-12 pr-24 py-3 rounded-full border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium">
                         <button id="btn-map-search" class="absolute right-2 top-1.5 px-4 py-1.5 bg-purple-600 text-white font-bold rounded-full hover:bg-purple-700 text-sm transition-colors">Buscar</button>
                     </div>
                 </div>
-
                 <div class="flex flex-wrap justify-center gap-2 mt-6" id="map-filters">
-                    <button data-category="todos" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-purple-600 text-white border-purple-600 transition-all">Todos</button>
-                    <button data-category="arte" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-cyan-600 border-cyan-200 transition-all">Artes Visuales</button>
-                    <button data-category="musica" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-orange-600 border-orange-200 transition-all">Música</button>
-                    <button data-category="teatro" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-pink-600 border-pink-200 transition-all">Teatro</button>
-                    <button data-category="cine" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-blue-600 border-blue-200 transition-all">Cine</button>
-                    <button data-category="literatura" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-emerald-600 border-emerald-200 transition-all">Literatura</button>
+                    <button data-category="todos" data-active="bg-purple-600 text-white border-purple-600" data-inactive="bg-white text-purple-600 border-purple-200" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-purple-600 text-white border-purple-600 transition-all">Todos</button>
+                    <button data-category="arte" data-active="bg-cyan-500 text-white border-cyan-500" data-inactive="bg-white text-cyan-600 border-cyan-200" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-cyan-600 border-cyan-200 hover:bg-cyan-50 transition-all">Artes Visuales</button>
+                    <button data-category="musica" data-active="bg-orange-500 text-white border-orange-500" data-inactive="bg-white text-orange-500 border-orange-200" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-orange-500 border-orange-200 hover:bg-orange-50 transition-all">Música</button>
+                    <button data-category="teatro" data-active="bg-pink-500 text-white border-pink-500" data-inactive="bg-white text-pink-500 border-pink-200" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-pink-500 border-pink-200 hover:bg-pink-50 transition-all">Teatro</button>
+                    <button data-category="cine" data-active="bg-blue-500 text-white border-blue-500" data-inactive="bg-white text-blue-500 border-blue-200" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-blue-500 border-blue-200 hover:bg-blue-50 transition-all">Cine</button>
+                    <button data-category="literatura" data-active="bg-emerald-500 text-white border-emerald-500" data-inactive="bg-white text-emerald-500 border-emerald-200" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-emerald-500 border-emerald-200 hover:bg-emerald-50 transition-all">Literatura</button>
                 </div>
             </div>
-            
-            <div id="map" class="h-[500px] rounded-lg mx-4 md:mx-8 z-0 border border-gray-100 shadow-inner">
-                <p class="p-8 text-center text-gray-500">El mapa interactivo cargará aquí.</p>
-            </div>
+            <div id="map" class="h-[500px] rounded-lg mx-4 md:mx-8 z-0 border border-gray-100 shadow-inner"></div>
         </section>
 
-        <!-- Sección Agenda de Destacados (estructura estática) -->
+        <!-- Sección Agenda de Destacados -->
         <section id="arte" class="py-16">
             <h3 class="text-3xl font-bold text-center mb-12">Agenda de Destacados</h3>
             <div id="events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="col-span-full flex justify-center items-center h-40">
-                    <p class="text-center text-gray-500">Los eventos destacados cargarán aquí.</p>
-                </div>
+                <div id="loader-container" class="col-span-full flex justify-center items-center h-40"><div class="loader"></div></div>
             </div>
         </section>
     </div>
+
+    {{-- Scripts específicos de la Home (Mapa y Fetch de Datos) --}}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWlNhxc1smYH8szpjpXLMbjPXHIts-nMc",
+            authDomain: "zumaq-8bcaa.firebaseapp.com",
+            projectId: "zumaq-8bcaa",
+            storageBucket: "zumaq-8bcaa.firebasestorage.app", 
+            messagingSenderId: "812019183354",
+            appId: "1:812019183354:web:05a6904d4c5491c4fb2343",
+            measurementId: "G-DJJS3XS1RL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const eventsContainer = document.getElementById('events-container');
+        const loaderContainer = document.getElementById('loader-container');
+
+        // --- LÓGICA DEL MAPA ---
+        const map = L.map('map').setView([-34.6037, -58.3816], 13);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom...'
+        }).addTo(map);
+
+        let mapMarkersGroup = L.layerGroup().addTo(map);
+        let allValidMapEvents = []; 
+        let currentMapCategory = 'todos';
+        let currentSearchTerm = '';
+        let userMarker = null;
+        let userCircle = null;
+
+        document.getElementById('btn-locate').addEventListener('click', () => {
+            map.locate({setView: true, maxZoom: 14});
+        });
+
+        map.on('locationfound', (e) => {
+            const radius = e.accuracy / 2;
+            if (userMarker) map.removeLayer(userMarker);
+            if (userCircle) map.removeLayer(userCircle);
+
+            userMarker = L.marker(e.latlng).addTo(map).bindPopup("<b class='text-purple-600'>¡Estás aquí!</b>").openPopup();
+            userCircle = L.circle(e.latlng, radius, {color: '#a855f7', fillColor: '#a855f7', fillOpacity: 0.2}).addTo(map);
+        });
+
+        map.on('locationerror', (e) => {
+            alert("No pudimos obtener tu ubicación. Asegúrate de darle permisos al navegador.");
+        });
+
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                currentMapCategory = e.currentTarget.getAttribute('data-category');
+                filterButtons.forEach(b => {
+                    const activeClasses = b.getAttribute('data-active').split(' ');
+                    const inactiveClasses = b.getAttribute('data-inactive').split(' ');
+                    if (b === e.currentTarget) {
+                        b.classList.remove(...inactiveClasses);
+                        b.classList.add(...activeClasses);
+                    } else {
+                        b.classList.remove(...activeClasses);
+                        b.classList.add(...inactiveClasses);
+                    }
+                });
+                renderMapMarkers();
+            });
+        });
+
+        const searchInput = document.getElementById('map-search-input');
+        const searchBtn = document.getElementById('btn-map-search');
+
+        searchInput.addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value.toLowerCase().trim();
+            renderMapMarkers();
+        });
+
+        function zoomToSearchResults() {
+            if (!currentSearchTerm) return; 
+            const layers = mapMarkersGroup.getLayers();
+            if (layers.length > 0) {
+                const featureGroup = new L.featureGroup(layers);
+                map.fitBounds(featureGroup.getBounds(), { padding: [50, 50], maxZoom: 15 });
+                if (layers.length === 1) {
+                    layers[0].openPopup();
+                }
+            } else {
+                alert("No se encontraron eventos o lugares con esa búsqueda.");
+            }
+        }
+
+        searchBtn.addEventListener('click', zoomToSearchResults);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                zoomToSearchResults();
+            }
+        });
+
+        function renderMapMarkers() {
+            mapMarkersGroup.clearLayers();
+            const filteredEvents = allValidMapEvents.filter(event => {
+                const matchCategory = currentMapCategory === 'todos' || event.category === currentMapCategory;
+                let matchSearch = true;
+                if (currentSearchTerm) {
+                    const title = (event.title || '').toLowerCase();
+                    const loc = (event.locationName || '').toLowerCase();
+                    const art = Array.isArray(event.artists) ? event.artists.join(' ').toLowerCase() : (event.artist || '').toLowerCase();
+                    matchSearch = title.includes(currentSearchTerm) || loc.includes(currentSearchTerm) || art.includes(currentSearchTerm);
+                }
+                return matchCategory && matchSearch;
+            });
+
+            filteredEvents.forEach(event => {
+                let lat = event.latitude ? parseFloat(event.latitude.toString().replace(',', '.')) : null;
+                let lng = event.longitude ? parseFloat(event.longitude.toString().replace(',', '.')) : null;
+                if (!lat || !lng) {
+                    if (event.locationGeoPoint) {
+                        lat = event.locationGeoPoint.latitude;
+                        lng = event.locationGeoPoint.longitude;
+                    }
+                }
+                if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                    const marker = L.marker([lat, lng]);
+                    let catColor = "purple";
+                    let displayCategory = event.category || 'Evento';
+                    if(event.category === 'arte') { catColor = "cyan"; displayCategory = "Artes Visuales"; }
+                    if(event.category === 'musica') catColor = "orange";
+                    if(event.category === 'teatro') catColor = "pink";
+                    if(event.category === 'cine') catColor = "blue";
+                    if(event.category === 'literatura') catColor = "emerald";
+                    const popupContent = `
+                        <div class="font-sans">
+                            <span class="text-[10px] font-black uppercase text-${catColor}-500">${displayCategory}</span>
+                            <h3 class="font-bold text-lg leading-tight mb-1 mt-1">${event.title}</h3>
+                            <p class="text-gray-600 text-sm mb-2 font-medium">${event.locationName}</p>
+                            <a href="event-detail.html?id=${event.id}" class="inline-block px-3 py-1 bg-${catColor}-600 text-white rounded text-xs font-bold hover:opacity-80 transition">Ver detalle</a>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+                    mapMarkersGroup.addLayer(marker);
+                }
+            });
+        }
+
+        async function fetchAndPlotEvents() {
+            try {
+                const eventsRef = collection(db, "events");
+                const q = query(eventsRef, where("isPublished", "==", true));
+                const querySnapshot = await getDocs(q);
+                const now = new Date();
+                querySnapshot.forEach((doc) => {
+                    const event = { id: doc.id, ...doc.data() };
+                    const hasEnd = event.endDate && typeof event.endDate.toDate === 'function';
+                    const hasSingle = event.singleDate && typeof event.singleDate.toDate === 'function';
+                    const hasStart = event.startDate && typeof event.startDate.toDate === 'function';
+                    let isValidEvent = true;
+                    if (hasEnd) { isValidEvent = event.endDate.toDate() >= now; } 
+                    else if (hasSingle) { isValidEvent = event.singleDate.toDate() >= now; } 
+                    else if (hasStart) { isValidEvent = event.startDate.toDate() >= now; }
+                    let lat = event.latitude ? parseFloat(event.latitude.toString().replace(',', '.')) : null;
+                    let lng = event.longitude ? parseFloat(event.longitude.toString().replace(',', '.')) : null;
+                    let hasCoords = (lat && lng && !isNaN(lat) && !isNaN(lng)) || event.locationGeoPoint;
+                    if (isValidEvent && hasCoords) {
+                        allValidMapEvents.push(event);
+                    }
+                });
+                renderMapMarkers();
+            } catch (error) {
+                console.error("Error al obtener eventos para el mapa: ", error);
+            }
+        }
+        
+        async function fetchAndDisplayFeaturedEvents() {
+            try {
+                const eventsRef = collection(db, "events");
+                const q = query(eventsRef, where("isPublished", "==", true), where("isFeatured", "==", true));
+                const querySnapshot = await getDocs(q);
+                loaderContainer.style.display = 'none';
+                eventsContainer.innerHTML = '';
+                const events = [];
+                querySnapshot.forEach((doc) => { events.push({ id: doc.id, ...doc.data() }); });
+                const now = new Date();
+                const upcomingEvents = events
+                    .filter(event => {
+                        const hasEnd = event.endDate && typeof event.endDate.toDate === 'function';
+                        const hasSingle = event.singleDate && typeof event.singleDate.toDate === 'function';
+                        const hasStart = event.startDate && typeof event.startDate.toDate === 'function';
+                        if (hasEnd) return event.endDate.toDate() >= now;
+                        if (hasSingle) return event.singleDate.toDate() >= now;
+                        if (hasStart) return event.startDate.toDate() >= now;
+                        return true; 
+                    })
+                    .sort((a, b) => {
+                        const timeA = (a.startDate && typeof a.startDate.toMillis === 'function') ? a.startDate.toMillis() : 0;
+                        const timeB = (b.startDate && typeof b.startDate.toMillis === 'function') ? b.startDate.toMillis() : 0;
+                        return timeA - timeB;
+                    });
+                if (upcomingEvents.length === 0) {
+                    eventsContainer.innerHTML = `<p class="col-span-full text-center text-gray-500">No hay eventos destacados en este momento.</p>`;
+                } else {
+                    upcomingEvents.forEach((event) => {
+                        let dateString = 'Próximamente';
+                        if (event.startDate && event.endDate && typeof event.startDate.toDate === 'function' && typeof event.endDate.toDate === 'function') {
+                            const sd = event.startDate.toDate();
+                            const ed = event.endDate.toDate();
+                            dateString = `${sd.getDate()} ${sd.toLocaleString('es-ES', { month: 'short' })} - ${ed.getDate()} ${ed.toLocaleString('es-ES', { month: 'short' })}`;
+                        } else if (event.singleDate && typeof event.singleDate.toDate === 'function') {
+                            const sDate = event.singleDate.toDate();
+                            dateString = `${sDate.getDate()} ${sDate.toLocaleString('es-ES', { month: 'short' })}`;
+                        } else if (event.recurringSchedule) {
+                            dateString = 'Recurrente';
+                        }
+                        let borderColor = "slate-100";
+                        let displayCategory = event.category || 'Evento';
+                        if(event.category === 'arte') { borderColor = "cyan-200"; displayCategory = "Artes Visuales"; }
+                        if(event.category === 'musica') borderColor = "orange-200";
+                        if(event.category === 'teatro') borderColor = "pink-200";
+                        if(event.category === 'cine') borderColor = "blue-200";
+                        if(event.category === 'literatura') borderColor = "emerald-200";
+                        const eventCard = `
+                            <a href="event-detail.html?id=${event.id}" class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col group border border-${borderColor}">
+                                <div class="relative">
+                                    <img src="${event.mainImageUrl || 'https://placehold.co/400x250/e9d5ff/a855f7?text=BAMARTE'}" alt="${event.title}" class="w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x250/e9d5ff/a855f7?text=BAMARTE';">
+                                    <div class="absolute top-2 right-2 bg-white bg-opacity-90 text-gray-800 font-black text-xs px-3 py-1 rounded-full shadow-sm uppercase">${dateString}</div>
+                                    <div class="absolute top-2 left-2 bg-black bg-opacity-80 text-white font-black text-[10px] px-2 py-1 rounded shadow-sm uppercase tracking-widest">${displayCategory}</div>
+                                </div>
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <h4 class="text-xl font-black mb-2 uppercase group-hover:opacity-80 transition-colors leading-tight">${event.title}</h4>
+                                    <p class="text-gray-500 text-xs uppercase tracking-widest font-bold mb-4">${event.locationName || 'Ubicación no especificada'}</p>
+                                    <p class="text-gray-600 text-sm flex-grow font-medium">${(event.description || '').substring(0, 100)}...</p>
+                                </div>
+                            </a>`;
+                        eventsContainer.innerHTML += eventCard;
+                    });
+                }
+            } catch (error) {
+                console.error("Error al obtener los eventos destacados: ", error);
+                loaderContainer.style.display = 'none';
+            }
+        }
+        fetchAndDisplayFeaturedEvents();
+        fetchAndPlotEvents();
+    </script>
 </x-app-layout>
