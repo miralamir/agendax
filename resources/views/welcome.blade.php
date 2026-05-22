@@ -35,7 +35,12 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center gap-2 mt-6" id="map-filters">
-                    {{-- Filtros (estáticos por ahora) --}}
+                    <button data-category="todos" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-purple-600 text-white border-purple-600 transition-all">Todos</button>
+                    <button data-category="arte" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-cyan-600 border-cyan-200 transition-all">Artes Visuales</button>
+                    <button data-category="musica" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-orange-600 border-orange-200 transition-all">Música</button>
+                    <button data-category="teatro" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-pink-600 border-pink-200 transition-all">Teatro</button>
+                    <button data-category="cine" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-blue-600 border-blue-200 transition-all">Cine</button>
+                    <button data-category="literatura" class="filter-btn px-4 py-2 rounded-full font-bold text-sm shadow-sm border bg-white text-emerald-600 border-emerald-200 transition-all">Literatura</button>
                 </div>
             </div>
             
