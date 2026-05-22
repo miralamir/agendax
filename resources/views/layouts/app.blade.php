@@ -28,7 +28,11 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 {{ $theme ?? '' }}">
             <div class="container mx-auto px-4">
-                @include('layouts.navigation')
+                            @if(request()->is('/'))
+                @include('layouts.navigation-home')
+            @else
+                @include('layouts.navigation-internal')
+            @endif
 
                 <!-- Page Heading -->
                 @isset($header)
