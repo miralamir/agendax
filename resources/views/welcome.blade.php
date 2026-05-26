@@ -70,35 +70,210 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firestore.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY", // Replace with your actual Firebase API key
+            apiKey: "AIzaSyBWlNhxc1smYH8szpjpXLMbjPXHIts-nMc",
             authDomain: "zumaq-8bcaa.firebaseapp.com",
             projectId: "zumaq-8bcaa",
-            storageBucket: "zumaq-8bcaa.appspot.com",
+            storageBucket: "zumaq-8bcaa.firebasestorage.app", 
             messagingSenderId: "812019183354",
-            appId: "1:812019183354:web:05a6904d4c5491c4fb2343"
+            appId: "1:812019183354:web:05a6904d4c5491c4fb2343",
+            measurementId: "G-DJJS3XS1RL"
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const eventsContainer = document.getElementById('events-container');
         const loaderContainer = document.getElementById('loader-container');
+        
+        // Inicializar el mapa centrado en Buenos Aires por defecto
         const map = L.map('map').setView([-34.6037, -58.3816], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
         }).addTo(map);
 
+        let allEvents = [];
+        let currentMarkers = [];
+
+        function createEventCard(event) {
+            let dateString = 'Próximamente';
+            const hasStart = event.startDate && typeof event.startDate.toDate === 'function';
+            const hasEnd = event.endDate && typeof event.endDate.toDate === 'function';
+            const hasSingle = event.singleDate && typeof event.singleDate.toDate === 'function';
+            
+            if (hasStart && hasEnd) {
+                const startDate = event.startDate.toDate();
+                const endDate = event.endDate.toDate();
+                dateString = `${startDate.getDate()} ${startDate.toLocaleString('es-ES', { month: 'short' })} - ${endDate.getDate()} ${endDate.toLocaleString('es-ES', { month: 'short' })}`;
+            } else if (hasSingle) {
+                const sDate = event.singleDate.toDate();
+                dateString = `${sDate.getDate()} ${sDate.toLocaleString('es-ES', { month: 'short' })}`;
+            } else if (hasStart && !hasEnd) {
+                const startDate = event.startDate.toDate();
+                dateString = `${startDate.getDate()} ${startDate.toLocaleString('es-ES', { month: 'short' })}`;
+            } else if (event.recurringSchedule) {
+                dateString = 'Recurrente';
+            }
+
+            const image = (event.gallery && event.gallery.length > 0) ? event.gallery[0] : 'https://via.placeholder.com/400x300?text=BAMARTE';
+            
+            return `
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <img src="${image}" alt="${event.title}" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="text-sm font-bold text-purple-600 mb-2 uppercase tracking-wider">${dateString}</div>
+                        <h4 class="text-xl font-bold mb-2 text-gray-800">${event.title}</h4>
+                        <p class="text-gray-600 mb-4 line-clamp-2">${event.locationName || ''}</p>
+                        <a href="/event-detail.html?id=${event.id}" class="inline-flex items-center space-x-2 text-purple-600 font-bold hover:text-purple-800 transition-colors">
+                            <span>Ver detalles</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
         async function fetchAndDisplayFeaturedEvents() {
-            // ... (rest of the full JS code from source)
+            try {
+                const eventsRef = collection(db, "events");
+                const q = query(eventsRef, where("isPublished", "==", true), where("isFeatured", "==", true));
+                const querySnapshot = await getDocs(q);
+                
+                if(loaderContainer) loaderContainer.style.display = 'none';
+                eventsContainer.innerHTML = '';
+
+                let activeEventsCount = 0;
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+
+                querySnapshot.forEach((doc) => {
+                    const event = { id: doc.id, ...doc.data() };
+                    
+                    let eventDate = null;
+                    if (event.endDate && typeof event.endDate.toDate === 'function') {
+                        eventDate = event.endDate.toDate();
+                    } else if (event.singleDate && typeof event.singleDate.toDate === 'function') {
+                        eventDate = event.singleDate.toDate();
+                    } else if (event.startDate && typeof event.startDate.toDate === 'function') {
+                        eventDate = event.startDate.toDate();
+                    }
+
+                    if (eventDate) {
+                        eventDate.setHours(23, 59, 59, 999);
+                    }
+
+                    if (!eventDate || eventDate >= now || event.recurringSchedule) {
+                        eventsContainer.innerHTML += createEventCard(event);
+                        activeEventsCount++;
+                    }
+                });
+                
+                if (activeEventsCount === 0) {
+                    eventsContainer.innerHTML = '<p class="col-span-full text-center text-gray-500 font-bold">No hay eventos destacados en este momento.</p>';
+                }
+            } catch (error) {
+                console.error("Error fetching featured events:", error);
+                if(loaderContainer) loaderContainer.style.display = 'none';
+                eventsContainer.innerHTML = '<p class="col-span-full text-center text-red-500 font-bold">Error al cargar la agenda.</p>';
+            }
         }
         
         async function fetchAndPlotEvents() {
-            // ... (rest of the full JS code from source)
+            try {
+                const eventsRef = collection(db, "events");
+                const q = query(eventsRef, where("isPublished", "==", true));
+                const querySnapshot = await getDocs(q);
+
+                allEvents = [];
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+
+                querySnapshot.forEach((doc) => {
+                    const event = { id: doc.id, ...doc.data() };
+                    
+                    let eventDate = null;
+                    if (event.endDate && typeof event.endDate.toDate === 'function') {
+                        eventDate = event.endDate.toDate();
+                    } else if (event.singleDate && typeof event.singleDate.toDate === 'function') {
+                        eventDate = event.singleDate.toDate();
+                    } else if (event.startDate && typeof event.startDate.toDate === 'function') {
+                        eventDate = event.startDate.toDate();
+                    }
+
+                    if (eventDate) {
+                        eventDate.setHours(23, 59, 59, 999);
+                    }
+
+                    if (!eventDate || eventDate >= now || event.recurringSchedule) {
+                        allEvents.push(event);
+                    }
+                });
+                renderMapMarkers(allEvents);
+            } catch (error) {
+                console.error("Error al obtener los eventos para el mapa: ", error);
+            }
+        }
+        
+        function renderMapMarkers(events) {
+            currentMarkers.forEach(marker => map.removeLayer(marker));
+            currentMarkers = [];
+            
+            events.forEach(event => {
+                if (event.locationGeoPoint && event.locationGeoPoint.latitude && event.locationGeoPoint.longitude) {
+                    const marker = L.marker([event.locationGeoPoint.latitude, event.locationGeoPoint.longitude]).addTo(map);
+                    const popupContent = `
+                        <div class="font-sans">
+                            <h3 class="font-bold text-lg mb-1">${event.title}</h3>
+                            <p class="text-gray-600 mb-2">${event.locationName || ''}</p>
+                            <a href="/event-detail.html?id=${event.id}" class="text-purple-600 font-semibold hover:underline">Ver más detalles</a>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+                    currentMarkers.push(marker);
+                }
+            });
         }
 
-        // Event listeners and other logic
-        // ... (rest of the full JS code from source)
+        document.getElementById('btn-locate')?.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    map.setView([lat, lon], 15);
+                    L.marker([lat, lon], {
+                        icon: L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })
+                    }).addTo(map).bindPopup('<b>¡Estás aquí!</b>').openPopup();
+                }, () => {
+                    console.log("No se pudo acceder a la ubicación.");
+                });
+            }
+        });
+
+        document.getElementById('btn-map-search')?.addEventListener('click', () => {
+            const val = document.getElementById('map-search-input').value.toLowerCase();
+            const filtered = allEvents.filter(e => e.title.toLowerCase().includes(val) || (e.locationName && e.locationName.toLowerCase().includes(val)));
+            renderMapMarkers(filtered);
+            if(filtered.length > 0 && filtered[0].locationGeoPoint) {
+                map.setView([filtered[0].locationGeoPoint.latitude, filtered[0].locationGeoPoint.longitude], 14);
+            }
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const category = e.target.getAttribute('data-category');
+                if(category === 'todos') {
+                    renderMapMarkers(allEvents);
+                } else {
+                    renderMapMarkers(allEvents.filter(ev => ev.category === category));
+                }
+            });
+        });
 
         fetchAndDisplayFeaturedEvents();
         fetchAndPlotEvents();
