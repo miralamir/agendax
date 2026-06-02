@@ -6,6 +6,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ArtistasController;
 use App\Http\Controllers\EspaciosController;
 use App\Http\Controllers\CiclosController;
+use App\Http\Controllers\Dashboard\EventoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArteController;
 use App\Http\Controllers\MusicaController;
@@ -56,10 +57,11 @@ Route::prefix("literatura")->name("literatura.")->group(function () {
 });
 
 Route::get("/dashboard", function () {
-    return view("dashboard");
+    return redirect()->route('dashboard.eventos.index');
 })->middleware(["auth", "verified"])->name("dashboard");
 
 Route::middleware("auth")->group(function () {
+    Route::resource('/dashboard/eventos', EventoController::class)->names('dashboard.eventos');
     Route::get('/bamarte', [BAMARTEController::class, 'index'])->name('bamarte');
     Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
     Route::get('/artistas', [ArtistasController::class, 'index'])->name('artistas');
