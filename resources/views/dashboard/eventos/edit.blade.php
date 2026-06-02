@@ -12,8 +12,15 @@
                     <form action="{{ route('dashboard.eventos.update', $evento) }}" method="POST">
                         @csrf
                         @method('PUT')
+
+                        <div class="mb-6 flex justify-end items-center bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                            <a href="{{ route('dashboard.eventos.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 font-bold transition mr-3">Cancelar</a>
+                            <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 font-bold shadow-md shadow-purple-200 transition transform hover:-translate-y-0.5">Actualizar Evento</button>
+                        </div>
+
                         @include('dashboard.eventos._form', ['evento' => $evento])
-                        <div class="mt-6 flex justify-end">
+                        
+                        <div class="mt-8 flex justify-end">
                             <a href="{{ route('dashboard.eventos.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition mr-2">Cancelar</a>
                             <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition">Actualizar Evento</button>
                         </div>
