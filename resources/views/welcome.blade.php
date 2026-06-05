@@ -65,14 +65,12 @@
  <h3 class="text-3xl font-bold text-gray-900">Destacados</h3>
  <div class="h-px bg-gray-200 flex-grow ml-8"></div>
  </div>
- <div id="events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
- <!-- Cargado vía JS -->
- </div>
+ <x-event-card-grid :events="$featuredEvents" />
  </section>
 
  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
  <script>
- window.allEventsData = @json(\App\Models\Evento::all());
+ window.allEventsData = @json($allEvents); // Asegurar que todos los eventos estén disponibles para el mapa
 
  let allEvents = window.allEventsData.map(event => {
  return {
@@ -82,7 +80,7 @@
  };
  });
 
- const eventsContainer = document.getElementById('events-container');
+ const eventsContainer = document.getElementById('events-container'); // Este ya no es necesario para destacados, pero se mantiene para el mapa
 
  const map = L.map('map').setView([-34.6037, -58.3816], 13);
  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -100,39 +98,7 @@
  return 'Próximamente';
  }
 
- function createEventCard(event) {
- const imageUrl = event.mainImageUrl || 'https://via.placeholder.com/600x400?text=BAMARTE';
- return `
- <a href="/evento/${event.id}" class="group block bg-white rounded-2xl shadow-boutique hover-lift transition-all duration-500 overflow-hidden border border-gray-50">
- <div class="relative h-64 overflow-hidden">
- <img src="${imageUrl}" alt="${event.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
- </div>
- <div class="p-8">
- <div class="text-xs font-bold text-gray-400 mb-3 tracking-widest uppercase">${formatDate(event)}</div>
- <h4 class="text-2xl font-bold mb-3 text-gray-900 leading-tight">${event.title}</h4>
- <p class="text-gray-500 font-light mb-6 line-clamp-2">${event.locationName || ''}</p>
- <div class="inline-flex items-center space-x-2 text-sm font-bold text-gray-900 border-b border-gray-900 pb-1 group-hover:text-gray-500 group-hover:border-gray-500 transition-colors">
- <span>Ver detalles</span>
- </div>
- </div>
- </a>
- `;
- }
-
- function fetchAndDisplayFeaturedEvents() {
- eventsContainer.innerHTML = '';
- const destacados = allEvents.filter(ev => ev.isPublished && ev.isFeatured);
- const top5 = destacados.sort((a, b) => b.id - a.id).slice(0, 5);
-
- if (top5.length === 0) {
- eventsContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 font-light">No hay eventos destacados en este momento.</p>';
- return;
- }
-
- top5.forEach(event => {
- eventsContainer.innerHTML += createEventCard(event);
- });
- }
+ // La función createEventCard y fetchAndDisplayFeaturedEvents ya no son necesarias si el renderizado de tarjetas es Blade
 
  function fetchAndPlotEvents(eventsToPlot) {
  currentMarkers.forEach(marker => map.removeLayer(marker));
@@ -188,7 +154,7 @@
  });
  });
 
- fetchAndDisplayFeaturedEvents();
+ // fetchAndDisplayFeaturedEvents(); // Ya no es necesario, el Blade lo renderiza
  fetchAndPlotEvents(allEvents);
  </script>
 </x-app-layout>

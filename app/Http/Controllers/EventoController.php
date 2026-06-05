@@ -14,7 +14,7 @@ class EventoController extends Controller
 
     public function categoryShow($category)
     {
-        $events = Evento::where('category', $category)
+        $events = Evento::whereRaw('LOWER(category) = ?', [strtolower($category)])
                         ->where('isPublished', 1)
                         ->orderBy('startDate', 'desc')
                         ->get();

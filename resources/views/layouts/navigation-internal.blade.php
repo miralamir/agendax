@@ -18,65 +18,52 @@ $themeColors = [
                 <ul class="hidden md:flex items-center space-x-8 font-bold text-sm">
                     <!-- Artes Visuales -->
                     <li class="relative group z-50">
-                        <a href="{{ route('arte') }}" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('agenda.category', 'Arte') }}" class="uppercase text-cyan-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Artes Visuales
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
-                            <li><a href="{{ route('arte.agenda') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
-                            <li><a href="{{ route('arte.creadores') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Creadores</a></li>
-                            <li><a href="{{ route('arte.ferias') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
-                            <li><a href="{{ route('arte.novedades') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="{{ route('agenda.category', 'Arte') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                         </ul>
                     </li>
                     <!-- Música -->
                     <li class="relative group z-50">
-                        <a href="{{ route('musica') }}" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('agenda.category', 'Musica') }}" class="uppercase text-orange-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Música
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
-                            <li><a href="{{ route('musica.agenda') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
-                            <li><a href="{{ route('musica.lanzamientos') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Lanzamientos</a></li>
-                            <li><a href="{{ route('musica.festivales') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
-                            <li><a href="{{ route('musica.novedades') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="{{ route('agenda.category', 'Musica') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                         </ul>
                     </li>
                     <!-- Teatro -->
                     <li class="relative group z-50">
-                        <a href="{{ route('teatro') }}" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('agenda.category', 'Teatro') }}" class="uppercase text-pink-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Teatro
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
-                            <li><a href="{{ route('teatro.cartelera') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Cartelera</a></li>
-                            <li><a href="{{ route('teatro.festivales') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales</a></li>
-                            <li><a href="{{ route('teatro.novedades') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="{{ route('agenda.category', 'Teatro') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                         </ul>
                     </li>
                     <!-- Cine -->
                     <li class="relative group z-50">
-                        <a href="{{ route('cine') }}" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('agenda.category', 'Cine') }}" class="uppercase text-blue-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Cine
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
-                            <li><a href="{{ route('cine.estrenos') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Estrenos</a></li>
-                            <li><a href="{{ route('cine.festivales-ciclos') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Festivales / Ciclos</a></li>
-                            <li><a href="{{ route('cine.novedades') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
+                            <li><a href="{{ route('agenda.category', 'Cine') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                         </ul>
                     </li>
                     <!-- Literatura -->
                     <li class="relative group z-50">
-                        <a href="{{ route('literatura') }}" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
+                        <a href="{{ route('agenda.category', 'Literatura') }}" class="uppercase text-emerald-500 hover:opacity-75 transition-opacity duration-300 flex items-center">
                             Literatura
                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </a>
                         <ul class="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 mt-1">
-                            <li><a href="{{ route('literatura.agenda') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
-                            <li><a href="{{ route('literatura.novedades-editoriales') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades Editoriales</a></li>
-                            <li><a href="{{ route('literatura.novedades') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novedades</a></li>
-                            <li><a href="{{ route('literatura.ferias') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ferias</a></li>
+                            <li><a href="{{ route('agenda.category', 'Literatura') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Agenda</a></li>
                         </ul>
                     </li>
                 </ul>
