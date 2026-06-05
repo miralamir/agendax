@@ -23,12 +23,15 @@
 
     {{-- Contenido de la Home --}}
     <main class="text-center py-16 md:py-24">
-        <h2 class="text-4xl md:text-6xl font-black mb-4">
-            Descubrí el <span class="hero-text-gradient">Arte que te Rodea</span> con BAMARTE
-        </h2>
-        <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Tu guía completa para inauguraciones, muestras actuales, noticias y todos los eventos culturales en tu ciudad.
-        </p>
+        <div class="hero-card max-w-4xl mx-auto">
+            <p class="intro-text">DESCUBRÍ</p>
+            <h2 class="text-4xl md:text-6xl font-black mb-4">
+                El <span class="hero-text-gradient">Arte que te Rodea</span>
+            </h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                Tu guía completa para inauguraciones, muestras actuales, noticias y todos los eventos culturales en tu ciudad.
+            </p>
+        </div>
     </main>
 
     <section id="mapa" class="py-16 bg-white rounded-2xl shadow-lg mb-16 relative z-0">

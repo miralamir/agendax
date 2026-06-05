@@ -1,6 +1,23 @@
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f8fafc;
+    background-color: #fcfcfd; /* Un gris apenas perceptible */
+    color: #2d3748; /* Gris oscuro para el texto */
+}
+
+.hero-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0; /* Borde muy sutil */
+    border-radius: 1rem; /* Bordes redondeados */
+    padding: 2.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* Sombra muy delicada */
+}
+
+.intro-text {
+    font-size: 0.875rem; /* Letra más chica */
+    font-weight: 600;
+    letter-spacing: 0.1em; /* Espaciado */
+    color: #4a5568; /* Un gris un poco más claro que el principal */
+    margin-bottom: 0.5rem;
 }
 .hero-text-gradient {
     background: linear-gradient(to right, #a855f7, #d946ef);
