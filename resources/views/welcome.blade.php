@@ -8,9 +8,28 @@
  body { font-family: 'Lato', sans-serif; background-color: #FAFAFA; color: #1A1A1A; }
  .shadow-boutique { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); }
  .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); }
+
+ .gradient-border-wrapper {
+    padding: 2px; /* Grosor del borde */
+    background: linear-gradient(90deg, #38b2ac, #f687b3, #667eea, #f56565, #ed8936, #38b2ac);
+    background-size: 400% 400%;
+    animation: gradient-flow 10s ease infinite;
+    transition: box-shadow 0.3s ease;
+ }
+
+ .gradient-border-wrapper:hover {
+    box-shadow: 0 20px 40px -10px rgba(102,126,234,0.15);
+ }
+
+ @keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+ }
  </style>
 
  <main class="px-4 py-16 md:py-24 max-w-5xl mx-auto">
+ <div class="p-1 rounded-[2.1rem] gradient-border-wrapper">
  <div class="border border-gray-200 bg-gray-50/80 rounded-[2rem] p-10 md:p-16 shadow-sm text-center">
  <span class="block text-sm font-bold text-gray-400 tracking-[0.2em] uppercase mb-4">
  DESCUBRÍ
@@ -21,6 +40,7 @@
  <p class="text-lg md:text-xl text-gray-500 font-light max-w-2xl mx-auto">
  Una agenda curada con inauguraciones, muestras y eventos culturales.
  </p>
+ </div>
  </div>
  </main>
 
