@@ -20,12 +20,12 @@ class QuinquelaEventSeeder extends Seeder
                 'category' => 'Artes Visuales',
                 'singleDate' => Carbon::createFromFormat('Y-m-d H:i', "2026-06-06 14:00"),
                 'locationName' => 'Museo Benito Quinquela Martín',
-                'locationAddress' => 'Av. Pedro de Mendoza 1835, La Boca, Buenos Aires',
-                'cost' => 'General: $10.000 | Residentes: $2.000 | Miércoles GRATIS.',
+                'venueAddress' => 'Av. Pedro de Mendoza 1835, La Boca, Buenos Aires', // Corregido
+                'priceInfo' => 'General: $10.000 | Residentes: $2.000 | Miércoles GRATIS.', // Corregido
                 'mainImageUrl' => 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Museo_Quinquela_Mart%C3%ADn.JPG',
                 'description' => 'El icónico museo de La Boca inaugura tres exhibiciones simultáneas con obras de Adolfo Pérez Esquivel, José “Pipo” Ferrari y Sergio Pisani.',
-                'is_featured' => 1,
-                'is_published' => 1,
+                'isFeatured' => 1, // Corregido
+                'isPublished' => 1, // Corregido
                 'user_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
