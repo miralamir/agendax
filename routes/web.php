@@ -13,17 +13,17 @@ use App\Http\Controllers\MusicaController;
 use App\Http\Controllers\CineController;
 use App\Http\Controllers\TeatroController;
 use App\Http\Controllers\LiteraturaController;
-use App\Http\Controllers\EventoController; // <-- Añadido
+use App\Http\Controllers\EventoController as FrontendEventoController; // <-- Alias añadido
 
 Route::get("/", function () {
     return view("welcome");
 });
 
 // Ruta para el detalle del evento (con implicit model binding)
-Route::get('/evento/{event}', [EventoController::class, 'show'])->name('evento.show');
+Route::get('/evento/{event}', [FrontendEventoController::class, 'show'])->name('evento.show');
 
 // Rutas genéricas para las categorías de agenda
-Route::get('/agenda/{category}', [EventoController::class, 'categoryShow'])->name('agenda.category');
+Route::get('/agenda/{category}', [FrontendEventoController::class, 'categoryShow'])->name('agenda.category');
 
 // Public main sections
 Route::get("/arte", [ArteController::class, "index"])->name("arte");
