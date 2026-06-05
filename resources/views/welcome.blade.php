@@ -24,12 +24,12 @@
     {{-- Contenido de la Home --}}
     <main class="text-center py-16 md:py-24">
         <div class="hero-card max-w-4xl mx-auto">
-            <p class="intro-text">DESCUBRÍ</p>
+            <span class="intro-tag">Descubrí</span>
             <h2 class="text-4xl md:text-6xl font-black mb-4">
                 El <span class="hero-text-gradient">Arte que te Rodea</span>
             </h2>
-            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                Tu guía completa para inauguraciones, muestras actuales, noticias y todos los eventos culturales en tu ciudad.
+            <p class="text-lg md:text-xl max-w-3xl mx-auto">
+                Tu guía completa de inauguraciones, muestras, noticias y todos los eventos culturales de la ciudad.
             </p>
         </div>
     </main>

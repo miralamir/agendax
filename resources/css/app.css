@@ -1,3 +1,57 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Base Body Styles */
+body {
+    background-color: #f7f8fa; /* Un fondo gris muy sutil y frío */
+    color: #333; /* Gris oscuro principal para textos, gran legibilidad */
+}
+
+/* Hero Card - Glassmorphism Effect */
+.hero-card {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1.25rem; /* Bordes más pronunciados */
+    padding: 3rem;
+    box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.1); /* Sombra sutil con un toque de color */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-card:hover {
+    transform: translateY(-5px); /* Efecto de elevación al pasar el mouse */
+    box-shadow: 0 12px 40px 0 rgba(168, 85, 247, 0.15);
+}
+
+/* "DESCUBRÍ" Pill/Tag */
+.intro-tag {
+    display: inline-block; /* Para que el fondo se ajuste al texto */
+    padding: 0.25rem 0.75rem;
+    background-color: rgba(168, 85, 247, 0.1); /* Color de acento de la marca, muy suave */
+    border-radius: 9999px; /* Forma de píldora */
+    color: #8b5cf6; /* Color de acento */
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+}
+
+/* Adjusting headings and paragraphs inside the card */
+.hero-card h2 {
+    color: #1f2937; /* Un gris casi negro para el titular */
+}
+
+.hero-card .hero-text-gradient {
+    background: linear-gradient(to right, #8b5cf6, #ec4899); /* Gradiente más vibrante */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-card p {
+    color: #4b5563; /* Gris medio para el texto secundario */
+    font-size: 1.125rem;
+    line-height: 1.75;
+}
