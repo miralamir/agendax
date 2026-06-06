@@ -15,7 +15,7 @@ class ArteController extends Controller
                         ->get();
 
         $featuredEvents = $events->where('isFeatured', true);
-        $latestEvents = $events->where('isFeatured', false);
+        $latestEvents = $events->where('isFeatured', false)->paginate(12);
 
         return view("arte.index", compact('featuredEvents', 'latestEvents'));
     }

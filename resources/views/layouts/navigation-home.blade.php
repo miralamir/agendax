@@ -1,14 +1,14 @@
 <nav class="bg-white border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="/" class="text-2xl font-black tracking-tight" style="font-family: 'Lato', sans-serif; font-weight: 900;">BAM<span style="color: var(--gray-600);">ARTE</span></a>
-                </div>
+        <div class="flex justify-between h-16 w-full">
+            <!-- Logo -->
+            <div class="shrink-0 flex items-center">
+                <a href="/" class="text-2xl font-black tracking-tight" style="font-family: 'Lato', sans-serif; font-weight: 900;">BAM<span style="color: var(--gray-600);">ARTE</span></a>
+            </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+            <!-- Navigation Links (Centered) -->
+            <div class="hidden sm:flex sm:items-center sm:justify-center flex-1">
+                <div class="space-x-8">
                     <a href="/arte" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">Artes Visuales</a>
                     <a href="/musica" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">Música</a>
                     <a href="/teatro" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">Teatro</a>

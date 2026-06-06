@@ -3,7 +3,7 @@
         <!-- 1. Category Header -->
         <header class="py-12" style="background-color: var(--color-teatro-light); border-bottom: 3px solid var(--color-teatro);">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 class="text-4xl font-black" style="color: var(--color-teatro);">Teatro</h1>
+                <h1 class="text-6xl font-black" style="color: var(--color-teatro);">Teatro</h1>
             </div>
         </header>
 
@@ -24,7 +24,6 @@
         <section class="py-24 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center mb-8">
-                    <h2 class="section-title">Destacados</h2>
                 </div>
                 @if($featuredEvents->isNotEmpty())
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -55,11 +54,11 @@
             </div>
         </section>
 
-        <!-- 4. Últimos Posts Section -->
+        <!-- 4. Últimas Novedades Section -->
         <section class="py-24 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center mb-8">
-                    <h2 class="section-title">Últimos Posts</h2>
+                    <h2 class="section-title">Últimas Novedades</h2>
                 </div>
                 @if($latestEvents->isNotEmpty())
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

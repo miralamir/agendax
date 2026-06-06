@@ -19,7 +19,7 @@
 
     <main>
         <!-- 1. Hero Section -->
-        <section class="relative bg-white py-24 sm:py-32 overflow-hidden">
+        <section class="relative bg-white py-12 sm:py-16 overflow-hidden">
             <div class="absolute inset-0">
                 <div class="blob" style="top: -10%; left: -5%; width: 400px; height: 400px; animation-duration: 25s;"></div>
                 <div class="blob" style="bottom: -15%; right: 5%; width: 500px; height: 500px; animation-duration: 30s; animation-delay: 3s;"></div>
@@ -37,7 +37,7 @@
         </section>
 
         <!-- 2. Destacados Section -->
-        <section class="py-24 bg-white">
+        <section class="py-12 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Carrusel Principal (Columna Izquierda) -->
@@ -84,10 +84,9 @@
         </section>
 
         <!-- 3. Mapa Cultural -->
-        <section id="mapa" class="py-24 bg-[var(--gray-100)]">
+        <section id="mapa" class="py-12 bg-[var(--gray-100)]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                 <h2 class="section-title">Mapa Cultural</h2>
-                <div class="flex flex-wrap justify-center gap-2 mb-8" id="map-filters">
+                <div class="flex flex-wrap justify-center gap-2 mb-4" id="map-filters">
                     <button data-category="todos" class="filter-btn px-4 py-2 rounded-full font-bold text-xs tracking-widest uppercase transition-colors duration-300 bg-gray-800 text-white">Todos</button>
                     <button data-category="arte" class="filter-btn px-4 py-2 rounded-full font-bold text-xs tracking-widest uppercase transition-colors duration-300 border border-[var(--color-visuales)] text-[var(--color-visuales)] hover:bg-[var(--color-visuales)] hover:text-white">Visuales</button>
                     <button data-category="musica" class="filter-btn px-4 py-2 rounded-full font-bold text-xs tracking-widest uppercase transition-colors duration-300 border border-[var(--color-musica)] text-[var(--color-musica)] hover:bg-[var(--color-musica)] hover:text-white">Música</button>
@@ -110,7 +109,7 @@
                         <button @click="activeTab = 'visuales'" :class="{ 'border-[var(--color-visuales)] text-[var(--color-visuales)]': activeTab === 'visuales', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'visuales' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Artes Visuales</button>
                         <button @click="activeTab = 'musica'"   :class="{ 'border-[var(--color-musica)] text-[var(--color-musica)]': activeTab === 'musica', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'musica' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Música</button>
                         <button @click="activeTab = 'teatro'"   :class="{ 'border-[var(--color-teatro)] text-[var(--color-teatro)]': activeTab === 'teatro', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'teatro' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Teatro</button>
-                        <button @click="activeTab = 'cine'"     :class="{ 'border-[var(--color-cine)] text-[var(--color-cine)]': activeTab === 'cine', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cine' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Cine</button>
+                        <button @click="activeTab = 'cine'"     :class="{ 'border-[var(--color-cine)] text-[var(--color-cine)]': activeTab === 'cine', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cine'; }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Cine</button>
                         <button @click="activeTab = 'literatura'" :class="{ 'border-[var(--color-literatura)] text-[var(--color-literatura)]': activeTab === 'literatura', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'literatura' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Literatura</button>
                     </nav>
                 </div>
