@@ -37,11 +37,11 @@ Route::prefix("arte")->name("arte.")->group(function () {
     Route::get("ferias", [ArteController::class, "ferias"])->name("ferias");
     Route::get("novedades", [ArteController::class, "novedades"])->name("novedades");
 });
-// Route::get("/arte", [ArteController::class, "index"])->name("arte"); // Eliminada
-// Route::get("/musica", [MusicaController::class, "index"])->name("musica"); // Eliminada
-// Route::get("/cine", [CineController::class, "index"])->name("cine"); // Eliminada
-// Route::get("/teatro", [TeatroController::class, "index"])->name("teatro"); // Eliminada
-// Route::get("/literatura", [LiteraturaController::class, "index"])->name("literatura"); // Eliminada
+Route::get("/arte", [ArteController::class, "index"])->name("arte");
+Route::get("/musica", [MusicaController::class, "index"])->name("musica");
+Route::get("/cine", [CineController::class, "index"])->name("cine");
+Route::get("/teatro", [TeatroController::class, "index"])->name("teatro");
+Route::get("/literatura", [LiteraturaController::class, "index"])->name("literatura");
 
 // Se mantienen las sub-rutas de otras categorías que no sean 'agenda' si son necesarias.
 // Para Música

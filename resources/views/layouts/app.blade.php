@@ -63,6 +63,13 @@
                 border-left: 3px solid var(--gray-300);
                 margin-bottom: 2rem;
             }
+            
+            /* Navbar Hover Styles */
+            nav a[href*="/arte"]:hover { color: var(--color-visuales); }
+            nav a[href*="/musica"]:hover { color: var(--color-musica); }
+            nav a[href*="/teatro"]:hover { color: var(--color-teatro); }
+            nav a[href*="/cine"]:hover { color: var(--color-cine); }
+            nav a[href*="/literatura"]:hover { color: var(--color-literatura); }
         </style>
     </head>
     <body class="font-sans antialiased">
