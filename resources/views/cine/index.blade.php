@@ -59,30 +59,55 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="section-title">Últimas Novedades</h2>
+                    <a href="#" class="text-sm font-bold" style="color: var(--color-cine);">Ver todos &rarr;</a>
                 </div>
-                @if($latestEvents->isNotEmpty())
+                <!-- Grilla de 3 columnas para los posts -->
+                @if($latestItems->isNotEmpty())
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach($latestEvents->take(6) as $event)
-                        <a href="{{ route('evento.show', $event->id) }}" class="group block bg-white rounded-lg border border-[var(--border-color)] hover:translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.09)] transition-all duration-300 overflow-hidden">
+                    @foreach($latestItems as $item)
+                        @php
+                            $isEvento = $item instanceof \App\Models\Evento;
+                            $link = $isEvento ? route('evento.show', $item->id) : route('novedades.show', $item->slug);
+                            $imageUrl = null;
+                            if ($isEvento && $item->mainImageUrl) {
+                                $imageUrl = Storage::url($item->mainImageUrl);
+                            } elseif (!$isEvento && $item->image) {
+                                $imageUrl = Storage::url($item->image);
+                            }
+                            $categoryName = $isEvento ? ($item->category ?? 'Sin categoría') : ($item->category ?? 'Sin categoría');
+                            $date = $isEvento ? ($item->startDate ?? null) : ($item->published_at ?? null);
+                            $location = $isEvento ? ($item->locationName ?? null) : null;
+                        @endphp
+                        <a href="{{ $link }}" class="group block bg-white rounded-lg border border-[var(--border-color)] hover:translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.09)] transition-all duration-300 overflow-hidden">
                             <div class="relative h-48 overflow-hidden">
-                                <img src="{{ $event->mainImageUrl }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
+                                @if($imageUrl)
+                                    <img src="{{ $imageUrl }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">Sin imagen</div>
+                                @endif
                             </div>
                             <div class="p-6">
-                                <span class="text-xs font-bold uppercase tracking-wider mb-2 block" style="color: var(--color-cine)">
-                                    {{ $event->category ?? '' }}
+                                <span class="text-xs font-bold uppercase tracking-wider mb-2 block" style="color: var(--color-{{ strtolower(str_replace(' ', '', $categoryName)) }})">
+                                    {{ $categoryName }}
                                 </span>
-                                <h4 class="text-xl font-bold mb-2 text-gray-800 leading-tight">{{ $event->title }}</h4>
+                                <h4 class="text-xl font-bold mb-2 text-gray-800 leading-tight">{{ $item->title }}</h4>
                                 <p class="text-sm text-gray-500 font-normal">
-                                    {{ \Carbon\Carbon::parse($event->startDate)->locale('es')->isoFormat('D MMM') }} | {{ $event->locationName }}
+                                    @if ($date)
+                                        {{ \Carbon\Carbon::parse($date)->locale('es')->isoFormat('D MMM') }}
+                                    @endif
+                                    @if ($location)
+                                        | {{ $location }}
+                                    @endif
                                 </p>
                             </div>
                         </a>
                     @endforeach
                 </div>
+                <div class="mt-12 text-center">
+                    {{ $latestItems->links() }}
+                </div>
                 @else
-                <p class="text-gray-500">No hay más eventos por el momento.</p>
+                <p class="text-gray-500">No hay más novedades ni eventos por el momento.</p>
                 @endif
-            </div>
-        </section>
     </main>
 </x-app-layout>

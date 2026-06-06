@@ -14,6 +14,8 @@ use App\Http\Controllers\CineController;
 use App\Http\Controllers\TeatroController;
 use App\Http\Controllers\LiteraturaController;
 use App\Http\Controllers\EventoController as FrontendEventoController; // <-- Alias añadido
+use App\Http\Controllers\NovedadController as FrontendNovedadController; // <-- Nuevo alias para controlador público
+use App\Http\Controllers\Dashboard\NovedadController; // <-- Importar controlador del dashboard
 
 Route::get("/", function () {
     // Aquí pasamos los eventos destacados y todos los eventos para el mapa en la Home
@@ -75,6 +77,7 @@ Route::get("/dashboard", function () {
 
 Route::middleware("auth")->group(function () {
     Route::resource('/dashboard/eventos', EventoController::class)->names('dashboard.eventos');
+    Route::resource('dashboard/novedades', NovedadController::class)->names('dashboard.novedades'); // <-- Rutas de novedades para el dashboard
     Route::get('/bamarte', [BAMARTEController::class, 'index'])->name('bamarte');
     Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
     Route::get('/artistas', [ArtistasController::class, 'index'])->name('artistas');
@@ -84,5 +87,8 @@ Route::middleware("auth")->group(function () {
     Route::patch("/profile", [ProfileController::class, "update"])->name("profile.update");
     Route::delete("/profile", [ProfileController::class, "destroy"])->name("profile.destroy");
 });
+
+// Ruta pública para una novedad individual
+Route::get('/novedades/{slug}', [FrontendNovedadController::class, 'show'])->name('novedades.show');
 
 require __DIR__."/auth.php";
