@@ -3,11 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Evento;
 
 class CineController extends Controller
 {
-    public function index() { return view("cine.index"); }
-    public function estrenos() { return view("cine.estrenos"); }
-    public function festivalesCiclos() { return view("cine.festivales-ciclos"); }
-    public function novedades() { return view("cine.novedades"); }
+    public function index()
+    {
+        $events = Evento::where('category', 'Cine')
+                        ->where('isPublished', 1)
+                        ->orderBy('startDate', 'desc')
+                        ->get();
+
+        $featuredEvents = $events->where('isFeatured', true);
+        $latestEvents = $events->where('isFeatured', false);
+
+        return view("cine.index", compact('featuredEvents', 'latestEvents'));
+    }
+    public function agenda() { return view("musica.agenda"); }
+    public function lanzamientos() { return view("musica.lanzamientos"); }
+    public function festivales() { return view("musica.festivales"); }
+    public function novedades() { return view("musica.novedades"); }
 }
