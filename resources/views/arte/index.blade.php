@@ -1,44 +1,74 @@
-<x-slot name="theme">theme-arte</x-slot>
 <x-app-layout>
-    {{-- Inyectamos los estilos y fuentes del diseño estático. Idealmente, esto se compilaría en el futuro. --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        .font-lato {
-            font-family: 'Lato', sans-serif;
-        }
-    </style>
+    <main>
+        <!-- 1. Category Header -->
+        <header class="py-12" style="background-color: var(--color-visuales-light); border-bottom: 3px solid var(--color-visuales);">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="text-4xl font-black" style="color: var(--color-visuales);">Artes Visuales</h1>
+            </div>
+        </header>
 
-    {{-- El layout de Blade ya proporciona un contenedor, pero usamos el de la maqueta para máxima fidelidad visual. --}}
-    <div class="container mx-auto px-4 font-lato">
+        <!-- 2. Subcategory Filters (Pills) -->
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full text-white" style="background-color: var(--color-visuales);">Todos</a>
+                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-visuales); border-color: var(--color-visuales); background-color: transparent;">Agenda</a>
+                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-visuales); border-color: var(--color-visuales); background-color: transparent;">Creadores</a>
+                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-visuales); border-color: var(--color-visuales); background-color: transparent;">Ferias</a>
+                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-visuales); border-color: var(--color-visuales); background-color: transparent;">Novedades</a>
+                </div>
+            </div>
+        </nav>
 
-        <!-- Contenido Principal de la Página de Arte (migrado del HTML estático) -->
-        <main class="py-16">
-            <!-- Sección Eventos Destacados de Arte -->
-            <section class="mb-16">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-cyan-500">Eventos Destacados de Artes Visuales</h2>
-                    <p class="text-lg text-gray-600 mt-2">Una selección de los eventos de artes visuales más relevantes.</p>
+        <!-- 3. Destacados Section -->
+        <section class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="section-title">Destacados</h2>
+                    <a href="#" class="text-sm font-bold" style="color: var(--color-visuales);">Ver todos →</a>
                 </div>
-                {{-- Contenedor para la data que vendrá de la base de datos en el futuro --}}
-                <div id="featured-events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <p class="col-span-full text-center text-gray-500">Contenido de eventos se cargará aquí dinámicamente.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Nota Grande (Izquierda) -->
+                    <div class="lg:col-span-2">
+                        <!-- Placeholder para card destacada grande -->
+                        <div class="bg-gray-200 h-96 rounded-lg flex items-center justify-center">
+                            <p class="text-gray-500">Nota destacada principal</p>
+                        </div>
+                    </div>
+                    <!-- Stack de Notas Pequeñas (Derecha) -->
+                    <div class="space-y-4">
+                        <!-- Placeholder para 3 notas pequeñas -->
+                        <div class="p-4 border border-[var(--border-color)] rounded-lg">
+                            <p class="font-bold text-gray-800">Título de nota pequeña</p>
+                        </div>
+                        <div class="p-4 border border-[var(--border-color)] rounded-lg">
+                            <p class="font-bold text-gray-800">Otra nota interesante</p>
+                        </div>
+                        <div class="p-4 border border-[var(--border-color)] rounded-lg">
+                            <p class="font-bold text-gray-800">Tercera noticia</p>
+                        </div>
+                    </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Sección Noticias Destacadas de Arte -->
-            <section>
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-cyan-500">Noticias Destacadas de Artes Visuales</h2>
-                    <p class="text-lg text-gray-600 mt-2">Las últimas novedades y artículos del mundo de las artes visuales.</p>
+        <!-- 4. Últimos Posts Section -->
+        <section class="py-24 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="section-title">Últimos Posts</h2>
+                    <a href="#" class="text-sm font-bold" style="color: var(--color-visuales);">Ver todos →</a>
                 </div>
-                {{-- Contenedor para la data que vendrá de la base de datos en el futuro --}}
-                <div id="featured-news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <p class="col-span-full text-center text-gray-500">Contenido de noticias se cargará aquí dinámicamente.</p>
+                <!-- Grilla de 3 columnas para los posts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Placeholder para las cards de los posts -->
+                    @for ($i = 0; $i < 6; $i++)
+                        <div class="bg-white rounded-lg border border-[var(--border-color)] h-64 flex items-center justify-center">
+                            <p class="text-gray-500">Post #{{ $i + 1 }}</p>
+                        </div>
+                    @endfor
                 </div>
-            </section>
-        </main>
-        
-    </div>
+            </div>
+        </section>
+    </main>
 </x-app-layout>
