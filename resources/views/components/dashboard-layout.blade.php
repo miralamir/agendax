@@ -145,10 +145,10 @@
         <div class="min-h-screen flex">
             <!-- Sidebar -->
             <div class="dashboard-sidebar w-64 flex-shrink-0 p-6">
-                <div class="text-2xl font-black mb-10" style="font-family: 'Lato', sans-serif; font-weight: 900;">
+                <a href="{{ route('home') }}" class="text-2xl font-black mb-10" style="font-family: 'Lato', sans-serif; font-weight: 900;">
                     BAM<span style="color: var(--gray-600);">ARTE</span>
-                </div>
-                <nav>
+                </a>
+                <nav class="mt-8">
                     <ul>
                         <li class="mb-3"><a href="{{ route('dashboard.eventos.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Eventos</a></li>
                         <li class="mb-3"><a href="#" class="font-bold text-gray-400 cursor-not-allowed">Novedades (próximamente)</a></li>
