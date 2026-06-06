@@ -17,8 +17,8 @@ use App\Http\Controllers\EventoController as FrontendEventoController; // <-- Al
 
 Route::get("/", function () {
     // Aquí pasamos los eventos destacados y todos los eventos para el mapa en la Home
-    $featuredEvents = \App\Models\Evento::where('isPublished', 1)->where('isFeatured', 1)->orderBy('startDate', 'desc')->take(5)->get();
-    $allEvents = \App\Models\Evento::where('isPublished', 1)->get();
+    $featuredEvents = \App\Models\Evento::with('category')->where('isPublished', 1)->where('isFeatured', 1)->orderBy('startDate', 'desc')->take(8)->get();
+    $allEvents = \App\Models\Evento::with('category')->where('isPublished', 1)->get();
     return view("welcome", compact('featuredEvents', 'allEvents'));
 })->name("home"); // Se añade un nombre a la ruta principal
 
