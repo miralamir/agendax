@@ -51,7 +51,7 @@
                                         <img src="{{ $event->mainImageUrl }}" alt="{{ $event->title }}" class="w-full h-96 object-cover">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                         <div class="absolute bottom-0 left-0 p-8 text-white">
-                                            <span class="text-sm font-bold uppercase tracking-wider" style="color: var(--color-{{ strtolower(str_replace(' ', '', $event->category?->name ?? '')) }});">{{ $event->category?->name ?? 'Sin categoría' }}</span>
+                                            <span class="text-sm font-bold uppercase tracking-wider" style="color: var(--color-{{ strtolower(str_replace(' ', '', $event->category ?? '')) }});">{{ $event->category ?? 'Sin categoría' }}</span>
                                             <h3 class="text-3xl font-bold mt-2">{{ $event->title }}</h3>
                                             <p class="mt-2 text-sm">{{ $event->locationName }}</p>
                                         </div>
@@ -70,7 +70,7 @@
                         <div class="space-y-4">
                             @foreach($featuredEvents->skip(4)->take(4) as $event) {{-- Tomamos los siguientes 4 --}}
                             <a href="{{ route('evento.show', $event->id) }}" class="block p-4 border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition">
-                                <span class="text-xs font-bold uppercase" style="color: var(--color-{{ strtolower(str_replace(' ', '', $event->category?->name ?? '')) }});">{{ $event->category?->name ?? 'Sin categoría' }}</span>
+                                <span class="text-xs font-bold uppercase" style="color: var(--color-{{ strtolower(str_replace(' ', '', $event->category ?? '')) }});">{{ $event->category ?? 'Sin categoría' }}</span>
                                 <p class="font-bold text-gray-800 mt-1">{{ $event->title }}</p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     {{ \Carbon\Carbon::parse($event->startDate)->locale('es')->isoFormat('D MMM') }} | {{ $event->locationName }}
