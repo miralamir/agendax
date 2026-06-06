@@ -4,14 +4,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="/">
-                        {{-- Utiliza el logo de la aplicación si está disponible como un componente Blade --}}
-                        @if(file_exists(resource_path('views/components/application-logo.blade.php')))
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                        @else
-                            <span class="text-2xl font-black">BAMARTE</span>
-                        @endif
-                    </a>
+                    <a href="/" class="text-2xl font-black tracking-tight" style="font-family: 'Lato', sans-serif; font-weight: 900;">BAM<span style="color: var(--gray-600);">ARTE</span></a>
                 </div>
 
                 <!-- Navigation Links -->

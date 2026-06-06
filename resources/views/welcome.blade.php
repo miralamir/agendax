@@ -31,7 +31,7 @@
                     Descubrí<span class="sm:block"></span> el arte que te rodea.
                 </h1>
                 <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-600">
-                    Una agenda curada con inauguraciones, muestras y eventos culturales en la ciudad.
+                    Una agenda curada con inauguraciones, muestras y eventos culturales.
                 </p>
             </div>
         </section>
