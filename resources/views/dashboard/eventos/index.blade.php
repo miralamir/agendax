@@ -1,5 +1,5 @@
 <x-dashboard-layout>
-    <div class="flex justify-between items-center mb-6 sticky top-0 bg-gray-100 z-10 py-4 -mx-6 px-6">
+    <div class="flex justify-between items-center sticky top-0 bg-white z-10 py-4 -mx-6 px-6">
         <h2 class="text-2xl font-black text-gray-900">Administrar Eventos</h2>
         <a href="{{ route('dashboard.eventos.create') }}" class="dashboard-button-primary">
             + Nuevo Evento

@@ -192,7 +192,7 @@
                     </div>
                 </header>
 
-                <main class="p-6">
+                <main style="max-width: 1200px; margin: 0 auto; padding: 24px 32px;">
                     {{ $slot }}
                 </main>
             </div>
