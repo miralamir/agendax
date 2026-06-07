@@ -77,7 +77,7 @@ Route::get("/dashboard", function () {
 
 Route::middleware("auth")->group(function () {
     Route::resource('/dashboard/eventos', EventoController::class)->names('dashboard.eventos');
-    Route::resource('dashboard/novedades', NovedadController::class)->names('dashboard.novedades'); // <-- Rutas de novedades para el dashboard
+    Route::resource('dashboard/novedades', NovedadController::class, ['parameters' => ['novedades' => 'novedad']])->names('dashboard.novedades'); // <-- Rutas de novedades para el dashboard
     Route::get('/bamarte', [BAMARTEController::class, 'index'])->name('bamarte');
     Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
     Route::get('/artistas', [ArtistasController::class, 'index'])->name('artistas');
