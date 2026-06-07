@@ -1,1 +1,165 @@
-<?php\n\nnamespace App\\Http\\Controllers\\Dashboard;\n\nuse App\\Http\\Controllers\\Controller;\nuse App\\Models\\Novedad;\nuse Illuminate\\Http\\Request;\nuse Illuminate\\Support\\Facades\\Storage;\nuse Illuminate\\Support\\Str;\n\nclass NovedadController extends Controller\n{\n    /**\n     * Display a listing of the resource.\n     */\n    public function index()\n    {\n        $search = request(\'search\');\n\n        $novedades = Novedad::when($search, fn($query) => $query->where(\'title\', \'like\', \"%{\$search}%\"))\n                            ->orderBy(\'published_at\', \'desc\')\n                            ->paginate(10);\n\n        return view(\'dashboard.novedades.index\', compact(\'novedades\'));\n    }\n\n    /**\n     * Show the form for creating a new resource.\n     */\n    public function create()\n    {\n        return view(\'dashboard.novedades.create\');\n    }\n\n    /**\n     * Store a newly created resource in storage.\n     */\n    public function store(Request $request)\n    {\n        $validatedData = $request->validate([\n            \'title\' => \'required|string|max:255\',\n            \'slug\' => \'nullable|string|max:255|unique:novedades,slug\',\n            \'excerpt\' => \'nullable|string\',\n            \'body\' => \'nullable|string\',\n            \'image\' => \'nullable|image|max:2048\',\n            \'gallery.*\' => \'nullable|image|max:2048\',\n            \'videos\' => \'nullable|array\',\n            \'videos.*\' => \'nullable|url\',\n            \'pdf\' => \'nullable|mimes:pdf|max:10240\',\n            \'category\' => \'required|string|max:255\',\n            \'subCategory\' => \'nullable|string|max:255\',\n            \'author\' => \'nullable|string|max:255\',\n            \'isPublished\' => \'boolean\',\n            \'isFeatured\' => \'boolean\',\n            \'seo_title\' => \'nullable|string|max:255\',\n            \'seo_description\' => \'nullable|string|max:255\',\n            \'published_at\' => \'nullable|date\',\n        ]);\n\n        if (empty($validatedData[\'slug\'])) {\n            $validatedData[\'slug\'] = Str::slug($validatedData[\'title\']);\n        }\n\n        if ($request->hasFile(\'image\')) {\n            $validatedData[\'image\'] = $request->file(\'image\')->store(\'novedades\', \'public\');\n        }\n\n        if ($request->hasFile(\'pdf\')) {\n            $validatedData[\'pdf\'] = $request->file(\'pdf\')->store(\'novedades/pdfs\', \'public\');\n        }\n\n        $galleryPaths = [];\n        if ($request->hasFile(\'gallery\')) {\n            foreach ($request->file(\'gallery\') as $file) {\n                $galleryPaths[] = $file->store(\'novedades/gallery\', \'public\');\n            }\n        }\n        $validatedData[\'gallery\'] = $galleryPaths;\n        \n        // Videos se guardan tal cual vienen (array de URLs)\n        $validatedData[\'videos\'] = $request->input(\'videos\', []);\n\n        Novedad::create($validatedData);\n\n        return redirect()->route(\'dashboard.novedades.index\')->with(\'success\', \'Novedad creada exitosamente.\');\n    }\n\n    /**\n     * Show the form for editing the specified resource.\n     */\n    public function edit(Novedad $novedad)\n    {\n        return view(\'dashboard.novedades.edit\', compact(\'novedad\'));\n    }\n\n    /**\n     * Update the specified resource in storage.\n     */\n    public function update(Request $request, Novedad $novedad)\n    {\n        $validatedData = $request->validate([\n            \'title\' => \'required|string|max:255\',\n            \'slug\' => \'nullable|string|max:255|unique:novedades,slug,\' . $novedad->id,\n            \'excerpt\' => \'nullable|string\',\n            \'body\' => \'nullable|string\',\n            \'image\' => \'nullable|image|max:2048\',\n            \'gallery.*\' => \'nullable|image|max:2048\',\n            \'videos\' => \'nullable|array\',\n            \'videos.*\' => \'nullable|url\',\n            \'pdf\' => \'nullable|mimes:pdf|max:10240\',\n            \'category\' => \'required|string|max:255\',\n            \'subCategory\' => \'nullable|string|max:255\',\n            \'author\' => \'nullable|string|max:255\',\n            \'isPublished\' => \'boolean\',\n            \'isFeatured\' => \'boolean\',\n            \'seo_title\' => \'nullable|string|max:255\',\n            \'seo_description\' => \'nullable|string|max:255\',\n            \'published_at\' => \'nullable|date\',\n        ]);\n\n        if (empty($validatedData[\'slug\'])) {\n            $validatedData[\'slug\'] = Str::slug($validatedData[\'title\']);\n        }\n\n        if ($request->hasFile(\'image\')) {\n            if ($novedad->image) {\n                Storage::disk(\'public\')->delete($novedad->image);\n            }\n            $validatedData[\'image\'] = $request->file(\'image\')->store(\'novedades\', \'public\');\n        }\n\n        if ($request->hasFile(\'pdf\')) {\n            if ($novedad->pdf) {\n                Storage::disk(\'public\')->delete($novedad->pdf);\n            }\n            $validatedData[\'pdf\'] = $request->file(\'pdf\')->store(\'novedades/pdfs\', \'public\');\n        }\n\n        $galleryPaths = $novedad->gallery ?? [];\n        if ($request->hasFile(\'gallery\')) {\n            // Delete old gallery images if new ones are uploaded\n            foreach ($ngalleryPaths as $oldImage) {\n                 Storage::disk(\'public\')->delete($oldImage);\n            }\n            $galleryPaths = [];\n            foreach ($request->file(\'gallery\') as $file) {\n                $galleryPaths[] = $file->store(\'novedades/gallery\', \'public\');\n            }\n        }\n        $validatedData[\'gallery\'] = $galleryPaths;\n\n        // Videos se guardan tal cual vienen (array de URLs)\n        $validatedData[\'videos\'] = $request->input(\'videos\', []);\n\n        $novedad->update($validatedData);\n\n        return redirect()->route(\'dashboard.novedades.index\')->with(\'success\', \'Novedad actualizada exitosamente.\');\n    }\n\n    /**\n     * Remove the specified resource from storage.\n     */\n    public function destroy(Novedad $novedad)\n    {\n        if ($novedad->image) {\n            Storage::disk(\'public\')->delete($novedad->image);\n        }\n        if ($novedad->pdf) {\n            Storage::disk(\'public\')->delete($novedad->pdf);\n        }\n        if ($novedad->gallery) {\n            foreach ($novedad->gallery as $image) {\n                Storage::disk(\'public\')->delete($image);\n            }\n        }\n        $novedad->delete();\n\n        return redirect()->route(\'dashboard.novedades.index\')->with(\'success\', \'Novedad eliminada exitosamente.\');\n    }\n}\n
+<?php
+
+namespace App\Http\Controllers\Dashboard;
+
+use App\Http\Controllers\Controller;
+use App\Models\Novedad;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class NovedadController extends Controller
+{
+    public function index()
+    {
+        $novedades = Novedad::orderBy('published_at', 'desc')->paginate(10);
+        return view('dashboard.novedades.index', compact('novedades'));
+    }
+
+    public function create()
+    {
+        return view('dashboard.novedades.form');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:novedades,slug',
+            'excerpt' => 'nullable|string',
+            'body' => 'nullable|string',
+            'image' => 'nullable|image|max:2048', // 2MB max
+            'gallery.*' => 'nullable|image|max:2048', // Each image 2MB max
+            'videos.*' => 'nullable|url',
+            'pdf' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
+            'category' => 'required|string|max:255',
+            'subCategory' => 'nullable|string|max:255',
+            'author' => 'nullable|string|max:255',
+            'isPublished' => 'boolean',
+            'isFeatured' => 'boolean',
+            'seo_title' => 'nullable|string|max:60',
+            'seo_description' => 'nullable|string|max:160',
+            'published_at' => 'nullable|date',
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['title']);
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('public/novedades/main');
+        }
+
+        // Handle gallery images upload
+        $galleryPaths = [];
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $galleryImage) {
+                $galleryPaths[] = $galleryImage->store('public/novedades/gallery');
+            }
+        }
+        $validated['gallery'] = $galleryPaths;
+
+        // Handle videos (array of URLs)
+        $validated['videos'] = $request->input('videos');
+
+        // Handle PDF upload
+        if ($request->hasFile('pdf')) {
+            $validated['pdf'] = $request->file('pdf')->store('public/novedades/pdf');
+        }
+
+        $novedad = Novedad::create($validated);
+
+        return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad creada exitosamente.');
+    }
+
+    public function edit(Novedad $novedad)
+    {
+        return view('dashboard.novedades.form', compact('novedad'));
+    }
+
+    public function update(Request $request, Novedad $novedad)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:novedades,slug,' . $novedad->id,
+            'excerpt' => 'nullable|string',
+            'body' => 'nullable|string',
+            'image' => 'nullable|image|max:2048', // 2MB max
+            'gallery.*' => 'nullable|image|max:2048', // Each image 2MB max
+            'videos.*' => 'nullable|url',
+            'pdf' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
+            'category' => 'required|string|max:255',
+            'subCategory' => 'nullable|string|max:255',
+            'author' => 'nullable|string|max:255',
+            'isPublished' => 'boolean',
+            'isFeatured' => 'boolean',
+            'seo_title' => 'nullable|string|max:60',
+            'seo_description' => 'nullable|string|max:160',
+            'published_at' => 'nullable|date',
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['title']);
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($novedad->image) {
+                Storage::delete($novedad->image);
+            }
+            $validated['image'] = $request->file('image')->store('public/novedades/main');
+        }
+
+        // Handle gallery images upload
+        $galleryPaths = $novedad->gallery ?? []; // Keep existing if no new ones
+        if ($request->hasFile('gallery')) {
+            // Delete old gallery images
+            foreach ($galleryPaths as $oldImage) {
+                Storage::delete($oldImage);
+            }
+            $galleryPaths = [];
+            foreach ($request->file('gallery') as $galleryImage) {
+                $galleryPaths[] = $galleryImage->store('public/novedades/gallery');
+            }
+        }
+        $validated['gallery'] = $galleryPaths;
+
+        // Handle videos (array of URLs)
+        $validated['videos'] = $request->input('videos');
+
+        // Handle PDF upload
+        if ($request->hasFile('pdf')) {
+            // Delete old PDF if exists
+            if ($novedad->pdf) {
+                Storage::delete($novedad->pdf);
+            }
+            $validated['pdf'] = $request->file('pdf')->store('public/novedades/pdf');
+        }
+
+        $novedad->update($validated);
+
+        return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad actualizada exitosamente.');
+    }
+
+    public function destroy(Novedad $novedad)
+    {
+        // Delete associated files
+        if ($novedad->image) {
+            Storage::delete($novedad->image);
+        }
+        if ($novedad->gallery) {
+            foreach ($novedad->gallery as $image) {
+                Storage::delete($image);
+            }
+        }
+        if ($novedad->pdf) {
+            Storage::delete($novedad->pdf);
+        }
+
+        $novedad->delete();
+
+        return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad eliminada exitosamente.');
+    }
+}
