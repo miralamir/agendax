@@ -24,7 +24,7 @@ class NovedadController extends Controller
      */
     public function create()
     {
-        return view('dashboard.novedades.form');
+        return view('dashboard.novedades.form', ['novedad' => new \App\Models\Novedad()]);
     }
 
     /**
