@@ -38,8 +38,8 @@
                     @forelse($eventos as $evento)
                         <tr class="dashboard-table-row">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="font-bold text-gray-900">{{ $evento->title }}</div>
-                                <div class="text-sm text-gray-600">{{ $evento->artist ?: 'N/A' }}</div>
+                                <span class="block max-w-xs truncate font-bold text-gray-900">{{ $evento->title }}</span>
+                                <span class="text-sm text-gray-600 truncate block max-w-xs">{{ $evento->artist ?: 'N/A' }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full badge-{{ strtolower(str_replace(' ', '', $evento->category ?? '')) }}">

@@ -11,11 +11,10 @@
         <nav class="bg-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div class="flex flex-wrap items-center gap-2">
-                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full text-white" style="background-color: var(--color-cine);">Todos</a>
-                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-cine); border-color: var(--color-cine);">Agenda</a>
-                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-cine); border-color: var(--color-cine);">Lanzamientos</a>
-                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-cine); border-color: var(--color-cine);">Festivales</a>
-                    <a href="#" class="px-4 py-2 text-sm font-bold rounded-full border" style="color: var(--color-cine); border-color: var(--color-cine);">Novedades</a>
+                    <a href="{{ request()->fullUrlWithoutQuery('sub') }}" class="px-4 py-2 text-sm font-bold rounded-full {{ !request('sub') ? 'text-white' : 'border' }}" style="background-color: {{ !request('sub') ? 'var(--color-cine)' : 'transparent' }}; color: {{ !request('sub') ? 'white' : 'var(--color-cine)' }}; border-color: {{ !request('sub') ? 'none' : 'var(--color-cine)' }};">Todos</a>
+                    <a href="{{ request()->fullUrlWithQuery(['sub' => 'Estrenos']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Estrenos' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Estrenos' ? 'var(--color-cine)' : 'transparent' }}; color: {{ request('sub') == 'Estrenos' ? 'white' : 'var(--color-cine)' }}; border-color: var(--color-cine);">Estrenos</a>
+                    <a href="{{ request()->fullUrlWithQuery(['sub' => 'Festivales / Ciclos']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Festivales / Ciclos' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Festivales / Ciclos' ? 'var(--color-cine)' : 'transparent' }}; color: {{ request('sub') == 'Festivales / Ciclos' ? 'white' : 'var(--color-cine)' }}; border-color: var(--color-cine);">Festivales / Ciclos</a>
+                    <a href="{{ request()->fullUrlWithQuery(['sub' => 'Novedades']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Novedades' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Novedades' ? 'var(--color-cine)' : 'transparent' }}; color: {{ request('sub') == 'Novedades' ? 'white' : 'var(--color-cine)' }}; border-color: var(--color-cine);">Novedades</a>
                 </div>
             </div>
         </nav>
@@ -31,7 +30,7 @@
                         @php $firstFeatured = $featuredEvents->first(); @endphp
                         <a href="{{ route('evento.show', $firstFeatured->id) }}" class="group block bg-white rounded-lg border border-[var(--border-color)] hover:translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.09)] transition-all duration-300 overflow-hidden">
                            <div class="relative h-96 overflow-hidden">
-                               <img src="{{ $firstFeatured->mainImageUrl }}" alt="{{ $firstFeatured->title }}" class="w-full h-full object-cover">
+                               <img src="{{ $firstFeatured->mainImageUrl ? Storage::url($firstFeatured->mainImageUrl) : '/img/placeholder.jpg' }}" alt="{{ $firstFeatured->title }}" class="w-full h-full object-cover">
                            </div>
                            <div class="p-6">
                                <h4 class="text-2xl font-bold mb-2 text-gray-800 leading-tight">{{ $firstFeatured->title }}</h4>
@@ -69,10 +68,10 @@
                             $isEvento = $item instanceof \App\Models\Evento;
                             $link = $isEvento ? route('evento.show', $item->id) : route('novedades.show', $item->slug);
                             $imageUrl = null;
-                            if ($isEvento && $item->mainImageUrl) {
-                                $imageUrl = Storage::url($item->mainImageUrl);
-                            } elseif (!$isEvento && $item->image) {
-                                $imageUrl = Storage::url($item->image);
+                            if ($isEvento) {
+                                $imageUrl = $item->mainImageUrl ? Storage::url($item->mainImageUrl) : '/img/placeholder.jpg';
+                            } else {
+                                $imageUrl = $item->image ? Storage::url($item->image) : '/img/placeholder.jpg';
                             }
                             $categoryName = $isEvento ? ($item->category ?? 'Sin categoría') : ($item->category ?? 'Sin categoría');
                             $date = $isEvento ? ($item->startDate ?? null) : ($item->published_at ?? null);
