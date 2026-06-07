@@ -1,3 +1,4 @@
+<x-dashboard-layout>
 @php
     $novedad = $novedad ?? new App\Models\Novedad();
     $galleryText = old('gallery', is_array($novedad->gallery) ? implode("\n", $novedad->gallery) : '');
@@ -275,3 +276,4 @@
         }
     }
 </script>
+</x-dashboard-layout>
