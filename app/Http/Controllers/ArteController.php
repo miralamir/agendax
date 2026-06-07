@@ -32,11 +32,19 @@ class ArteController extends Controller
             ->orderBy('published_at', 'desc')
             ->get();
 
-        // Mergear eventos y novedades, ordenar por fecha y paginar
-        $latestItems = $latestEvents->merge($latestNovedades)
-            ->sortByDesc(fn ($item) => $item->created_at ?? $item->published_at) // Ordenar por created_at o published_at
-            ->paginate(12)
-            ->withQueryString();
+        $allItems = $latestEvents->merge($latestNovedades)
+            ->sortByDesc(fn($item) => $item->created_at ?? $item->published_at)
+            ->values(); // Importante para reindexar la colección
+
+        $page = request()->get('page', 1);
+        $perPage = 12;
+        $latestItems = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allItems->forPage($page, $perPage),
+            $allItems->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return view('arte.index', compact('featuredEvents', 'latestItems'));
     }

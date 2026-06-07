@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 
 class Novedad extends Model
 {
+    protected $table = 'novedades';
+{
     use HasFactory;
 
     protected $fillable = [
