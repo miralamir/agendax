@@ -10,168 +10,156 @@ use Illuminate\Support\Str;
 
 class NovedadController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         $novedades = Novedad::orderBy('published_at', 'desc')->paginate(10);
         return view('dashboard.novedades.index', compact('novedades'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         return view('dashboard.novedades.form');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:novedades,slug',
             'excerpt' => 'nullable|string',
             'body' => 'nullable|string',
-            'image' => 'nullable|image|max:2048', // 2MB max
-            'gallery.*' => 'nullable|image|max:2048', // Each image 2MB max
-            'videos.*' => 'nullable|url',
-            'pdf' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'pdf' => 'nullable|mimes:pdf|max:10240',
             'category' => 'required|string|max:255',
             'subCategory' => 'nullable|string|max:255',
             'author' => 'nullable|string|max:255',
-            'isPublished' => 'boolean',
-            'isFeatured' => 'boolean',
-            'seo_title' => 'nullable|string|max:60',
-            'seo_description' => 'nullable|string|max:160',
             'published_at' => 'nullable|date',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['title']);
-        }
+        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured']);
 
-        // Manejo de checkboxes
-        $validated['isPublished'] = $request->has('isPublished') ? 1 : 0;
-        $validated['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
+        $data['slug'] = Str::slug($request->title);
 
-        // Handle image upload
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('public/novedades/main');
+            $data['image'] = $request->file('image')->store('public/novedades/images');
         }
 
-        // Handle gallery images upload
-        $galleryPaths = [];
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $galleryImage) {
-                $galleryPaths[] = $galleryImage->store('public/novedades/gallery');
-            }
-        }
-        $validated['gallery'] = $galleryPaths;
-
-        // Handle videos (array of URLs)
-        $validated['videos'] = array_filter($request->input('videos', [])); // Asegura que se guarden solo URLs válidas
-
-        // Handle PDF upload
         if ($request->hasFile('pdf')) {
-            $validated['pdf'] = $request->file('pdf')->store('public/novedades/pdf');
+            $data['pdf'] = $request->file('pdf')->store('public/novedades/pdfs');
         }
 
-        $novedad = Novedad::create($validated);
+        $data['gallery'] = json_encode(array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', ''))));
+        $data['videos'] = json_encode(array_filter($request->input('videos', [])));
+
+        $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
+        $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
+
+        Novedad::create($data);
 
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad creada exitosamente.');
     }
 
-    public function edit(Novedad $novedad)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Novedad $novedad) // Usar 'novedad'
     {
         return view('dashboard.novedades.form', compact('novedad'));
     }
 
-    public function update(Request $request, Novedad $novedad)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Novedad $novedad) // Usar 'novedad'
     {
-        $validated = $request->validate([
+        $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:novedades,slug,' . $novedad->id,
             'excerpt' => 'nullable|string',
             'body' => 'nullable|string',
-            'image' => 'nullable|image|max:2048', // 2MB max
-            'gallery.*' => 'nullable|image|max:2048', // Each image 2MB max
-            'videos.*' => 'nullable|url',
-            'pdf' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'pdf' => 'nullable|mimes:pdf|max:10240',
             'category' => 'required|string|max:255',
             'subCategory' => 'nullable|string|max:255',
             'author' => 'nullable|string|max:255',
-            'isPublished' => 'boolean',
-            'isFeatured' => 'boolean',
-            'seo_title' => 'nullable|string|max:60',
-            'seo_description' => 'nullable|string|max:160',
             'published_at' => 'nullable|date',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['title']);
+        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured', '_method', '_token', 'clear_image', 'clear_pdf']);
+
+        // Mantener el slug si no se cambia el título
+        if ($request->has('title') && $request->title !== $novedad->title) {
+             $data['slug'] = Str::slug($request->title);
         }
 
-        // Manejo de checkboxes
-        $validated['isPublished'] = $request->has('isPublished') ? 1 : 0;
-        $validated['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
-
-        // Handle image upload
+        // Handle main image
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($novedad->image) {
                 Storage::delete($novedad->image);
             }
-            $validated['image'] = $request->file('image')->store('public/novedades/main');
+            $data['image'] = $request->file('image')->store('public/novedades/images');
+        } elseif ($request->input('clear_image')) {
+            if ($novedad->image) {
+                Storage::delete($novedad->image);
+            }
+            $data['image'] = null;
         }
 
-        // Handle gallery images upload (replace existing)
-        if ($request->hasFile('gallery')) {
-            // Delete old gallery images
-            if ($novedad->gallery) {
-                foreach ($novedad->gallery as $oldImage) {
-                    Storage::delete($oldImage);
-                }
-            }
-            $galleryPaths = [];
-            foreach ($request->file('gallery') as $galleryImage) {
-                $galleryPaths[] = $galleryImage->store('public/novedades/gallery');
-            }
-            $validated['gallery'] = $galleryPaths;
-        } else {
-             // Si no se suben nuevas imágenes, mantener las existentes
-            $validated['gallery'] = $novedad->gallery;
-        }
-
-
-        // Handle videos (array of URLs)
-        $validated['videos'] = array_filter($request->input('videos', [])); // Asegura que se guarden solo URLs válidas
-
-        // Handle PDF upload
+        // Handle PDF
         if ($request->hasFile('pdf')) {
-            // Delete old PDF if exists
             if ($novedad->pdf) {
                 Storage::delete($novedad->pdf);
             }
-            $validated['pdf'] = $request->file('pdf')->store('public/novedades/pdf');
-        } else {
-             // Si no se sube nuevo PDF, mantener el existente
-            $validated['pdf'] = $novedad->pdf;
+            $data['pdf'] = $request->file('pdf')->store('public/novedades/pdfs');
+        } elseif ($request->input('clear_pdf')) {
+            if ($novedad->pdf) {
+                Storage::delete($novedad->pdf);
+            }
+            $data['pdf'] = null;
         }
 
-        $novedad->update($validated);
+        // Handle gallery (URLs as text area)
+        $data['gallery'] = json_encode(array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', ''))));
+        // Handle videos (URLs as dynamic inputs)
+        $data['videos'] = json_encode(array_filter($request->input('videos', [])));
+
+        $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
+        $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
+
+        $novedad->update($data);
 
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad actualizada exitosamente.');
     }
 
-    public function destroy(Novedad $novedad)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Novedad $novedad) // Usar 'novedad'
     {
-        // Delete associated files
         if ($novedad->image) {
             Storage::delete($novedad->image);
         }
-        if ($novedad->gallery) {
-            foreach ($novedad->gallery as $image) {
-                Storage::delete($image);
-            }
-        }
         if ($novedad->pdf) {
             Storage::delete($novedad->pdf);
+        }
+        // También borrar imágenes de la galería si se gestionan individualmente y son paths de storage
+        $galleryImages = json_decode($novedad->gallery, true);
+        foreach ($galleryImages as $img) {
+            // Asumimos que si no es una URL http/https, es un path de storage
+            if (!Str::startsWith($img, ['http://', 'https://'])) {
+                 Storage::delete($img);
+            }
         }
 
         $novedad->delete();

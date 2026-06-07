@@ -22,32 +22,32 @@
 
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-[var(--border-color)]">
         <div class="p-6 overflow-x-auto">
-            <table class="min-w-full divide-y divide-[var(--border-color)]">
+            <table class="min-w-full divide-y divide-[var(--border-color)] table-fixed">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Título</th>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Categoría</th>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Subcategoría</th>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Estado</th>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Fecha</th>
-                        <th class="px-6 py-3 text-right dashboard-table-header">Acciones</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-3/12">Título</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-2/12">Categoría</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-2/12">Subcategoría</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-2/12">Estado</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-2/12">Fecha</th>
+                        <th class="px-4 py-3 text-right dashboard-table-header w-1/12">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-[var(--border-color)]">
                     @forelse($novedades as $novedad)
                         <tr class="dashboard-table-row">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="font-bold text-gray-900">{{ $novedad->title }}</div>
+                            <td class="px-4 py-3 max-w-0">
+                                <span class="block truncate font-bold text-gray-900">{{ $novedad->title }}</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full badge-{{ strtolower(str_replace(' ', '', $novedad->category ?? '')) }}">
+                            <td class="px-4 py-3 max-w-0">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full badge-{{ strtolower(str_replace(' ', '', $novedad->category ?? '')) }}">
                                     {{ $novedad->category ?: 'Sin categoría' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                {{ $novedad->subCategory ?: 'N/A' }}
+                            <td class="px-4 py-3 max-w-0">
+                                <span class="block truncate text-sm text-gray-700">{{ $novedad->subCategory ?: 'N/A' }}</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <td class="px-4 py-3 max-w-0">
                                 @if($novedad->isPublished)
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publicado</span>
                                 @else
@@ -57,10 +57,10 @@
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">⭐ Destacado</span>
                                 @endif
                             </td>
-                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                {{ $novedad->published_at ? $novedad->published_at->format('d M Y') : 'N/A' }}
+                             <td class="px-4 py-3 max-w-0">
+                                <span class="block truncate text-sm text-gray-700">{{ $novedad->published_at ? $novedad->published_at->format('d M Y') : 'N/A' }}</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="px-4 py-3 text-right text-sm font-medium max-w-0">
                                 <a href="{{ route('dashboard.novedades.edit', $novedad) }}" class="text-blue-600 hover:text-blue-900 mr-3">Editar</a>
                                 <form action="{{ route('dashboard.novedades.destroy', $novedad) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Seguro que deseas eliminar esta novedad?');">
                                     @csrf

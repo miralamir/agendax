@@ -8,13 +8,27 @@ use Illuminate\Support\Str;
 
 class Novedad extends Model
 {
-    protected $table = 'novedades';
+    use HasFactory;
 
+    protected $table = 'novedades'; // Especificar el nombre de la tabla
 
     protected $fillable = [
-        'title', 'slug', 'excerpt', 'body', 'image', 'gallery', 'videos',
-        'pdf', 'category', 'subCategory', 'author', 'isPublished',
-        'isFeatured', 'seo_title', 'seo_description', 'published_at'
+        'title',
+        'slug',
+        'excerpt',
+        'body',
+        'image',
+        'gallery',
+        'videos',
+        'pdf',
+        'category',
+        'subCategory',
+        'author',
+        'isPublished',
+        'isFeatured',
+        'seo_title',
+        'seo_description',
+        'published_at',
     ];
 
     protected $casts = [
@@ -25,12 +39,21 @@ class Novedad extends Model
         'published_at' => 'datetime',
     ];
 
-    // Auto-generar slug desde title
-    protected static function boot()
+    /**
+     * Automatically generate slug from title if not provided.
+     */
+    public static function boot()
     {
         parent::boot();
+
         static::creating(function ($novedad) {
-            if (empty($novedad->slug)) {
+            if (empty($novedad->slug) && !empty($novedad->title)) {
+                $novedad->slug = Str::slug($novedad->title);
+            }
+        });
+
+        static::updating(function ($novedad) {
+            if (empty($novedad->slug) && !empty($novedad->title)) {
                 $novedad->slug = Str::slug($novedad->title);
             }
         });

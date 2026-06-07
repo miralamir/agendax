@@ -24,35 +24,35 @@
 
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-[var(--border-color)]">
         <div class="p-6 overflow-x-auto">
-            <table class="min-w-full divide-y divide-[var(--border-color)]">
+            <table class="min-w-full divide-y divide-[var(--border-color)] table-fixed">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Título / Artista</th>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Categoría</th>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Lugar</th>
-                        <th class="px-6 py-3 text-left dashboard-table-header">Estado</th>
-                        <th class="px-6 py-3 text-right dashboard-table-header">Acciones</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-4/12">Título / Artista</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-2/12">Categoría</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-2/12">Lugar</th>
+                        <th class="px-4 py-3 text-left dashboard-table-header w-2/12">Estado</th>
+                        <th class="px-4 py-3 text-right dashboard-table-header w-2/12">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-[var(--border-color)]">
                     @forelse($eventos as $evento)
                         <tr class="dashboard-table-row">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="block max-w-xs truncate font-bold text-gray-900">{{ $evento->title }}</span>
-                                <span class="text-sm text-gray-600 truncate block max-w-xs">{{ $evento->artist ?: 'N/A' }}</span>
+                            <td class="px-4 py-3 max-w-0">
+                                <span class="block truncate font-bold text-gray-900">{{ $evento->title }}</span>
+                                <span class="block truncate text-sm text-gray-600">{{ $evento->artist ?: 'N/A' }}</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full badge-{{ strtolower(str_replace(' ', '', $evento->category ?? '')) }}">
+                            <td class="px-4 py-3 max-w-0">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full badge-{{ strtolower(str_replace(' ', '', $evento->category ?? '')) }}">
                                     {{ $evento->category ?: 'Sin categoría' }}
                                 </span>
                                 @if($evento->subCategory)
-                                    <div class="text-xs text-gray-500 mt-1">{{ $evento->subCategory }}</div>
+                                    <span class="block truncate text-xs text-gray-500 mt-1">{{ $evento->subCategory }}</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                {{ $evento->locationName ?: 'N/A' }}
+                            <td class="px-4 py-3 max-w-0">
+                                <span class="block truncate text-sm text-gray-700">{{ $evento->locationName ?: '-' }}</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <td class="px-4 py-3 max-w-0">
                                 @if($evento->isPublished)
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publicado</span>
                                 @else
@@ -62,7 +62,7 @@
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">⭐ Destacado</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="px-4 py-3 text-right text-sm font-medium max-w-0">
                                 <a href="{{ route('dashboard.eventos.edit', $evento) }}" class="text-blue-600 hover:text-blue-900 mr-3">Editar</a>
                                 <form action="{{ route('dashboard.eventos.destroy', $evento) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Seguro que deseas eliminar este evento?');">
                                     @csrf
