@@ -151,7 +151,7 @@
                 <nav class="mt-8">
                     <ul>
                         <li class="mb-3"><a href="{{ route('dashboard.eventos.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Eventos</a></li>
-                        <li class="mb-3"><a href="#" class="font-bold text-gray-400 cursor-not-allowed">Novedades (próximamente)</a></li>
+                        <li class="mb-3"><a href="{{ route('dashboard.novedades.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Novedades</a></li>
                         <li class="mb-3"><a href="#" class="font-bold text-gray-400 cursor-not-allowed">Configuración (próximamente)</a></li>
                     </ul>
                 </nav>
