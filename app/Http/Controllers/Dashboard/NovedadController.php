@@ -46,6 +46,10 @@ class NovedadController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
 
+        // Manejo de checkboxes
+        $validated['isPublished'] = $request->has('isPublished') ? 1 : 0;
+        $validated['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
+
         // Handle image upload
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('public/novedades/main');
@@ -61,7 +65,7 @@ class NovedadController extends Controller
         $validated['gallery'] = $galleryPaths;
 
         // Handle videos (array of URLs)
-        $validated['videos'] = $request->input('videos');
+        $validated['videos'] = array_filter($request->input('videos', [])); // Asegura que se guarden solo URLs válidas
 
         // Handle PDF upload
         if ($request->hasFile('pdf')) {
@@ -103,6 +107,10 @@ class NovedadController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
 
+        // Manejo de checkboxes
+        $validated['isPublished'] = $request->has('isPublished') ? 1 : 0;
+        $validated['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
+
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
@@ -112,22 +120,27 @@ class NovedadController extends Controller
             $validated['image'] = $request->file('image')->store('public/novedades/main');
         }
 
-        // Handle gallery images upload
-        $galleryPaths = $novedad->gallery ?? []; // Keep existing if no new ones
+        // Handle gallery images upload (replace existing)
         if ($request->hasFile('gallery')) {
             // Delete old gallery images
-            foreach ($galleryPaths as $oldImage) {
-                Storage::delete($oldImage);
+            if ($novedad->gallery) {
+                foreach ($novedad->gallery as $oldImage) {
+                    Storage::delete($oldImage);
+                }
             }
             $galleryPaths = [];
             foreach ($request->file('gallery') as $galleryImage) {
                 $galleryPaths[] = $galleryImage->store('public/novedades/gallery');
             }
+            $validated['gallery'] = $galleryPaths;
+        } else {
+             // Si no se suben nuevas imágenes, mantener las existentes
+            $validated['gallery'] = $novedad->gallery;
         }
-        $validated['gallery'] = $galleryPaths;
+
 
         // Handle videos (array of URLs)
-        $validated['videos'] = $request->input('videos');
+        $validated['videos'] = array_filter($request->input('videos', [])); // Asegura que se guarden solo URLs válidas
 
         // Handle PDF upload
         if ($request->hasFile('pdf')) {
@@ -136,6 +149,9 @@ class NovedadController extends Controller
                 Storage::delete($novedad->pdf);
             }
             $validated['pdf'] = $request->file('pdf')->store('public/novedades/pdf');
+        } else {
+             // Si no se sube nuevo PDF, mantener el existente
+            $validated['pdf'] = $novedad->pdf;
         }
 
         $novedad->update($validated);

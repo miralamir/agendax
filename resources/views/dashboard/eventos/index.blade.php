@@ -1,5 +1,10 @@
 <x-dashboard-layout>
-    <h2 class="text-2xl font-black text-gray-900 mb-6">Administrar Eventos</h2>
+    <div class="flex justify-between items-center mb-6 sticky top-0 bg-gray-100 z-10 py-4 -mx-6 px-6">
+        <h2 class="text-2xl font-black text-gray-900">Administrar Eventos</h2>
+        <a href="{{ route('dashboard.eventos.create') }}" class="dashboard-button-primary">
+            + Nuevo Evento
+        </a>
+    </div>
 
     <div class="flex justify-between items-center mb-6">
         <form method="GET" action="{{ route('dashboard.eventos.index') }}" class="flex items-center space-x-2">
@@ -9,9 +14,6 @@
                 <a href="{{ route('dashboard.eventos.index') }}" class="ml-2 text-gray-500 hover:text-gray-700">Limpiar</a>
             @endif
         </form>
-        <a href="{{ route('dashboard.eventos.create') }}" class="dashboard-button-primary">
-            + Nuevo Evento
-        </a>
     </div>
 
     @if (session('success'))
