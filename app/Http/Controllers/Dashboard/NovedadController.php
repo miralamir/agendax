@@ -130,9 +130,12 @@ class NovedadController extends Controller
         }
 
         // Handle gallery (URLs as text area)
-        $data['gallery'] = json_encode(array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', ''))));
+        $newGallery = array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', '')));
+        $data['gallery'] = json_encode(empty($newGallery) ? ($novedad->gallery ?? []) : $newGallery);
+
         // Handle videos (URLs as dynamic inputs)
-        $data['videos'] = json_encode(array_filter($request->input('videos', [])));
+        $newVideos = array_filter($request->input('videos', []));
+        $data['videos'] = json_encode(empty($newVideos) ? ($novedad->videos ?? []) : $newVideos);
 
         $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
         $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
