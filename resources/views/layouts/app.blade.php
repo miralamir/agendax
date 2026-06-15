@@ -5,7 +5,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'BAMARTE') }}</title>
+
+        <!-- Favicons -->
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+
+        {{-- Google AdSense (anuncios automáticos) - solo en producción --}}
+        @production
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2677514599907084" crossorigin="anonymous"></script>
+        @endproduction
 
         <!-- Google Fonts: Lato (Unified) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,10 +48,10 @@
                 --color-musica-light: #e6edf9;
                 --color-teatro: #8B1A2D;
                 --color-teatro-light: #faeaed;
-                --color-cine: #1a1a2e;
-                --color-cine-light: #e8e8f0;
-                --color-literatura: #1A5C3A;
-                --color-literatura-light: #eafaf0;
+                --color-cine: #E67E22;
+                --color-cine-light: #fef3e8;
+                --color-literatura: #2E8B57;
+                --color-literatura-light: #e8f5ee;
 
                 /* Borders */
                 --border-color: #e0e0e0;
@@ -133,5 +144,6 @@
                 </main>
             </div>
         </div>
+        <x-footer />
     </body>
 </html>

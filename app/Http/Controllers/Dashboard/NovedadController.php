@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Novedad;
+use App\Helpers\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -13,10 +14,58 @@ class NovedadController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $novedades = Novedad::orderBy('published_at', 'desc')->paginate(10);
+        $query = Novedad::query();
+
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('excerpt', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) $query->where('category', $request->get('category'));
+        if ($request->filled('subCategory')) $query->where('subCategory', $request->get('subCategory'));
+        if ($request->get('published') !== null && $request->get('published') !== '') $query->where('isPublished', $request->get('published'));
+        if ($request->get('featured') !== null && $request->get('featured') !== '') $query->where('isFeatured', $request->get('featured'));
+
+        $sort = $request->get('sort', 'id');
+        $dir = $request->get('dir', 'desc') === 'asc' ? 'asc' : 'desc';
+        if (!in_array($sort, ['id', 'title', 'category', 'published_at', 'created_at'])) $sort = 'id';
+
+        $novedades = $query->orderBy($sort, $dir)->paginate(20)->withQueryString();
         return view('dashboard.novedades.index', compact('novedades'));
+    }
+
+    public function bulk(\Illuminate\Http\Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) return back()->with('success', 'No seleccionaste ninguna novedad.');
+
+        switch ($request->input('accion')) {
+            case 'eliminar': Novedad::whereIn('id', $ids)->delete(); $msg = count($ids) . ' novedades eliminadas.'; break;
+            case 'publicar':
+                Novedad::whereIn('id', $ids)->update(['isPublished' => 1]);
+                Novedad::whereIn('id', $ids)->whereNull('published_at')->update(['published_at' => now()]);
+                $msg = count($ids) . ' novedades publicadas.'; break;
+            case 'despublicar': Novedad::whereIn('id', $ids)->update(['isPublished' => 0]); $msg = count($ids) . ' novedades pasadas a borrador.'; break;
+            case 'destacar': Novedad::whereIn('id', $ids)->update(['isFeatured' => 1]); $msg = count($ids) . ' novedades destacadas.'; break;
+            case 'quitar_destacado': Novedad::whereIn('id', $ids)->update(['isFeatured' => 0]); $msg = 'Destacado quitado a ' . count($ids) . ' novedades.'; break;
+            default: $msg = 'Acción no reconocida.';
+        }
+        return back()->with('success', $msg);
+    }
+
+    public function toggle(Novedad $novedad, string $campo)
+    {
+        if (!in_array($campo, ['isPublished', 'isFeatured'])) abort(404);
+        $nuevo = !$novedad->$campo;
+        $datos = [$campo => $nuevo];
+        if ($campo === 'isPublished' && $nuevo && !$novedad->published_at) $datos['published_at'] = now();
+        $novedad->update($datos);
+        return back();
     }
 
     /**
@@ -51,11 +100,11 @@ class NovedadController extends Controller
         $data['slug'] = Str::slug($request->title);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('public/novedades/images');
+            $data['image'] = ImageOptimizer::store($request->file('image'), 'novedades/images');
         }
 
         if ($request->hasFile('pdf')) {
-            $data['pdf'] = $request->file('pdf')->store('public/novedades/pdfs');
+            $data['pdf'] = $request->file('pdf')->store('novedades/pdfs', 'public');
         }
 
         $data['gallery'] = json_encode(array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', ''))));
@@ -104,11 +153,13 @@ class NovedadController extends Controller
         }
 
         // Handle main image
-        if ($request->hasFile('image')) {
+        if (!$request->hasFile('image') && !$request->input('clear_image')) {
+            // mantener imagen existente
+        } elseif ($request->hasFile('image')) {
             if ($novedad->image) {
                 Storage::delete($novedad->image);
             }
-            $data['image'] = $request->file('image')->store('public/novedades/images');
+            $data['image'] = ImageOptimizer::store($request->file('image'), 'novedades/images');
         } elseif ($request->input('clear_image')) {
             if ($novedad->image) {
                 Storage::delete($novedad->image);
@@ -121,7 +172,7 @@ class NovedadController extends Controller
             if ($novedad->pdf) {
                 Storage::delete($novedad->pdf);
             }
-            $data['pdf'] = $request->file('pdf')->store('public/novedades/pdfs');
+            $data['pdf'] = $request->file('pdf')->store('novedades/pdfs', 'public');
         } elseif ($request->input('clear_pdf')) {
             if ($novedad->pdf) {
                 Storage::delete($novedad->pdf);
@@ -129,13 +180,38 @@ class NovedadController extends Controller
             $data['pdf'] = null;
         }
 
-        // Handle gallery (URLs as text area)
-        $newGallery = array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', '')));
-        $data['gallery'] = json_encode(empty($newGallery) ? ($novedad->gallery ?? []) : $newGallery);
+        // Handle gallery con estructura url+caption
+        $rawGallery = $request->input('gallery', []);
+        $galleryItems = [];
+        if (is_array($rawGallery)) {
+            foreach ($rawGallery as $item) {
+                if (is_array($item)) {
+                    $url = trim($item['url'] ?? '');
+                    $caption = trim($item['caption'] ?? '');
+                    if ($url) $galleryItems[] = ['url' => $url, 'caption' => $caption];
+                } elseif (is_string($item) && trim($item)) {
+                    $galleryItems[] = ['url' => trim($item), 'caption' => ''];
+                }
+            }
+        }
+        // Manejar archivos subidos
+        if ($request->hasFile('galleryFiles')) {
+            foreach ($request->file('galleryFiles') as $idx => $f) {
+                if ($f && $f->isValid()) {
+                    $path = ImageOptimizer::store($f, 'novedades/gallery');
+                    if (isset($galleryItems[$idx])) {
+                        $galleryItems[$idx]['url'] = $path;
+                    } else {
+                        $galleryItems[] = ['url' => $path, 'caption' => ''];
+                    }
+                }
+            }
+        }
+        $data['gallery'] = array_values($galleryItems);
 
         // Handle videos (URLs as dynamic inputs)
         $newVideos = array_filter($request->input('videos', []));
-        $data['videos'] = json_encode(empty($newVideos) ? ($novedad->videos ?? []) : $newVideos);
+        $data['videos'] = empty($newVideos) ? [] : array_values($newVideos);
 
         $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
         $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;

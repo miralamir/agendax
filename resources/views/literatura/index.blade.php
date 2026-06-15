@@ -1,62 +1,136 @@
 <x-app-layout>
+    @php $subCat = request('sub'); @endphp
+    <x-breadcrumb :items="array_filter([
+        'Literatura' => $subCat ? route('literatura') : null,
+        $subCat => null
+    ])"/>
     <main>
         <!-- 1. Category Header -->
-        <header class="py-12" style="background-color: var(--color-literatura-light); border-bottom: 3px solid var(--color-literatura);">
+        <header class="py-6" style="background-color: var(--color-literatura-light); border-bottom: 3px solid var(--color-literatura);">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 class="text-6xl font-black" style="color: var(--color-literatura);">Literatura</h1>
-            </div>
-        </header>
-
-        <!-- 2. Subcategory Filters (Pills) -->
-        <nav class="bg-white border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                <div class="mt-4">
                 <div class="flex flex-wrap items-center gap-2">
                     <a href="{{ request()->fullUrlWithoutQuery('sub') }}" class="px-4 py-2 text-sm font-bold rounded-full {{ !request('sub') ? 'text-white' : 'border' }}" style="background-color: {{ !request('sub') ? 'var(--color-literatura)' : 'transparent' }}; color: {{ !request('sub') ? 'white' : 'var(--color-literatura)' }}; border-color: {{ !request('sub') ? 'none' : 'var(--color-literatura)' }};">Todos</a>
                     <a href="{{ request()->fullUrlWithQuery(['sub' => 'Agenda']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Agenda' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Agenda' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Agenda' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Agenda</a>
-                    <a href="{{ request()->fullUrlWithQuery(['sub' => 'Novedades']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Novedades' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Novedades' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Novedades' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Novedades</a>
-                    <a href="{{ request()->fullUrlWithQuery(['sub' => 'Editoriales']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Editoriales' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Editoriales' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Editoriales' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Editoriales</a>
+                    <a href="{{ request()->fullUrlWithQuery(['sub' => 'Novedades Editoriales']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Novedades Editoriales' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Novedades Editoriales' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Novedades Editoriales' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Novedades Editoriales</a>
                     <a href="{{ request()->fullUrlWithQuery(['sub' => 'Ferias']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Ferias' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Ferias' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Ferias' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Ferias</a>
                     <a href="{{ request()->fullUrlWithQuery(['sub' => 'Noticias']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Noticias' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Noticias' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Noticias' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Noticias</a>
                 </div>
+                </div>
             </div>
-        </nav>
+        </header>
 
         <!-- 3. Destacados Section -->
-        <section class="py-24 bg-white">
+        <!-- Swiper (destacados) -->
+        <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+        <section class="pt-10 pb-12 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center mb-8">
-                </div>
+                @php
+                    $linkDe = fn($i) => $i instanceof \App\Models\Evento ? route('evento.show', $i->id) : route('novedades.show', $i->slug);
+                    $imgDe = function($i) {
+                        if ($i instanceof \App\Models\Evento) return $i->mainImage ? Storage::url($i->mainImage) : ($i->mainImageUrl ?: '/img/placeholder.jpg');
+                        return $i->image ? Storage::url($i->image) : '/img/placeholder.jpg';
+                    };
+                    $fechaDe = fn($i) => $i instanceof \App\Models\Evento ? ($i->startDate ?? $i->singleDate ?? $i->created_at) : ($i->published_at ?? $i->created_at);
+                @endphp
                 @if($featuredEvents->isNotEmpty())
+                <div class="rounded-2xl p-6 shadow-[0_2px_16px_rgba(0,0,0,0.06)]" style="background: linear-gradient(to top, color-mix(in srgb, var(--color-literatura) 12%, white), color-mix(in srgb, var(--color-literatura) 4%, white)); border: 1px solid color-mix(in srgb, var(--color-literatura) 25%, white);">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2">
-                        @php $firstFeatured = $featuredEvents->first(); @endphp
-                        <a href="{{ route('evento.show', $firstFeatured->id) }}" class="group block bg-white rounded-lg border border-[var(--border-color)] hover:translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.09)] transition-all duration-300 overflow-hidden">
-                           <div class="relative h-96 overflow-hidden">
-                               <img src="{{ $firstFeatured->mainImageUrl ? Storage::url($firstFeatured->mainImageUrl) : '/img/placeholder.jpg' }}" alt="{{ $firstFeatured->title }}" class="w-full h-full object-cover">
-                           </div>
-                           <div class="p-6">
-                               <h4 class="text-2xl font-bold mb-2 text-gray-800 leading-tight">{{ $firstFeatured->title }}</h4>
-                               <p class="text-sm text-gray-500">{{ $firstFeatured->locationName }}</p>
-                           </div>
-                        </a>
+                    <!-- Carrusel grande (Izquierda) -->
+                    <div class="lg:col-span-2 flex">
+                        <div class="swiper carousel-literatura rounded-lg overflow-hidden relative w-full">
+                            <div class="swiper-wrapper">
+                                @foreach($featuredEvents as $item)
+                                <div class="swiper-slide h-auto">
+                                    <a href="{{ $linkDe($item) }}" class="block h-full relative">
+                                        <img src="{{ $imgDe($item) }}" alt="{{ $item->title }}" class="w-full h-full object-cover" style="min-height: 28rem;">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10"></div>
+                                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                                            <span class="text-sm font-bold uppercase tracking-wider" style="color: #fff; background: var(--color-literatura); padding: 3px 10px; border-radius: 9999px; display: inline-block;">{{ $item->category }}@if($item->subCategory) &middot; {{ $item->subCategory }}@endif</span>
+                                            <h3 class="text-3xl font-bold mt-2 leading-tight">{{ $item->title }}</h3>
+                                            <p class="mt-2 text-sm">{{ $item->locationName ?? '' }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
+                            <div class="swiper-pagination"></div>
+                            <div class="swiper-button-next text-white"></div>
+                            <div class="swiper-button-prev text-white"></div>
+                        </div>
                     </div>
-                    <div class="space-y-4">
-                        @foreach($featuredEvents->skip(1)->take(3) as $event)
-                        <a href="{{ route('evento.show', $event->id) }}" class="block p-4 border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition">
-                            <p class="font-bold text-gray-800">{{ $event->title }}</p>
-                            <p class="text-xs text-gray-500 mt-1">{{ \Carbon\Carbon::parse($event->startDate)->locale('es')->isoFormat('D MMM') }}</p>
-                        </a>
-                        @endforeach
+                    <!-- Lista lateral (Derecha) con imagenes + scroll -->
+                    <div class="hidden sm:flex flex-col" id="lista-literatura">
+                        @if($featuredEvents->count() > 4)
+                        <button type="button" class="lista-arriba w-full flex justify-center py-1 text-gray-400 hover:text-gray-700" aria-label="Anterior">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                        </button>
+                        @endif
+                        <div class="lista-viewport overflow-hidden flex-1" style="max-height: 28rem;">
+                            <div class="lista-track flex flex-col gap-4 transition-transform duration-300">
+                                @foreach($featuredEvents as $item)
+                                <a href="{{ $linkDe($item) }}" class="flex gap-3 p-3 border border-[var(--border-color)] rounded-lg bg-white hover:bg-gray-50 transition flex-shrink-0">
+                                    <div class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0" style="background:#f3f3f3">
+                                        <img src="{{ $imgDe($item) }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="text-xs font-bold uppercase" style="color: var(--color-literatura);">{{ $item->category }}</span>
+                                        <p class="font-bold text-gray-800 text-sm leading-snug line-clamp-2 mt-0.5">{{ $item->title }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">{{ \Carbon\Carbon::parse($fechaDe($item))->locale('es')->isoFormat('D MMM') }}</p>
+                                    </div>
+                                </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        @if($featuredEvents->count() > 4)
+                        <button type="button" class="lista-abajo w-full flex justify-center py-1 text-gray-400 hover:text-gray-700" aria-label="Siguiente">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        @endif
                     </div>
                 </div>
-                @else
-                <p class="text-gray-500">No hay eventos destacados en este momento.</p>
+                </div>
                 @endif
             </div>
         </section>
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (document.querySelector('.carousel-literatura')) {
+                    new Swiper('.carousel-literatura', {
+                        loop: true,
+                        autoplay: { delay: 3800, disableOnInteraction: false },
+                        pagination: { el: '.carousel-literatura .swiper-pagination', clickable: true },
+                        navigation: { nextEl: '.carousel-literatura .swiper-button-next', prevEl: '.carousel-literatura .swiper-button-prev' },
+                    });
+                }
 
+            // Scroll de la lista lateral con flechas
+            (function() {
+                const cont = document.getElementById('lista-literatura');
+                if (!cont) return;
+                const track = cont.querySelector('.lista-track');
+                const items = track ? track.children : [];
+                if (items.length <= 4) return;
+                let pos = 0;
+                const visibles = 4;
+                function itemH() { return items[0].offsetHeight + 16; }
+                function aplicar() { track.style.transform = 'translateY(-' + (pos * itemH()) + 'px)'; }
+                const up = cont.querySelector('.lista-arriba');
+                const down = cont.querySelector('.lista-abajo');
+                if (up) up.addEventListener('click', () => { if (pos > 0) { pos--; aplicar(); } });
+                if (down) down.addEventListener('click', () => { if (pos < items.length - visibles) { pos++; aplicar(); } });
+            })();
+            });
+        </script>
+
+        <!-- Banner entre destacados y noticias -->
+        <div class="max-w-7xl mx-auto px-4 pb-8">
+            <x-banner posicion="cat_entre_secciones" />
+        </div>
         <!-- 4. Últimas Novedades Section -->
-        <section class="py-24 bg-gray-50">
+        <section class="pt-4 pb-16 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="section-title">Últimas Novedades</h2>
@@ -64,22 +138,27 @@
                 </div>
                 <!-- Grilla de 3 columnas para los posts -->
                 @if($latestItems->isNotEmpty())
+                @php $totalPaginasCel = (int) ceil($latestItems->count() / 3); @endphp
+                <div x-data="{ pagina: 1, totalPaginas: {{ max($totalPaginasCel, 1) }} }">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach($latestItems as $item)
+                    @foreach($latestItems as $idx => $item)
                         @php
                             $isEvento = $item instanceof \App\Models\Evento;
                             $link = $isEvento ? route('evento.show', $item->id) : route('novedades.show', $item->slug);
                             $imageUrl = null;
                             if ($isEvento && $item->mainImageUrl) {
-                                $imageUrl = $item->mainImageUrl ? Storage::url($item->mainImageUrl) : '/img/placeholder.jpg';
+                                $img = $item->mainImage ? Storage::url($item->mainImage) : ($item->mainImageUrl ? (str_starts_with($item->mainImageUrl, 'http') ? $item->mainImageUrl : Storage::url($item->mainImageUrl)) : null);
+                                $imageUrl = $img;
                             } else {
                                 $imageUrl = $item->image ? Storage::url($item->image) : '/img/placeholder.jpg';
                             }
                             $categoryName = $isEvento ? ($item->category ?? 'Sin categoría') : ($item->category ?? 'Sin categoría');
-                            $date = $isEvento ? ($item->startDate ?? null) : ($item->published_at ?? null);
+                            $date = $isEvento ? ($item->startDate ?? $item->singleDate ?? null) : ($item->published_at ?? null);
                             $location = $isEvento ? ($item->locationName ?? null) : null;
                         @endphp
-                        <a href="{{ $link }}" class="group block bg-white rounded-lg border border-[var(--border-color)] hover:translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.09)] transition-all duration-300 overflow-hidden">
+                        <a href="{{ $link }}"
+                           x-show="window.innerWidth >= 768 || (Math.floor({{ $idx }} / 3) + 1 === pagina)"
+                           class="group block bg-white rounded-lg border border-[var(--border-color)] hover:translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.09)] transition-all duration-300 overflow-hidden">
                             <div class="relative h-48 overflow-hidden">
                                 @if($imageUrl)
                                     <img src="{{ $imageUrl }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
@@ -89,10 +168,10 @@
                             </div>
                             <div class="p-6">
                                 <span class="text-xs font-bold uppercase tracking-wider mb-2 block" style="color: var(--color-{{ strtolower(str_replace(' ', '', $categoryName)) }})">
-                                    {{ $categoryName }}
+                                    {{ $categoryName }}@if($item->subCategory) · {{ $item->subCategory }}@endif
                                 </span>
                                 <h4 class="text-xl font-bold mb-2 text-gray-800 leading-tight">{{ $item->title }}</h4>
-                                <p class="text-sm text-gray-500 font-normal">
+                                <p class="text-sm text-gray-700 font-medium">
                                     @if ($date)
                                         {{ \Carbon\Carbon::parse($date)->locale('es')->isoFormat('D MMM') }}
                                     @endif
@@ -104,8 +183,16 @@
                         </a>
                     @endforeach
                 </div>
+                <div class="mt-6 flex justify-center items-center gap-2 md:hidden" x-show="totalPaginas > 1">
+                    <button @click="pagina = Math.max(1, pagina - 1)" :disabled="pagina === 1" :class="{ 'opacity-30 cursor-not-allowed': pagina === 1 }" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600">‹</button>
+                    <template x-for="p in totalPaginas" :key="p">
+                        <button @click="pagina = p" :class="pagina === p ? 'text-white' : 'text-gray-600 border border-gray-300'" :style="pagina === p ? 'background-color: var(--color-literatura)' : ''" class="w-9 h-9 flex items-center justify-center rounded-full text-sm font-bold" x-text="p"></button>
+                    </template>
+                    <button @click="pagina = Math.min(totalPaginas, pagina + 1)" :disabled="pagina === totalPaginas" :class="{ 'opacity-30 cursor-not-allowed': pagina === totalPaginas }" class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600">›</button>
+                </div>
+                </div>
                 <div class="mt-12 text-center">
-                    {{ $latestItems->links() }}
+                    <div class="hidden md:block">{{ $latestItems->links() }}</div>
                 </div>
                 @else
                 <p class="text-gray-500">No hay más novedades ni eventos por el momento.</p>

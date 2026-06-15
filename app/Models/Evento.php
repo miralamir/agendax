@@ -19,6 +19,8 @@ class Evento extends Model
         'artists' => 'array',
         'curators' => 'array',
         'gallery' => 'array',
+        'bios' => 'array',
+        'videos' => 'array',
         'isPublished' => 'boolean',
         'isFeatured' => 'boolean',
     ];

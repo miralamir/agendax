@@ -1,8 +1,8 @@
 <x-dashboard-layout>
 @php
     $novedad = $novedad ?? new App\Models\Novedad();
-    $galleryText = old('gallery', is_array($novedad->gallery) ? implode("\n", $novedad->gallery) : '');
-    $videosArray = old('videos', $novedad->videos ?? []);
+    $galleryText = ''; // galería ahora es array de objetos
+    $videosArray = old('videos', is_array($novedad->videos) ? $novedad->videos : json_decode($novedad->videos ?? '[]', true) ?? []);
 @endphp
 
 <form action="{{ isset($novedad->id) ? route('dashboard.novedades.update', $novedad->id) : route('dashboard.novedades.store') }}" method="POST" enctype="multipart/form-data">
@@ -68,16 +68,40 @@
         </div>
 
         <div class="col-span-1 md:col-span-2">
-            <label for="gallery" class="dashboard-label">Galería de Imágenes</label>
-            <input type="file" name="gallery[]" id="gallery" multiple class="mt-1 block w-full dashboard-input p-1" onchange="previewGallery(event, 'gallery-preview')">
-            <div id="gallery-preview" class="mt-2 grid grid-cols-4 gap-2">
-                @if ($novedad->gallery)
-                    @foreach ($novedad->gallery as $imgUrl)
-                        <img src="{{ Storage::url($imgUrl) }}" class="max-h-24 object-cover rounded-lg">
-                    @endforeach
-                @endif
+            <div class="flex items-center justify-between mb-3">
+                <label class="dashboard-label">Galería de Imágenes</label>
+                <button type="button" onclick="agregarImagenGaleriaNov()" class="dashboard-button-outline text-sm">+ Agregar imagen</button>
             </div>
-            @error('gallery.*') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div id="galeria-nov-container" class="space-y-3">
+                @php $galeriaItems = is_array($novedad->gallery) ? $novedad->gallery : []; @endphp
+                @foreach($galeriaItems as $gi => $gitem)
+                @php
+                    $gurl = is_array($gitem) ? ($gitem["url"] ?? "") : $gitem;
+                    $gcap = is_array($gitem) ? ($gitem["caption"] ?? "") : "";
+                @endphp
+                <div class="galeria-nov-item border border-gray-200 rounded-lg p-3 bg-gray-50">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
+                        <div>
+                            <p class="text-xs text-gray-400 mb-1">Subir archivo</p>
+                            <input type="file" name="galleryFiles[{{ $gi }}]" accept="image/*" class="block w-full dashboard-input p-1 text-xs" onchange="previewGalNov(this, 'gal-nov-prev-{{ $gi }}')">
+                            <input type="text" name="gallery[{{ $gi }}][url]" value="{{ $gurl }}" placeholder="O pegar URL..." class="mt-1 block w-full dashboard-input text-xs">
+                            @if($gurl)
+                            <img id="gal-nov-prev-{{ $gi }}" src="{{ str_starts_with($gurl, 'http') ? $gurl : Storage::url($gurl) }}" class="mt-1 h-16 w-auto rounded object-cover border border-gray-200">
+                            @else
+                            <img id="gal-nov-prev-{{ $gi }}" class="mt-1 h-16 w-auto rounded object-cover border border-gray-200 hidden">
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 mb-1">Epígrafe (opcional)</p>
+                            <textarea name="gallery[{{ $gi }}][caption]" rows="3" placeholder="Título, artista, año, técnica..." class="block w-full dashboard-input text-xs">{{ $gcap }}</textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" onclick="this.closest('.galeria-nov-item').remove()" class="text-red-500 text-xs hover:text-red-700">× Eliminar</button>
+                    </div>
+                </div>
+                @endforeach
+            </div>
         </div>
 
         <div class="col-span-1 md:col-span-2">
@@ -230,7 +254,7 @@
         'Música':         ['Agenda', 'Lanzamientos', 'Festivales', 'Novedades'],
         'Teatro':         ['Cartelera', 'Festivales', 'Novedades'],
         'Cine':           ['Estrenos', 'Festivales / Ciclos', 'Novedades'],
-        'Literatura':     ['Agenda', 'Novedades', 'Editoriales', 'Ferias', 'Noticias'],
+        'Literatura':     ['Agenda', 'Novedades Editoriales', 'Ferias', 'Noticias'],
     };
 
     function updateSubcategories() {
@@ -275,5 +299,37 @@
             countSpan.textContent = input.value.length;
         }
     }
+let galeriaNovCount = {{ count(is_array($novedad->gallery) ? $novedad->gallery : []) }};
+function agregarImagenGaleriaNov() {
+    const i = galeriaNovCount++;
+    const html = `<div class="galeria-nov-item border border-gray-200 rounded-lg p-3 bg-gray-50">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
+            <div>
+                <p class="text-xs text-gray-400 mb-1">Subir archivo</p>
+                <input type="file" name="galleryFiles[${i}]" accept="image/*" class="block w-full dashboard-input p-1 text-xs" onchange="previewGalNov(this, 'gal-nov-prev-${i}')">
+                <input type="text" name="gallery[${i}][url]" placeholder="O pegar URL..." class="mt-1 block w-full dashboard-input text-xs">
+                <img id="gal-nov-prev-${i}" class="mt-1 h-16 w-auto rounded object-cover border border-gray-200 hidden">
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 mb-1">Epigrafe (opcional)</p>
+                <textarea name="gallery[${i}][caption]" rows="3" placeholder="Titulo, artista, año, tecnica..." class="block w-full dashboard-input text-xs"></textarea>
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <button type="button" onclick="this.closest('.galeria-nov-item').remove()" class="text-red-500 text-xs hover:text-red-700">x Eliminar</button>
+        </div>
+    </div>`;
+    document.getElementById("galeria-nov-container").insertAdjacentHTML("beforeend", html);
+}
+function previewGalNov(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.getElementById(previewId);
+            if (img) { img.src = e.target.result; img.classList.remove("hidden"); }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 </script>
 </x-dashboard-layout>

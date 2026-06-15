@@ -5,7 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }} - Dashboard</title>
+        <title>{{ config('app.name', 'BAMARTE') }} - Dashboard</title>
+        <!-- Favicons -->
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
         <!-- Google Fonts: Lato (Unified) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -152,6 +157,9 @@
                     <ul>
                         <li class="mb-3"><a href="{{ route('dashboard.eventos.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Eventos</a></li>
                         <li class="mb-3"><a href="{{ route('dashboard.novedades.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Novedades</a></li>
+                        <li class="mb-3"><a href="{{ route('dashboard.creadores.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Creadores</a></li>
+                        <li class="mb-3"><a href="{{ route('dashboard.usuarios.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Usuarios</a></li>
+                        <li class="mb-3"><a href="{{ route('dashboard.banners.index') }}" class="font-bold text-gray-800 hover:text-gray-900">Publicidad</a></li>
                         <li class="mb-3"><a href="#" class="font-bold text-gray-400 cursor-not-allowed">Configuración (próximamente)</a></li>
                     </ul>
                 </nav>

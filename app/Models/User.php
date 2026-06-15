@@ -22,7 +22,37 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'baneado',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function favoritos()
+    {
+        return $this->hasMany(Favorito::class);
+    }
+
+    public function tieneFavorito($modelo): bool
+    {
+        return $this->favoritos()
+            ->where('favoritable_id', $modelo->id)
+            ->where('favoritable_type', get_class($modelo))
+            ->exists();
+    }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class);
+    }
+
+    public function puedeComentar(): bool
+    {
+        return !$this->baneado;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -44,6 +74,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'baneado' => 'boolean',
         ];
     }
 }

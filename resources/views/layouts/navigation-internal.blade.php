@@ -47,6 +47,9 @@
                                 </x-slot>
 
                                 <x-slot name="content">
+                                    <x-dropdown-link :href="route('mi-agenda')">
+                                        Mi Agenda
+                                    </x-dropdown-link>
                                     <x-dropdown-link :href="route('profile.edit')">
                                         {{ __('Profile') }}
                                     </x-dropdown-link>

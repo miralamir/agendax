@@ -3,7 +3,7 @@
 
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-[var(--border-color)]">
         <div class="p-6 text-gray-900">
-            <form action="{{ route('dashboard.eventos.update', $evento) }}" method="POST">
+            <form action="{{ route('dashboard.eventos.update', $evento->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 

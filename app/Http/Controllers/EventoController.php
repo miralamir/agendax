@@ -9,7 +9,7 @@ class EventoController extends Controller
 {
     public function show(Evento $event)
     {
-        return view('eventos.show', compact('event'));
+        return view('evento.show', ['evento' => $event]);
     }
 
     public function categoryShow($category)

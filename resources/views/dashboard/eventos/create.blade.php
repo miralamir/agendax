@@ -3,7 +3,7 @@
 
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-[var(--border-color)]">
         <div class="p-6 text-gray-900">
-            <form action="{{ route('dashboard.eventos.store') }}" method="POST">
+            <form action="{{ route('dashboard.eventos.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
                 <div class="mb-6 flex justify-end items-center bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">

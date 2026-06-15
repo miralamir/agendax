@@ -13,12 +13,13 @@ class MusicaController extends Controller
         $sub = request('sub');
         $categoryName = 'Música'; // Variable para la categoría actual
 
-        $featuredEvents = \App\Models\Evento::where('category', $categoryName)
-            ->where('isPublished', 1)
-            ->where('isFeatured', 1)
-            ->orderBy('startDate', 'desc')
-            ->take(4)
-            ->get();
+        $featEventos = \App\Models\Evento::where('category', $categoryName)
+            ->where('isPublished', 1)->where('isFeatured', 1)->get();
+        $featNovedades = \App\Models\Novedad::where('category', $categoryName)
+            ->where('isPublished', 1)->where('isFeatured', 1)->get();
+        $featuredEvents = $featEventos->merge($featNovedades)
+            ->sortByDesc(fn($i) => $i->created_at ?? $i->published_at)
+            ->take(12)->values();
 
         $latestEvents = \App\Models\Evento::where('category', $categoryName)
             ->when($sub, fn($q) => $q->where('subCategory', $sub))
