@@ -1,0 +1,23 @@
+--- routes/web.php
++++ routes/web.php
+@@ -5,6 +5,7 @@
+ use App\Http\Controllers\ArtistasController;
+ use App\Http\Controllers\EspaciosController;
+ use App\Http\Controllers\CiclosController;
++use App\Http\Controllers\Dashboard\EventoController;
+ use Illuminate\Support\Facades\Route;
+ use App\Http\Controllers\ArteController;
+ use App\Http\Controllers\MusicaController;
+@@ -52,10 +53,11 @@
+     Route::get("ferias", [LiteraturaController::class, "ferias"])->name("ferias");
+ });
+ 
+ Route::get("/dashboard", function () {
+-    return view("dashboard");
++    return redirect()->route('dashboard.eventos.index');
+ })->middleware(["auth", "verified"])->name("dashboard");
+ 
+ Route::middleware("auth")->group(function () {
++    Route::resource('/dashboard/eventos', EventoController::class)->names('dashboard.eventos');
+     Route::get('/bamarte', [BAMARTEController::class, 'index'])->name('bamarte');
+     Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
