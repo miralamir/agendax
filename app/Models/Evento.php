@@ -24,4 +24,9 @@ class Evento extends Model
         'isPublished' => 'boolean',
         'isFeatured' => 'boolean',
     ];
+
+    public function funciones()
+    {
+        return $this->hasMany(EventoFuncion::class, 'evento_id')->orderBy('fecha')->orderBy('hora');
+    }
 }

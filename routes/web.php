@@ -20,7 +20,9 @@ use App\Http\Controllers\Dashboard\CreadorController as DashCreadorController; /
 
 Route::get("/", function () {
     // Aquí pasamos los eventos destacados y todos los eventos para el mapa en la Home
-    $featuredEvents = \App\Models\Evento::where('isPublished', 1)->where('isFeatured', 1)->orderBy('startDate', 'desc')->take(8)->get();
+    $featEventos = \App\Models\Evento::where('isPublished', 1)->where('isFeatured', 1)->orderBy('updated_at', 'desc')->get();
+    $featNovedades = \App\Models\Novedad::where('isPublished', 1)->where('isFeatured', 1)->orderBy('updated_at', 'desc')->get();
+    $featuredEvents = $featEventos->merge($featNovedades)->sortByDesc('updated_at')->take(8)->values();
     $allEvents = \App\Models\Evento::where('isPublished', 1)->get();
     
     // Últimos items por categoría para los tabs

@@ -233,8 +233,8 @@ class NovedadController extends Controller
             Storage::delete($novedad->pdf);
         }
         // También borrar imágenes de la galería si se gestionan individualmente y son paths de storage
-        $galleryImages = json_decode($novedad->gallery, true);
-        foreach ($galleryImages as $img) {
+        $galleryImages = is_array($novedad->gallery) ? $novedad->gallery : json_decode($novedad->gallery ?? '[]', true);
+        foreach (($galleryImages ?: []) as $img) {
             // Asumimos que si no es una URL http/https, es un path de storage
             if (!Str::startsWith($img, ['http://', 'https://'])) {
                  Storage::delete($img);

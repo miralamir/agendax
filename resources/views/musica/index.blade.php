@@ -42,9 +42,9 @@
                         <div class="swiper carousel-musica rounded-lg overflow-hidden relative w-full">
                             <div class="swiper-wrapper">
                                 @foreach($featuredEvents as $item)
-                                <div class="swiper-slide h-auto">
-                                    <a href="{{ $linkDe($item) }}" class="block h-full relative">
-                                        <img src="{{ $imgDe($item) }}" alt="{{ $item->title }}" class="w-full h-full object-cover" style="min-height: 28rem;">
+                                <div class="swiper-slide">
+                                    <a href="{{ $linkDe($item) }}" class="block relative h-[480px]">
+                                        <img src="{{ $imgDe($item) }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10"></div>
                                         <div class="absolute bottom-0 left-0 p-8 text-white">
                                             <span class="text-sm font-bold uppercase tracking-wider" style="color: #fff; background: var(--color-musica); padding: 3px 10px; border-radius: 9999px; display: inline-block;">{{ $item->category }}@if($item->subCategory) &middot; {{ $item->subCategory }}@endif</span>

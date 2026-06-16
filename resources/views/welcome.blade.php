@@ -77,9 +77,9 @@
                             <div class="swiper-wrapper">
                                 <!-- Slides -->
                                 @foreach($featuredEvents->take(4) as $event) {{-- Tomamos los primeros 4 para el carrusel --}}
-                                <div class="swiper-slide h-auto">
-                                    <a href="{{ route('evento.show', $event->id) }}" class="block h-full">
-                                        <img src="{{ $event->mainImage ? Storage::url($event->mainImage) : ($event->mainImageUrl ?: '/img/placeholder.jpg') }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
+                                <div class="swiper-slide">
+                                    <a href="{{ $event instanceof \App\Models\Evento ? route('evento.show', $event->id) : route('novedades.show', $event->slug) }}" class="block relative h-[520px]">
+                                        <img src="{{ $event instanceof \App\Models\Evento ? ($event->mainImage ? Storage::url($event->mainImage) : ($event->mainImageUrl ?: '/img/placeholder.jpg')) : ($event->image ? Storage::url($event->image) : '/img/placeholder.jpg') }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                         <div class="absolute bottom-0 left-0 p-8 text-white">
                                             <span class="text-sm font-bold uppercase tracking-wider" style="color: var(--color-{{ strtolower(str_replace(' ', '', $event->category ?? '')) }});">{{ $event->category ?? 'Sin categoría' }}</span>
@@ -100,9 +100,9 @@
                     <div class="hidden sm:flex">
                         <div class="flex flex-col justify-between gap-4 w-full">
                             @foreach($featuredEvents->skip(4)->take(4) as $event) {{-- Tomamos los siguientes 4 --}}
-                            <a href="{{ route('evento.show', $event->id) }}" class="flex gap-3 p-3 border border-[var(--border-color)] rounded-lg bg-white hover:bg-gray-50 transition">
+                            <a href="{{ $event instanceof \App\Models\Evento ? route('evento.show', $event->id) : route('novedades.show', $event->slug) }}" class="flex gap-3 p-3 border border-[var(--border-color)] rounded-lg bg-white hover:bg-gray-50 transition">
                                 <div class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0" style="background:#f3f3f3">
-                                    <img src="{{ $event->mainImage ? Storage::url($event->mainImage) : ($event->mainImageUrl ?: '/img/placeholder.jpg') }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
+                                    <img src="{{ $event instanceof \App\Models\Evento ? ($event->mainImage ? Storage::url($event->mainImage) : ($event->mainImageUrl ?: '/img/placeholder.jpg')) : ($event->image ? Storage::url($event->image) : '/img/placeholder.jpg') }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <span class="text-xs font-bold uppercase" style="color: var(--color-{{ strtolower(str_replace(' ', '', $event->category ?? '')) }});">{{ $event->category ?? 'Sin categoría' }}</span>

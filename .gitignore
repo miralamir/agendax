@@ -23,3 +23,8 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 storage_public
+
+# Backups y temporales
+.git-corrupto-backup/
+*.sync
+memory/
