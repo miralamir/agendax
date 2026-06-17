@@ -78,7 +78,7 @@
             @endif
             <!-- Cuerpo del Artículo -->
             <div class="prose prose-lg max-w-none mb-12 text-gray-800">
-                {!! nl2br(e($novedad->body)) !!}
+                {!! \App\Helpers\TextHelper::autoLink($novedad->body) !!}
             </div>
 
             <!-- Videos Embebidos -->

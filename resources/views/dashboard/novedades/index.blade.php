@@ -89,6 +89,7 @@
                         <th class="px-4 py-3 text-left dashboard-table-header"><a href="{{ $orden('category') }}">Categoría{{ $flecha('category') }}</a></th>
                         <th class="px-4 py-3 text-left dashboard-table-header">Estado</th>
                         <th class="px-4 py-3 text-left dashboard-table-header"><a href="{{ $orden('published_at') }}">Publicada{{ $flecha('published_at') }}</a></th>
+                        <th class="px-4 py-3 text-center dashboard-table-header"><a href="{{ $orden('vistas') }}">Vistas{{ $flecha('vistas') }}</a></th>
                         <th class="px-4 py-3 text-right dashboard-table-header">Acciones</th>
                     </tr>
                 </thead>
@@ -115,6 +116,7 @@
                                 </form>
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">{{ $novedad->published_at ? $novedad->published_at->format('d/m/Y') : '-' }}</td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">{{ number_format($novedad->vistas) }}</td>
                             <td class="px-4 py-3 text-right text-sm font-medium whitespace-nowrap">
                                 <a href="{{ route('dashboard.novedades.edit', $novedad) }}" class="text-blue-600 hover:text-blue-900 mr-3">Editar</a>
                                 <form action="{{ route('dashboard.novedades.destroy', $novedad) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Seguro que deseas eliminar esta novedad?');">
@@ -124,7 +126,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No se encontraron novedades.</td></tr>
+                        <tr><td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">No se encontraron novedades.</td></tr>
                     @endforelse
                 </tbody>
             </table>

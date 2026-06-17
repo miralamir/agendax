@@ -108,7 +108,7 @@
     {{-- DESCRIPCIÓN --}}
     @if($evento->description)
     <div class="mb-10 prose prose-lg max-w-none text-gray-700 leading-relaxed">
-        {!! nl2br(e($evento->description)) !!}
+        {!! \App\Helpers\TextHelper::autoLink($evento->description) !!}
     </div>
     @endif
 
@@ -193,7 +193,7 @@
                         <a href="{{ route('creador.show', \Illuminate\Support\Str::slug($bio['nombre'])) }}" class="font-bold text-gray-900 hover:underline">{{ $bio['nombre'] }}</a>
                         @if(!empty($bio['rol']))<span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="background:{{ $catLight }};color:{{ $catColor }}">{{ $bio['rol'] }}</span>@endif
                     </div>
-                    @if(!empty($bio['bio']))<p class="text-sm text-gray-600 leading-relaxed">{!! nl2br(e($bio['bio'])) !!}</p>@endif
+                    @if(!empty($bio['bio']))<p class="text-sm text-gray-600 leading-relaxed">{!! \App\Helpers\TextHelper::autoLink($bio['bio']) !!}</p>@endif
                 </div>
             </div>
             @endif
