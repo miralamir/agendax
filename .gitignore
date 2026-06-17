@@ -28,3 +28,9 @@ storage_public
 .git-corrupto-backup/
 *.sync
 memory/
+
+# Sortable descartado / basura
+js/
+public/js/
+resources/views/partials/sortable-inline.blade.php
+isPublished

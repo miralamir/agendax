@@ -127,7 +127,11 @@
     <div class="col-span-1 md:col-span-2 mt-4">
         <div class="flex items-center justify-between mb-3">
             <label class="dashboard-label">Galería de Imágenes</label>
-            <button type="button" onclick="agregarImagenGaleria()" class="dashboard-button-outline text-sm">+ Agregar imagen</button>
+            <div class="flex items-center gap-2">
+                <input type="file" id="galeriaMultiInput" accept="image/*" multiple class="hidden" onchange="cargarVariasImagenes(this)">
+                <button type="button" onclick="document.getElementById('galeriaMultiInput').click()" class="dashboard-button-outline text-sm">⬆ Subir varias</button>
+                <button type="button" onclick="agregarImagenGaleria()" class="dashboard-button-outline text-sm">+ Agregar imagen</button>
+            </div>
         </div>
         <div id="galeria-container" class="space-y-3">
             @php $galeriaItems = is_array($evento->gallery) ? $evento->gallery : []; @endphp
@@ -137,7 +141,7 @@
                 $gcap = is_array($gitem) ? ($gitem["caption"] ?? "") : "";
             @endphp
             <div class="galeria-item border border-gray-200 rounded-lg p-3 bg-gray-50">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
                     <div>
                         <p class="text-xs text-gray-400 mb-1">Subir archivo</p>
                         <input type="file" name="galleryFiles[{{ $gi }}]" accept="image/*" class="block w-full dashboard-input p-1 text-xs" onchange="previewGaleriaItem(this, 'gal-prev-{{ $gi }}')">
@@ -153,7 +157,11 @@
                         <textarea name="gallery[{{ $gi }}][caption]" rows="3" placeholder="Título, artista, año, técnica..." class="block w-full dashboard-input text-xs">{{ $gcap }}</textarea>
                     </div>
                 </div>
-                <div class="flex justify-end">
+                <div class="flex justify-between items-center">
+                    <div class="flex gap-1">
+                        <button type="button" onclick="moverGaleriaItem(this,-1)" title="Subir" class="px-2 py-1 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded text-sm">▲</button>
+                        <button type="button" onclick="moverGaleriaItem(this,1)" title="Bajar" class="px-2 py-1 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded text-sm">▼</button>
+                    </div>
                     <button type="button" onclick="this.closest('.galeria-item').remove()" class="text-red-500 text-xs hover:text-red-700">× Eliminar</button>
                 </div>
             </div>
@@ -521,12 +529,62 @@ function agregarImagenGaleria() {
                 <textarea name="gallery[${i}][caption]" rows="3" placeholder="Titulo, artista, año, tecnica..." class="block w-full dashboard-input text-xs"></textarea>
             </div>
         </div>
-        <div class="flex justify-end">
+        <div class="flex justify-between items-center">
+            <div class="flex gap-1">
+                <button type="button" onclick="moverGaleriaItem(this,-1)" title="Subir" class="px-2 py-1 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded text-sm">&#9650;</button>
+                <button type="button" onclick="moverGaleriaItem(this,1)" title="Bajar" class="px-2 py-1 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded text-sm">&#9660;</button>
+            </div>
             <button type="button" onclick="this.closest('.galeria-item').remove()" class="text-red-500 text-xs hover:text-red-700">x Eliminar</button>
         </div>
     </div>`;
     document.getElementById("galeria-container").insertAdjacentHTML("beforeend", html);
 }
+function cargarVariasImagenes(inputMultiple) {
+    const archivos = Array.from(inputMultiple.files || []);
+    archivos.forEach(file => {
+        agregarImagenGaleria();
+        const cont = document.getElementById("galeria-container");
+        const item = cont.lastElementChild;
+        const fileInput = item.querySelector('input[type=file]');
+        const prevImg = item.querySelector('img');
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+        const reader = new FileReader();
+        reader.onload = e => { if (prevImg) { prevImg.src = e.target.result; prevImg.classList.remove("hidden"); } };
+        reader.readAsDataURL(file);
+    });
+    inputMultiple.value = "";
+}
+
+function moverGaleriaItem(boton, direccion) {
+    const item = boton.closest(".galeria-item");
+    const cont = document.getElementById("galeria-container");
+    if (!item || !cont) return;
+    if (direccion === -1 && item.previousElementSibling) {
+        cont.insertBefore(item, item.previousElementSibling);
+    } else if (direccion === 1 && item.nextElementSibling) {
+        cont.insertBefore(item.nextElementSibling, item);
+    }
+}
+
+// Al enviar el form, re-numerar los campos de galeria segun el orden visual
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.querySelector("form");
+    if (!form) return;
+    form.addEventListener("submit", function() {
+        const items = document.querySelectorAll("#galeria-container .galeria-item");
+        items.forEach((item, idx) => {
+            const fileInput = item.querySelector('input[type=file]');
+            const urlInput = item.querySelector('input[type=text][name^="gallery"]');
+            const captionInput = item.querySelector('textarea[name^="gallery"]');
+            if (fileInput) fileInput.name = "galleryFiles[" + idx + "]";
+            if (urlInput) urlInput.name = "gallery[" + idx + "][url]";
+            if (captionInput) captionInput.name = "gallery[" + idx + "][caption]";
+        });
+    });
+});
+
 function previewGaleriaItem(input, previewId) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -628,4 +686,6 @@ function funcionesProgramadas(reglaInicial) {
         }
     }
 }
+
+
 </script>

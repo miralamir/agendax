@@ -89,6 +89,7 @@
                         <th class="px-4 py-3 text-left dashboard-table-header"><a href="{{ $orden('category') }}">Categoría{{ $flecha('category') }}</a></th>
                         <th class="px-4 py-3 text-left dashboard-table-header"><a href="{{ $orden('startDate') }}">Fecha{{ $flecha('startDate') }}</a></th>
                         <th class="px-4 py-3 text-left dashboard-table-header">Lugar</th>
+                        <th class="px-4 py-3 text-center dashboard-table-header"><a href="{{ $orden('vistas') }}">Vistas{{ $flecha('vistas') }}</a></th>
                         <th class="px-4 py-3 text-left dashboard-table-header">Estado</th>
                         <th class="px-4 py-3 text-right dashboard-table-header">Acciones</th>
                     </tr>
@@ -111,6 +112,7 @@
                                 {{ $f ? \Carbon\Carbon::parse($f)->format('d/m/Y') : '-' }}
                             </td>
                             <td class="px-4 py-3"><span class="block truncate text-sm text-gray-700 max-w-[160px]">{{ $evento->locationName ?: '-' }}</span></td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">{{ number_format($evento->vistas) }}</td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <form action="{{ route('dashboard.eventos.toggle', [$evento, 'isPublished']) }}" method="POST" class="inline">
                                     @csrf @method('PATCH')
@@ -132,7 +134,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">No se encontraron eventos.</td></tr>
+                        <tr><td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500">No se encontraron eventos.</td></tr>
                     @endforelse
                 </tbody>
             </table>

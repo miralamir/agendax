@@ -9,6 +9,7 @@ class EventoController extends Controller
 {
     public function show(Evento $event)
     {
+        $event->increment('vistas');
         return view('evento.show', ['evento' => $event]);
     }
 
