@@ -23,7 +23,11 @@ Route::get("/", function () {
     $featEventos = \App\Models\Evento::where('isPublished', 1)->where('isFeatured', 1)->orderBy('updated_at', 'desc')->get();
     $featNovedades = \App\Models\Novedad::where('isPublished', 1)->where('isFeatured', 1)->orderBy('updated_at', 'desc')->get();
     $featuredEvents = $featEventos->merge($featNovedades)->sortByDesc('updated_at')->take(8)->values();
-    $allEvents = \App\Models\Evento::where('isPublished', 1)->get();
+    $allEvents = \App\Models\Evento::where('isPublished', 1)->with('funciones')->get()->map(function($e) {
+        $arr = $e->toArray();
+        $arr['fechasFuncion'] = $e->funciones->pluck('fecha')->map(fn($f) => $f->format('Y-m-d'))->values();
+        return $arr;
+    });
     
     // Últimos items por categoría para los tabs
     $categories = [

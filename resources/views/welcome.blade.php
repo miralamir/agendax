@@ -292,6 +292,7 @@ $tabCategories = [
             marker.eventTitle = event.title || '';
             marker.eventLocation = event.locationName || '';
             marker.fechaFiltro = event.inaugurationDate || event.singleDate || null;
+            marker.fechasFuncion = Array.isArray(event.fechasFuncion) ? event.fechasFuncion : [];
             const popupContent = '<div style="font-family:Lato,sans-serif;min-width:180px">'
                 + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:' + color + ';margin-bottom:4px">' + (event.category || '') + '</div>'
                 + '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + event.title + '</div>'
@@ -337,13 +338,19 @@ $tabCategories = [
                 let okFecha = true;
                 if (filtroFecha !== 'todos') {
                     okFecha = false;
-                    if (marker.fechaFiltro) {
-                        const fStr = diaBA(new Date(marker.fechaFiltro));
-                        if (filtroFecha === 'hoy') okFecha = (fStr === hoyStr);
-                        else if (filtroFecha === 'maniana') okFecha = (fStr === mananaStr);
-                        else if (filtroFecha === 'semana') {
-                            okFecha = (fStr >= hoyStr && fStr <= finSemanaStr);
-                        }
+                    // Funcion auxiliar: evalua si un string de fecha YYYY-MM-DD pasa el filtro
+                    const pasaFiltro = (fStr) => {
+                        if (filtroFecha === 'hoy') return (fStr === hoyStr);
+                        if (filtroFecha === 'maniana') return (fStr === mananaStr);
+                        if (filtroFecha === 'semana') return (fStr >= hoyStr && fStr <= finSemanaStr);
+                        return false;
+                    };
+                    // Si el evento tiene funciones programadas, evaluamos contra todas sus fechas
+                    if (marker.fechasFuncion && marker.fechasFuncion.length) {
+                        okFecha = marker.fechasFuncion.some(f => pasaFiltro(f));
+                    } else if (marker.fechaFiltro) {
+                        // Si no, usamos la fecha unica del evento (inauguracion / dia unico)
+                        okFecha = pasaFiltro(diaBA(new Date(marker.fechaFiltro)));
                     }
                 }
                 if (okCat && okFecha) { marker.addTo(map); } else { marker.remove(); }

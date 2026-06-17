@@ -78,7 +78,9 @@
             @elseif($evento->singleDate)
             <p>{{ ucfirst($evento->singleDate->locale('es')->isoFormat('dddd D [de] MMMM, HH:mm')) }} hs</p>
             @endif
-            @if($evento->recurringSchedule)
+            @if($evento->horarioResumido())
+            <p>Funciones: {{ $evento->horarioResumido() }}</p>
+            @elseif($evento->recurringSchedule)
             <p>Funciones: {{ $evento->recurringSchedule }}</p>
             @endif
             @if($evento->inaugurationDate)

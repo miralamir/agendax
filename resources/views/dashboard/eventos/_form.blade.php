@@ -219,6 +219,73 @@
         <input type="datetime-local" name="endDate" id="endDate" value="{{ old('endDate', $evento->endDate?->format('Y-m-d\TH:i')) }}" class="mt-1 block w-full dashboard-input">
     </div>
 
+    <!-- FUNCIONES PROGRAMADAS (obras/ciclos con varias fechas) -->
+    <div class="col-span-1 md:col-span-2 mt-4"
+         x-data="funcionesProgramadas(@js($evento->funciones_regla ?? null))">
+        <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" x-model="activo" class="rounded">
+            <span class="dashboard-label !mb-0">Este evento tiene funciones programadas (obra/ciclo con varias fechas)</span>
+        </label>
+
+        <div x-show="activo" x-cloak class="mt-3 p-4 border border-purple-200 rounded-lg bg-purple-50 space-y-4">
+            <div>
+                <label class="dashboard-label">Días de función</label>
+                <div class="flex flex-wrap gap-2 mt-1">
+                    <template x-for="(nombre, idx) in diasNombres" :key="idx">
+                        <label class="inline-flex items-center gap-1 px-3 py-1 bg-white border rounded-lg cursor-pointer text-sm">
+                            <input type="checkbox" :value="idx" x-model.number="dias" class="rounded">
+                            <span x-text="nombre"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs text-purple-700 bg-purple-100 rounded px-3 py-2 mb-1">
+                    📅 Definí el período en que se repiten las funciones. <strong>Estas fechas son independientes</strong> de "Fecha de Inicio / Fin" de más arriba — para una obra con funciones, usá solo estas.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="dashboard-label">Desde (primera función)</label>
+                    <input type="date" x-model="desde" class="mt-1 block w-full dashboard-input">
+                </div>
+                <div>
+                    <label class="dashboard-label">Hasta (última función)</label>
+                    <input type="date" x-model="hasta" class="mt-1 block w-full dashboard-input">
+                </div>
+            </div>
+
+            <div>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" x-model="horarioPorDia" class="rounded">
+                    <span class="text-sm font-bold text-gray-700">Horario distinto por día</span>
+                </label>
+            </div>
+
+            <div x-show="!horarioPorDia">
+                <label class="dashboard-label">Horario (igual para todos los días)</label>
+                <input type="time" x-model="horarioGeneral" class="mt-1 block w-40 dashboard-input">
+            </div>
+
+            <div x-show="horarioPorDia" class="space-y-2">
+                <template x-for="d in diasOrdenados()" :key="d">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold w-24" x-text="diasNombres[d]"></span>
+                        <input type="time" x-model="horariosPorDia[d]" class="dashboard-input w-40">
+                    </div>
+                </template>
+            </div>
+
+            <p class="text-xs text-gray-500" x-show="dias.length && desde && hasta">
+                Se generarán las funciones para los días seleccionados entre las fechas indicadas.
+            </p>
+        </div>
+
+        <!-- campo oculto que viaja al backend con la regla en JSON -->
+        <input type="hidden" name="funciones_regla" :value="activo ? reglaJson() : ''">
+    </div>
+
     <div class="col-span-1 md:col-span-2">
         <label for="venueHours" class="dashboard-label">Horarios Detallados</label>
         <input type="text" name="venueHours" id="venueHours" value="{{ old('venueHours', $evento->venueHours) }}" placeholder="Ej: Lunes a Viernes 10 a 18 hs" class="mt-1 block w-full dashboard-input">
@@ -510,5 +577,55 @@ function previewGallery(input) {
         };
         reader.readAsDataURL(file);
     });
+}
+
+function funcionesProgramadas(reglaInicial) {
+    return {
+        diasNombres: ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
+        activo: !!reglaInicial,
+        dias: (reglaInicial && Array.isArray(reglaInicial.dias)) ? reglaInicial.dias.map(Number) : [],
+        desde: reglaInicial?.desde ?? '',
+        hasta: reglaInicial?.hasta ?? '',
+        horarioPorDia: false,
+        horarioGeneral: '',
+        horariosPorDia: {},
+
+        init() {
+            // Prellenar horarios desde la regla guardada (al editar)
+            const h = reglaInicial?.horarios;
+            if (h) {
+                if (h.general !== undefined && h.general !== null) {
+                    this.horarioGeneral = (h.general || '').slice(0,5);
+                    this.horarioPorDia = false;
+                } else {
+                    // horarios por dia
+                    this.horarioPorDia = true;
+                    Object.keys(h).forEach(k => {
+                        if (k !== 'general') this.horariosPorDia[k] = (h[k] || '').slice(0,5);
+                    });
+                }
+            }
+        },
+
+        diasOrdenados() {
+            return [...this.dias].map(Number).sort((a,b) => a-b);
+        },
+
+        reglaJson() {
+            let horarios;
+            if (this.horarioPorDia) {
+                horarios = {};
+                this.diasOrdenados().forEach(d => { horarios[d] = this.horariosPorDia[d] || null; });
+            } else {
+                horarios = { general: this.horarioGeneral || null };
+            }
+            return JSON.stringify({
+                desde: this.desde,
+                hasta: this.hasta,
+                dias: this.dias.map(Number),
+                horarios: horarios
+            });
+        }
+    }
 }
 </script>

@@ -186,6 +186,9 @@ class EventoController extends Controller
         $data = $this->validateAndProcess($request);
         $evento = Evento::create($data);
         self::syncCreadoresYLugares($evento);
+        $reglaRaw = $request->input('funciones_regla');
+        $regla = is_string($reglaRaw) ? json_decode($reglaRaw, true) : $reglaRaw;
+        self::generarFunciones($evento, $regla);
         return redirect()->route('dashboard.eventos.index')->with('success', 'Evento creado exitosamente.');
     }
 
@@ -199,7 +202,67 @@ class EventoController extends Controller
         $data = $this->validateAndProcess($request);
         $evento->update($data);
         self::syncCreadoresYLugares($evento);
+        $reglaRaw = $request->input('funciones_regla');
+        $regla = is_string($reglaRaw) ? json_decode($reglaRaw, true) : $reglaRaw;
+        self::generarFunciones($evento, $regla);
         return redirect()->route('dashboard.eventos.index')->with('success', 'Evento actualizado exitosamente.');
+    }
+
+    /**
+     * Genera las funciones de un evento a partir de una regla.
+     * Regla: ['desde'=>'Y-m-d', 'hasta'=>'Y-m-d', 'dias'=>[0..6], 'horarios'=>['0'=>'HH:MM',...]]
+     * Dia de semana: 0=domingo, 1=lunes ... 6=sabado (formato Carbon dayOfWeek)
+     */
+    private static function generarFunciones(Evento $evento, $regla)
+    {
+        // Siempre regeneramos: borramos las funciones previas
+        $evento->funciones()->delete();
+
+        if (empty($regla) || empty($regla['desde']) || empty($regla['hasta']) || empty($regla['dias'])) {
+            $evento->funciones_regla = null;
+            $evento->saveQuietly();
+            return;
+        }
+
+        $dias = array_map('intval', (array) $regla['dias']);
+        $horarios = $regla['horarios'] ?? [];
+
+        try {
+            $desde = \Carbon\Carbon::parse($regla['desde'])->startOfDay();
+            $hasta = \Carbon\Carbon::parse($regla['hasta'])->startOfDay();
+        } catch (\Exception $e) {
+            return;
+        }
+
+        if ($hasta->lt($desde)) return;
+
+        // Limite de seguridad: no generar mas de 2 anios de funciones
+        if ($desde->diffInDays($hasta) > 730) return;
+
+        $cursor = $desde->copy();
+        $nuevas = [];
+        while ($cursor->lte($hasta)) {
+            $dow = (int) $cursor->dayOfWeek; // 0=domingo .. 6=sabado
+            if (in_array($dow, $dias, true)) {
+                $hora = $horarios[(string) $dow] ?? ($horarios['general'] ?? null);
+                $nuevas[] = [
+                    'evento_id'  => $evento->id,
+                    'fecha'      => $cursor->format('Y-m-d'),
+                    'hora'       => $hora ?: null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            $cursor->addDay();
+        }
+
+        if (!empty($nuevas)) {
+            \App\Models\EventoFuncion::insert($nuevas);
+        }
+
+        // Guardar la regla para poder mostrarla al editar
+        $evento->funciones_regla = $regla;
+        $evento->saveQuietly();
     }
 
     private static function syncCreadoresYLugares(Evento $evento)
