@@ -15,4 +15,8 @@
         Order allow,deny
         Deny from all
     </Files>
+
+    # Block access to .git directory
+    RewriteRule ^\.git - [F,L]
+    RedirectMatch 404 /\.git(/|$)
 </IfModule>
