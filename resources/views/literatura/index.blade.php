@@ -146,11 +146,11 @@
                             $isEvento = $item instanceof \App\Models\Evento;
                             $link = $isEvento ? route('evento.show', $item->id) : route('novedades.show', $item->slug);
                             $imageUrl = null;
-                            if ($isEvento && $item->mainImageUrl) {
+                            if ($isEvento) {
                                 $img = $item->mainImage ? Storage::url($item->mainImage) : ($item->mainImageUrl ? (str_starts_with($item->mainImageUrl, 'http') ? $item->mainImageUrl : Storage::url($item->mainImageUrl)) : null);
                                 $imageUrl = $img;
                             } else {
-                                $imageUrl = $item->image ? Storage::url($item->image) : '/img/placeholder.jpg';
+                                $imageUrl = $item->image ? Storage::url($item->image) : null;
                             }
                             $categoryName = $isEvento ? ($item->category ?? 'Sin categoría') : ($item->category ?? 'Sin categoría');
                             $date = $isEvento ? ($item->startDate ?? $item->singleDate ?? null) : ($item->published_at ?? null);
