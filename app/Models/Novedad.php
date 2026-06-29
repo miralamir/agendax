@@ -17,6 +17,7 @@ class Novedad extends Model
         'slug',
         'excerpt',
         'body',
+        'bios',
         'image',
         'gallery',
         'videos',
@@ -34,6 +35,7 @@ class Novedad extends Model
     protected $casts = [
         'gallery' => 'array',
         'videos' => 'array',
+        'bios' => 'array',
         'isPublished' => 'boolean',
         'isFeatured' => 'boolean',
         'published_at' => 'datetime',

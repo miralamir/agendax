@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Novedad;
+use App\Models\Creador;
 use App\Helpers\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -93,11 +94,18 @@ class NovedadController extends Controller
             'published_at' => 'nullable|date',
             'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string|max:500',
+            'bios' => 'nullable|array',
+            'bios.*.nombre' => 'nullable|string',
+            'bios.*.rol' => 'nullable|string',
+            'bios.*.bio' => 'nullable|string',
+            'bios.*.foto' => 'nullable|string',
         ]);
 
-        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured']);
+        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured', 'bios', 'bioFotos']);
 
         $data['slug'] = Str::slug($request->title);
+
+        $data['bios'] = $this->procesarBios($request);
 
         if ($request->hasFile('image')) {
             $data['image'] = ImageOptimizer::store($request->file('image'), 'novedades/images');
@@ -107,13 +115,47 @@ class NovedadController extends Controller
             $data['pdf'] = $request->file('pdf')->store('novedades/pdfs', 'public');
         }
 
-        $data['gallery'] = json_encode(array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', ''))));
-        $data['videos'] = json_encode(array_filter($request->input('videos', [])));
+        // Galería con estructura url+caption (igual que update); el cast 'array' del modelo hace el único json_encode
+        $rawGallery = $request->input('gallery', []);
+        $galleryItems = [];
+        if (is_array($rawGallery)) {
+            foreach ($rawGallery as $item) {
+                if (is_array($item)) {
+                    $url = trim($item['url'] ?? '');
+                    $caption = trim($item['caption'] ?? '');
+                    if ($url) $galleryItems[] = ['url' => $url, 'caption' => $caption];
+                } elseif (is_string($item) && trim($item)) {
+                    $galleryItems[] = ['url' => trim($item), 'caption' => ''];
+                }
+            }
+        }
+        // Archivos subidos desde el form
+        if ($request->hasFile('galleryFiles')) {
+            foreach ($request->file('galleryFiles') as $idx => $f) {
+                if ($f && $f->isValid()) {
+                    $path = ImageOptimizer::store($f, 'novedades/gallery');
+                    if (isset($galleryItems[$idx])) {
+                        $galleryItems[$idx]['url'] = $path;
+                    } else {
+                        $galleryItems[] = ['url' => $path, 'caption' => ''];
+                    }
+                }
+            }
+        }
+        $data['gallery'] = array_values($galleryItems);
+
+        $newVideos = array_filter($request->input('videos', []));
+        $data['videos'] = empty($newVideos) ? [] : array_values($newVideos);
 
         $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
         $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
 
-        Novedad::create($data);
+        if ($data['isPublished'] && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
+        $novedad = Novedad::create($data);
+        $this->syncCreadores($novedad->bios ?? []);
 
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad creada exitosamente.');
     }
@@ -143,9 +185,14 @@ class NovedadController extends Controller
             'published_at' => 'nullable|date',
             'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string|max:500',
+            'bios' => 'nullable|array',
+            'bios.*.nombre' => 'nullable|string',
+            'bios.*.rol' => 'nullable|string',
+            'bios.*.bio' => 'nullable|string',
+            'bios.*.foto' => 'nullable|string',
         ]);
 
-        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured', '_method', '_token', 'clear_image', 'clear_pdf']);
+        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured', '_method', '_token', 'clear_image', 'clear_pdf', 'bios', 'bioFotos']);
 
         // Mantener el slug si no se cambia el título
         if ($request->has('title') && $request->title !== $novedad->title) {
@@ -213,12 +260,61 @@ class NovedadController extends Controller
         $newVideos = array_filter($request->input('videos', []));
         $data['videos'] = empty($newVideos) ? [] : array_values($newVideos);
 
+        $data['bios'] = $this->procesarBios($request);
+
         $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
         $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
 
+        if ($data['isPublished'] && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
         $novedad->update($data);
+        $this->syncCreadores($novedad->bios ?? []);
 
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad actualizada exitosamente.');
+    }
+
+    /**
+     * Procesa el array de bios del request: sube las fotos cargadas manualmente
+     * y descarta las filas sin nombre. Mismo esquema que eventos.
+     */
+    private function procesarBios(Request $request): array
+    {
+        $bios = $request->input('bios', []);
+        if (!is_array($bios)) $bios = [];
+
+        if ($request->hasFile('bioFotos')) {
+            foreach ($request->file('bioFotos') as $idx => $fotoFile) {
+                if ($fotoFile && isset($bios[$idx])) {
+                    $bios[$idx]['foto'] = ImageOptimizer::store($fotoFile, 'novedades/bios');
+                }
+            }
+        }
+
+        // Descartar filas sin nombre
+        $bios = array_values(array_filter($bios, fn($b) => !empty(trim($b['nombre'] ?? ''))));
+
+        return $bios;
+    }
+
+    /**
+     * Crea/actualiza los registros Creador a partir de los bios.
+     * Solo completa campos vacíos del creador para no pisar datos cargados desde eventos.
+     */
+    private function syncCreadores(array $bios): void
+    {
+        foreach ($bios as $bio) {
+            $nombre = trim($bio['nombre'] ?? '');
+            if (!$nombre) continue;
+            $slug = Str::slug($nombre);
+            $creador = Creador::firstOrNew(['slug' => $slug]);
+            $creador->nombre = $nombre;
+            if (!empty($bio['rol']) && !$creador->rol) $creador->rol = $bio['rol'];
+            if (!empty($bio['foto']) && !$creador->foto) $creador->foto = $bio['foto'];
+            if (!empty($bio['bio']) && !$creador->bio) $creador->bio = $bio['bio'];
+            $creador->save();
+        }
     }
 
     /**

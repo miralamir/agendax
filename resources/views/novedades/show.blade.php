@@ -111,6 +111,36 @@
                 </div>
             @endif
 
+            {{-- BIOGRAFÍAS / CREADORES --}}
+            @php $biosNov = $novedad->bios ?? []; @endphp
+            @if(collect($biosNov)->contains(fn($b) => !empty($b['nombre'])))
+            @php
+                $catColorNov = ['Artes Visuales'=>'#7B2D8B','Arte'=>'#7B2D8B','Música'=>'#1A3A7C','Teatro'=>'#8B1A2D','Cine'=>'#E67E22','Literatura'=>'#2E8B57'][$novedad->category] ?? '#555';
+            @endphp
+            <section class="mb-12">
+                <div class="space-y-6">
+                    @foreach($biosNov as $bio)
+                    @if(!empty($bio['nombre']))
+                    <div class="flex gap-5 items-start">
+                        @if(!empty($bio['foto']))
+                        <img src="{{ str_starts_with($bio['foto'], 'http') ? $bio['foto'] : Storage::url($bio['foto']) }}"
+                             alt="{{ $bio['nombre'] }}" class="w-16 h-16 rounded-full object-cover flex-shrink-0 border-2" style="border-color:{{ $catColorNov }}">
+                        @else
+                        <div class="w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center text-xl font-bold text-white" style="background:{{ $catColorNov }}">
+                            {{ strtoupper(substr($bio['nombre'], 0, 1)) }}
+                        </div>
+                        @endif
+                        <div class="flex-1">
+                            <a href="{{ route('creador.show', \Illuminate\Support\Str::slug($bio['nombre'])) }}" class="font-bold text-gray-900 hover:underline">{{ $bio['nombre'] }}</a>
+                            @if(!empty($bio['bio']))<p class="text-sm text-gray-600 leading-relaxed mt-1">{!! \App\Helpers\TextHelper::autoLink($bio['bio']) !!}</p>@endif
+                        </div>
+                    </div>
+                    @endif
+                    @endforeach
+                </div>
+            </section>
+            @endif
+
             <!-- PDF Adjunto -->
             @if ($novedad->pdf)
                 <div class="mb-12">
