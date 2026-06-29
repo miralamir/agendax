@@ -689,3 +689,21 @@ function funcionesProgramadas(reglaInicial) {
 
 
 </script>
+
+{{-- Confirmación al cancelar si hay cambios sin guardar --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('evento-form');
+    if (!form) return;
+    var dirty = false;
+    form.addEventListener('input', function () { dirty = true; });
+    form.addEventListener('change', function () { dirty = true; });
+    document.querySelectorAll('.btn-cancelar').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            if (dirty && !confirm('Hay cambios sin guardar. ¿Querés descartarlos?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>

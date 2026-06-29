@@ -85,13 +85,13 @@
                     <tr>
                         <th class="px-2 py-3"><input type="checkbox" id="checkTodos"></th>
                         <th class="px-3 py-3 text-left dashboard-table-header"><a href="{{ $orden('id') }}">ID{{ $flecha('id') }}</a></th>
-                        <th class="px-4 py-3 text-left dashboard-table-header"><a href="{{ $orden('title') }}">Título / Artista{{ $flecha('title') }}</a></th>
-                        <th class="px-4 py-3 text-left dashboard-table-header"><a href="{{ $orden('category') }}">Categoría{{ $flecha('category') }}</a></th>
-                        <th class="px-4 py-3 text-left dashboard-table-header"><a href="{{ $orden('startDate') }}">Fecha{{ $flecha('startDate') }}</a></th>
-                        <th class="px-4 py-3 text-left dashboard-table-header">Lugar</th>
-                        <th class="px-4 py-3 text-center dashboard-table-header"><a href="{{ $orden('vistas') }}">Vistas{{ $flecha('vistas') }}</a></th>
-                        <th class="px-4 py-3 text-left dashboard-table-header">Estado</th>
-                        <th class="px-4 py-3 text-right dashboard-table-header">Acciones</th>
+                        <th class="px-2 py-3 text-left dashboard-table-header"><a href="{{ $orden('title') }}">Título / Artista{{ $flecha('title') }}</a></th>
+                        <th class="px-2 py-3 text-left dashboard-table-header"><a href="{{ $orden('category') }}">Categoría{{ $flecha('category') }}</a></th>
+                        <th class="px-2 py-3 text-left dashboard-table-header"><a href="{{ $orden('startDate') }}">Fecha{{ $flecha('startDate') }}</a></th>
+                        <th class="px-2 py-3 text-left dashboard-table-header">Lugar</th>
+                        <th class="px-2 py-3 text-center dashboard-table-header"><a href="{{ $orden('vistas') }}">Vistas{{ $flecha('vistas') }}</a></th>
+                        <th class="px-2 py-3 text-left dashboard-table-header">Estado</th>
+                        <th class="px-2 py-3 text-right dashboard-table-header">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-[var(--border-color)]">
@@ -99,21 +99,21 @@
                         <tr class="dashboard-table-row">
                             <td class="px-2 py-3"><input type="checkbox" name="ids[]" value="{{ $evento->id }}" form="bulkForm" class="check-item"></td>
                             <td class="px-3 py-3 text-sm text-gray-500">{{ $evento->id }}</td>
-                            <td class="px-4 py-3">
-                                <span class="block truncate font-bold text-gray-900 max-w-xs">{{ $evento->title }}</span>
-                                <span class="block truncate text-sm text-gray-600 max-w-xs">{{ $evento->artist ?: '-' }}</span>
+                            <td class="px-2 py-3">
+                                <span class="block truncate font-bold text-gray-900 max-w-[180px]">{{ $evento->title }}</span>
+                                <span class="block truncate text-sm text-gray-600 max-w-[180px]">{{ $evento->artist ?: '-' }}</span>
                             </td>
-                            <td class="px-4 py-3">
+                            <td class="px-2 py-3">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full badge-{{ strtolower(str_replace(' ', '', $evento->category ?? '')) }}">{{ $evento->category ?: 'Sin categoría' }}</span>
                                 @if($evento->subCategory)<span class="block text-xs text-gray-500 mt-1">{{ $evento->subCategory }}</span>@endif
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                            <td class="px-2 py-3 text-sm text-gray-700 whitespace-nowrap">
                                 @php $f = $evento->startDate ?? $evento->singleDate; @endphp
                                 {{ $f ? \Carbon\Carbon::parse($f)->format('d/m/Y') : '-' }}
                             </td>
-                            <td class="px-4 py-3"><span class="block truncate text-sm text-gray-700 max-w-[160px]">{{ $evento->locationName ?: '-' }}</span></td>
-                            <td class="px-4 py-3 text-center text-sm text-gray-600">{{ number_format($evento->vistas) }}</td>
-                            <td class="px-4 py-3 whitespace-nowrap">
+                            <td class="px-2 py-3"><span class="block truncate text-sm text-gray-700 max-w-[120px]">{{ $evento->locationName ?: '-' }}</span></td>
+                            <td class="px-2 py-3 text-center text-sm text-gray-600">{{ number_format($evento->vistas) }}</td>
+                            <td class="px-2 py-3 whitespace-nowrap">
                                 <form action="{{ route('dashboard.eventos.toggle', [$evento, 'isPublished']) }}" method="POST" class="inline">
                                     @csrf @method('PATCH')
                                     <button type="submit" title="Clic para cambiar" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $evento->isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
@@ -125,7 +125,7 @@
                                     <button type="submit" title="Clic para cambiar" class="px-2 inline-flex text-sm leading-5 font-bold rounded-full {{ $evento->isFeatured ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-300' }}">{{ $evento->isFeatured ? '★' : '☆' }}</button>
                                 </form>
                             </td>
-                            <td class="px-4 py-3 text-right text-sm font-medium whitespace-nowrap">
+                            <td class="px-2 py-3 text-right text-sm font-medium whitespace-nowrap">
                                 <a href="{{ route('dashboard.eventos.edit', $evento) }}" class="text-blue-600 hover:text-blue-900 mr-3">Editar</a>
                                 <form action="{{ route('dashboard.eventos.destroy', $evento) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Seguro que deseas eliminar este evento?');">
                                     @csrf @method('DELETE')

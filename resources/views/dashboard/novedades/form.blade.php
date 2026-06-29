@@ -5,15 +5,16 @@
     $videosArray = old('videos', is_array($novedad->videos) ? $novedad->videos : json_decode($novedad->videos ?? '[]', true) ?? []);
 @endphp
 
-<form action="{{ isset($novedad->id) ? route('dashboard.novedades.update', $novedad->id) : route('dashboard.novedades.store') }}" method="POST" enctype="multipart/form-data">
+<form id="novedad-form" action="{{ isset($novedad->id) ? route('dashboard.novedades.update', $novedad->id) : route('dashboard.novedades.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     @if(isset($novedad->id))
         @method('PUT')
     @endif
 
-    <div class="mb-6 flex justify-end items-center bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-        <a href="{{ route('dashboard.novedades.index') }}" class="dashboard-button-outline mr-3">Cancelar</a>
-        <button type="submit" class="dashboard-button-primary">Guardar Novedad</button>
+    <div class="mb-6 flex justify-end items-center gap-2 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+        <a href="{{ route('dashboard.novedades.index') }}" class="dashboard-button-outline btn-cancelar">Cancelar</a>
+        <button type="submit" name="accion" value="save" class="dashboard-button-outline">Guardar</button>
+        <button type="submit" name="accion" value="save_close" class="dashboard-button-primary">Guardar y cerrar</button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -177,12 +178,22 @@
         </div>
 
         <div class="col-span-1 md:col-span-2">
-            <label for="pdf" class="dashboard-label">Archivo PDF Adjunto</label>
-            <input type="file" name="pdf" id="pdf" class="mt-1 block w-full dashboard-input p-1">
+            <label class="dashboard-label">PDF Adjunto</label>
+            <div class="mt-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <p class="text-xs text-gray-400 mb-1">Subir archivo</p>
+                    <input type="file" name="pdf" id="pdf" accept="application/pdf" class="block w-full dashboard-input p-1">
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 mb-1">O pegar URL</p>
+                    <input type="url" name="pdf_url" value="{{ old('pdf_url', (str_starts_with($novedad->pdf ?? '', 'http') ? $novedad->pdf : '')) }}" placeholder="https://..." class="block w-full dashboard-input">
+                </div>
+            </div>
             @if ($novedad->pdf)
-                <p class="text-sm text-gray-600 mt-2">PDF actual: <a href="{{ Storage::url($novedad->pdf) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($novedad->pdf) }}</a></p>
+                <p class="text-sm text-gray-600 mt-2">PDF actual: <a href="{{ str_starts_with($novedad->pdf, 'http') ? $novedad->pdf : Storage::url($novedad->pdf) }}" target="_blank" class="text-blue-600 hover:underline">{{ str_starts_with($novedad->pdf, 'http') ? $novedad->pdf : basename($novedad->pdf) }}</a></p>
             @endif
             @error('pdf') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            @error('pdf_url') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
         <!-- 3. CATEGORIZACIÓN -->
@@ -249,9 +260,10 @@
         </div>
     </div>
 
-    <div class="mt-8 flex justify-end">
-        <a href="{{ route('dashboard.novedades.index') }}" class="dashboard-button-outline mr-2">Cancelar</a>
-        <button type="submit" class="dashboard-button-primary">Guardar Novedad</button>
+    <div class="mt-8 flex justify-end gap-2">
+        <a href="{{ route('dashboard.novedades.index') }}" class="dashboard-button-outline btn-cancelar">Cancelar</a>
+        <button type="submit" name="accion" value="save" class="dashboard-button-outline">Guardar</button>
+        <button type="submit" name="accion" value="save_close" class="dashboard-button-primary">Guardar y cerrar</button>
     </div>
 </form>
 
@@ -439,5 +451,23 @@ function previewBioFoto(input, previewId) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+</script>
+
+{{-- Confirmación al cancelar si hay cambios sin guardar --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('novedad-form');
+    if (!form) return;
+    var dirty = false;
+    form.addEventListener('input', function () { dirty = true; });
+    form.addEventListener('change', function () { dirty = true; });
+    document.querySelectorAll('.btn-cancelar').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            if (dirty && !confirm('Hay cambios sin guardar. ¿Querés descartarlos?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
 </script>
 </x-dashboard-layout>

@@ -88,6 +88,7 @@ class NovedadController extends Controller
             'body' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'pdf' => 'nullable|mimes:pdf|max:10240',
+            'pdf_url' => 'nullable|url',
             'category' => 'required|string|max:255',
             'subCategory' => 'nullable|string|max:255',
             'author' => 'nullable|string|max:255',
@@ -101,7 +102,7 @@ class NovedadController extends Controller
             'bios.*.foto' => 'nullable|string',
         ]);
 
-        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured', 'bios', 'bioFotos']);
+        $data = $request->except(['image', 'pdf', 'pdf_url', 'gallery', 'videos', 'isPublished', 'isFeatured', 'bios', 'bioFotos']);
 
         $data['slug'] = Str::slug($request->title);
 
@@ -113,6 +114,8 @@ class NovedadController extends Controller
 
         if ($request->hasFile('pdf')) {
             $data['pdf'] = $request->file('pdf')->store('novedades/pdfs', 'public');
+        } elseif ($request->filled('pdf_url')) {
+            $data['pdf'] = trim($request->input('pdf_url'));
         }
 
         // Galería con estructura url+caption (igual que update); el cast 'array' del modelo hace el único json_encode
@@ -157,6 +160,9 @@ class NovedadController extends Controller
         $novedad = Novedad::create($data);
         $this->syncCreadores($novedad->bios ?? []);
 
+        if ($request->input('accion') === 'save') {
+            return redirect()->route('dashboard.novedades.edit', $novedad->id)->with('success', 'Novedad creada exitosamente.');
+        }
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad creada exitosamente.');
     }
 
@@ -179,6 +185,7 @@ class NovedadController extends Controller
             'body' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'pdf' => 'nullable|mimes:pdf|max:10240',
+            'pdf_url' => 'nullable|url',
             'category' => 'required|string|max:255',
             'subCategory' => 'nullable|string|max:255',
             'author' => 'nullable|string|max:255',
@@ -192,7 +199,7 @@ class NovedadController extends Controller
             'bios.*.foto' => 'nullable|string',
         ]);
 
-        $data = $request->except(['image', 'pdf', 'gallery', 'videos', 'isPublished', 'isFeatured', '_method', '_token', 'clear_image', 'clear_pdf', 'bios', 'bioFotos']);
+        $data = $request->except(['image', 'pdf', 'pdf_url', 'gallery', 'videos', 'isPublished', 'isFeatured', '_method', '_token', 'clear_image', 'clear_pdf', 'bios', 'bioFotos']);
 
         // Mantener el slug si no se cambia el título
         if ($request->has('title') && $request->title !== $novedad->title) {
@@ -216,12 +223,17 @@ class NovedadController extends Controller
 
         // Handle PDF
         if ($request->hasFile('pdf')) {
-            if ($novedad->pdf) {
+            if ($novedad->pdf && !str_starts_with($novedad->pdf, 'http')) {
                 Storage::delete($novedad->pdf);
             }
             $data['pdf'] = $request->file('pdf')->store('novedades/pdfs', 'public');
+        } elseif ($request->filled('pdf_url')) {
+            if ($novedad->pdf && !str_starts_with($novedad->pdf, 'http')) {
+                Storage::delete($novedad->pdf);
+            }
+            $data['pdf'] = trim($request->input('pdf_url'));
         } elseif ($request->input('clear_pdf')) {
-            if ($novedad->pdf) {
+            if ($novedad->pdf && !str_starts_with($novedad->pdf, 'http')) {
                 Storage::delete($novedad->pdf);
             }
             $data['pdf'] = null;
@@ -272,6 +284,9 @@ class NovedadController extends Controller
         $novedad->update($data);
         $this->syncCreadores($novedad->bios ?? []);
 
+        if ($request->input('accion') === 'save') {
+            return redirect()->route('dashboard.novedades.edit', $novedad->id)->with('success', 'Novedad actualizada exitosamente.');
+        }
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad actualizada exitosamente.');
     }
 
@@ -325,7 +340,7 @@ class NovedadController extends Controller
         if ($novedad->image) {
             Storage::delete($novedad->image);
         }
-        if ($novedad->pdf) {
+        if ($novedad->pdf && !str_starts_with($novedad->pdf, 'http')) {
             Storage::delete($novedad->pdf);
         }
         // También borrar imágenes de la galería si se gestionan individualmente y son paths de storage
