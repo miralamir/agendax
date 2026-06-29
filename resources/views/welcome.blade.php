@@ -167,18 +167,37 @@
             <x-banner posicion="home_post_mapa" />
         </div>
         <!-- 4. Últimas Novedades (Tabs) -->
-        <section class="pt-12 pb-16" x-data="{ activeTab: 'visuales' }">
+        <section class="pt-12 pb-16"
+            x-data="{
+                tabs: ['visuales','musica','teatro','cine','literatura'],
+                activeTab: 'visuales',
+                timer: null,
+                stopped: false,
+                startRotation() {
+                    if (this.stopped) return;
+                    clearInterval(this.timer);
+                    this.timer = setInterval(() => {
+                        let i = this.tabs.indexOf(this.activeTab);
+                        this.activeTab = this.tabs[(i + 1) % this.tabs.length];
+                    }, 5000);
+                },
+                stopRotation() { clearInterval(this.timer); this.timer = null; },
+                selectTab(t) { this.stopped = true; this.stopRotation(); this.activeTab = t; }
+            }"
+            x-init="startRotation()"
+            @mouseenter="stopRotation()"
+            @mouseleave="startRotation()">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="section-title">Últimas Novedades</h2>
                 
                 <!-- Tabs -->
                 <div class="border-b border-gray-200 mb-8 overflow-x-auto">
                     <nav class="-mb-px flex space-x-6 sm:space-x-8 min-w-max" aria-label="Tabs">
-                        <button @click="activeTab = 'visuales'" :class="{ 'border-[var(--color-visuales)] text-[var(--color-visuales)]': activeTab === 'visuales', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'visuales' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Artes Visuales</button>
-                        <button @click="activeTab = 'musica'"   :class="{ 'border-[var(--color-musica)] text-[var(--color-musica)]': activeTab === 'musica', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'musica' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Música</button>
-                        <button @click="activeTab = 'teatro'"   :class="{ 'border-[var(--color-teatro)] text-[var(--color-teatro)]': activeTab === 'teatro', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'teatro' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Teatro</button>
-                        <button @click="activeTab = 'cine'"     :class="{ 'border-[var(--color-cine)] text-[var(--color-cine)]': activeTab === 'cine', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cine' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Cine</button>
-                        <button @click="activeTab = 'literatura'" :class="{ 'border-[var(--color-literatura)] text-[var(--color-literatura)]': activeTab === 'literatura', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'literatura' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Literatura</button>
+                        <button @click="selectTab('visuales')" :class="{ 'border-[var(--color-visuales)] text-[var(--color-visuales)]': activeTab === 'visuales', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'visuales' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Artes Visuales</button>
+                        <button @click="selectTab('musica')"   :class="{ 'border-[var(--color-musica)] text-[var(--color-musica)]': activeTab === 'musica', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'musica' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Música</button>
+                        <button @click="selectTab('teatro')"   :class="{ 'border-[var(--color-teatro)] text-[var(--color-teatro)]': activeTab === 'teatro', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'teatro' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Teatro</button>
+                        <button @click="selectTab('cine')"     :class="{ 'border-[var(--color-cine)] text-[var(--color-cine)]': activeTab === 'cine', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cine' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Cine</button>
+                        <button @click="selectTab('literatura')" :class="{ 'border-[var(--color-literatura)] text-[var(--color-literatura)]': activeTab === 'literatura', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'literatura' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Literatura</button>
                     </nav>
                 </div>
 
@@ -194,7 +213,7 @@ $tabCategories = [
 @endphp
 @foreach($tabCategories as $tab)
 @php $totalItems = $latestByCategory[$tab['key']] ?? collect(); $totalPaginas = (int) ceil($totalItems->count() / 3); @endphp
-<div x-show="activeTab === '{{ $tab['key'] }}'" x-cloak x-data="{ pagina: 1, totalPaginas: {{ max($totalPaginas, 1) }} }">
+<div x-show="activeTab === '{{ $tab['key'] }}'" x-transition:enter.opacity.duration.500ms x-cloak x-data="{ pagina: 1, totalPaginas: {{ max($totalPaginas, 1) }} }">
     @if(!empty($latestByCategory[$tab['key']]) && $latestByCategory[$tab['key']]->count() > 0)
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @foreach($latestByCategory[$tab['key']] as $idx => $item)
