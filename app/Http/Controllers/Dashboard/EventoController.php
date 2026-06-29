@@ -155,7 +155,7 @@ class EventoController extends Controller
             $gallery = $validated['gallery'] ?? [];
             foreach (request()->file('galleryFiles') as $idx => $f) {
                 if ($f && $f->isValid()) {
-                    $path = $f->store('eventos/gallery', 'public');
+                    $path = ImageOptimizer::store($f, 'eventos/gallery');
                     // Si ya existe el índice, actualizar url; si no, agregar
                     if (isset($gallery[$idx])) {
                         $gallery[$idx]['url'] = $path;
