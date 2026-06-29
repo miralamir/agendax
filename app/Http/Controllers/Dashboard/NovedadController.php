@@ -150,6 +150,10 @@ class NovedadController extends Controller
         $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
         $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
 
+        if ($data['isPublished'] && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
         $novedad = Novedad::create($data);
         $this->syncCreadores($novedad->bios ?? []);
 
@@ -260,6 +264,10 @@ class NovedadController extends Controller
 
         $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
         $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
+
+        if ($data['isPublished'] && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
 
         $novedad->update($data);
         $this->syncCreadores($novedad->bios ?? []);

@@ -40,7 +40,7 @@ Route::get("/", function () {
     $latestByCategory = [];
     foreach ($categories as $key => $cat) {
         $eventos = \App\Models\Evento::where('category', $cat)->where('isPublished', 1)->orderBy('created_at', 'desc')->take(9)->get();
-        $novedades = \App\Models\Novedad::where('category', $cat)->where('isPublished', 1)->orderBy('published_at', 'desc')->take(9)->get();
+        $novedades = \App\Models\Novedad::where('category', $cat)->where('isPublished', 1)->orderByRaw('COALESCE(published_at, created_at) DESC')->take(9)->get();
         $latestByCategory[$key] = $eventos->merge($novedades)->sortByDesc('created_at')->take(9)->values();
     }
     
