@@ -118,34 +118,8 @@ class NovedadController extends Controller
             $data['pdf'] = trim($request->input('pdf_url'));
         }
 
-        // Galería con estructura url+caption (igual que update); el cast 'array' del modelo hace el único json_encode
-        $rawGallery = $request->input('gallery', []);
-        $galleryItems = [];
-        if (is_array($rawGallery)) {
-            foreach ($rawGallery as $item) {
-                if (is_array($item)) {
-                    $url = trim($item['url'] ?? '');
-                    $caption = trim($item['caption'] ?? '');
-                    if ($url) $galleryItems[] = ['url' => $url, 'caption' => $caption];
-                } elseif (is_string($item) && trim($item)) {
-                    $galleryItems[] = ['url' => trim($item), 'caption' => ''];
-                }
-            }
-        }
-        // Archivos subidos desde el form
-        if ($request->hasFile('galleryFiles')) {
-            foreach ($request->file('galleryFiles') as $idx => $f) {
-                if ($f && $f->isValid()) {
-                    $path = ImageOptimizer::store($f, 'novedades/gallery');
-                    if (isset($galleryItems[$idx])) {
-                        $galleryItems[$idx]['url'] = $path;
-                    } else {
-                        $galleryItems[] = ['url' => $path, 'caption' => ''];
-                    }
-                }
-            }
-        }
-        $data['gallery'] = array_values($galleryItems);
+        // Galería: alineada por índice (cada fila usa su propio archivo o su url existente).
+        $data['gallery'] = $this->procesarGaleria($request, 'novedades/gallery');
 
         $newVideos = array_filter($request->input('videos', []));
         $data['videos'] = empty($newVideos) ? [] : array_values($newVideos);
@@ -239,34 +213,8 @@ class NovedadController extends Controller
             $data['pdf'] = null;
         }
 
-        // Handle gallery con estructura url+caption
-        $rawGallery = $request->input('gallery', []);
-        $galleryItems = [];
-        if (is_array($rawGallery)) {
-            foreach ($rawGallery as $item) {
-                if (is_array($item)) {
-                    $url = trim($item['url'] ?? '');
-                    $caption = trim($item['caption'] ?? '');
-                    if ($url) $galleryItems[] = ['url' => $url, 'caption' => $caption];
-                } elseif (is_string($item) && trim($item)) {
-                    $galleryItems[] = ['url' => trim($item), 'caption' => ''];
-                }
-            }
-        }
-        // Manejar archivos subidos
-        if ($request->hasFile('galleryFiles')) {
-            foreach ($request->file('galleryFiles') as $idx => $f) {
-                if ($f && $f->isValid()) {
-                    $path = ImageOptimizer::store($f, 'novedades/gallery');
-                    if (isset($galleryItems[$idx])) {
-                        $galleryItems[$idx]['url'] = $path;
-                    } else {
-                        $galleryItems[] = ['url' => $path, 'caption' => ''];
-                    }
-                }
-            }
-        }
-        $data['gallery'] = array_values($galleryItems);
+        // Galería: alineada por índice (cada fila usa su propio archivo o su url existente).
+        $data['gallery'] = $this->procesarGaleria($request, 'novedades/gallery');
 
         // Handle videos (URLs as dynamic inputs)
         $newVideos = array_filter($request->input('videos', []));
@@ -288,6 +236,37 @@ class NovedadController extends Controller
             return redirect()->route('dashboard.novedades.edit', $novedad->id)->with('success', 'Novedad actualizada exitosamente.');
         }
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad actualizada exitosamente.');
+    }
+
+    /**
+     * Procesa la galería respetando la alineación por índice entre gallery[i] y galleryFiles[i].
+     * Cada fila resuelve su url de su propio archivo subido o de su url existente — un archivo
+     * nuevo nunca pisa la url de otra fila. Filas nuevas sin fila de texto previa se agregan al final.
+     */
+    private function procesarGaleria(Request $request, string $dir): array
+    {
+        $rawGallery = $request->input('gallery', []);
+        $files = $request->file('galleryFiles', []);
+        if (!is_array($rawGallery)) $rawGallery = [];
+        if (!is_array($files)) $files = [];
+
+        $items = [];
+        foreach ($rawGallery as $idx => $item) {
+            $caption = trim(is_array($item) ? ($item['caption'] ?? '') : '');
+            $url = trim(is_array($item) ? ($item['url'] ?? '') : (is_string($item) ? $item : ''));
+            $f = $files[$idx] ?? null;
+            if ($f && $f->isValid()) {
+                $url = ImageOptimizer::store($f, $dir);
+            }
+            if ($url !== '') $items[] = ['url' => $url, 'caption' => $caption];
+        }
+        // Archivos en índices que no figuran en rawGallery (filas nuevas) → append al final
+        foreach ($files as $idx => $f) {
+            if ($f && $f->isValid() && !array_key_exists($idx, $rawGallery)) {
+                $items[] = ['url' => ImageOptimizer::store($f, $dir), 'caption' => ''];
+            }
+        }
+        return array_values($items);
     }
 
     /**

@@ -20,7 +20,10 @@ class ImageOptimizer
             ->scaleDown(width: $maxWidth, height: $maxWidth)
             ->encode(new JpegEncoder($quality));
 
-        Storage::disk('public')->put($fullPath, $encoded);
+        $ok = Storage::disk('public')->put($fullPath, (string) $encoded);
+        if ($ok === false) {
+            throw new \RuntimeException("ImageOptimizer: no se pudo escribir la imagen en {$fullPath}");
+        }
 
         return $fullPath;
     }

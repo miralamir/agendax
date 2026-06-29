@@ -117,21 +117,8 @@ class EventoController extends Controller
         $validated['isPublished'] = $request->has('isPublished');
         $validated['isFeatured'] = $request->has('isFeatured');
 
-        // Procesar galería con estructura url+caption
-        $rawGallery = $request->input('gallery', []);
-        $galleryItems = [];
-        if (is_array($rawGallery)) {
-            foreach ($rawGallery as $idx => $item) {
-                if (is_array($item)) {
-                    $url = trim($item['url'] ?? '');
-                    $caption = trim($item['caption'] ?? '');
-                    if ($url) $galleryItems[] = ['url' => $url, 'caption' => $caption];
-                } elseif (is_string($item) && trim($item)) {
-                    $galleryItems[] = ['url' => trim($item), 'caption' => ''];
-                }
-            }
-        }
-        $validated['gallery'] = $galleryItems;
+        // Galería: alineada por índice (cada fila usa su propio archivo o su url existente).
+        $validated['gallery'] = $this->procesarGaleria($request, 'eventos/gallery');
 
         // Manejar fotos de biografías
         if (request()->hasFile('bioFotos')) {
@@ -149,22 +136,6 @@ class EventoController extends Controller
             if (request()->hasFile($field)) {
                 $validated[$field] = ImageOptimizer::store(request()->file($field), 'eventos/images');
             }
-        }
-        // Galería de archivos subidos — mergear con estructura url+caption
-        if (request()->hasFile('galleryFiles')) {
-            $gallery = $validated['gallery'] ?? [];
-            foreach (request()->file('galleryFiles') as $idx => $f) {
-                if ($f && $f->isValid()) {
-                    $path = ImageOptimizer::store($f, 'eventos/gallery');
-                    // Si ya existe el índice, actualizar url; si no, agregar
-                    if (isset($gallery[$idx])) {
-                        $gallery[$idx]['url'] = $path;
-                    } else {
-                        $gallery[] = ['url' => $path, 'caption' => ''];
-                    }
-                }
-            }
-            $validated['gallery'] = array_values($gallery);
         }
         unset($validated['galleryFiles']);
         // Manejar PDF
@@ -269,6 +240,37 @@ class EventoController extends Controller
         // Guardar la regla para poder mostrarla al editar
         $evento->funciones_regla = $regla;
         $evento->saveQuietly();
+    }
+
+    /**
+     * Procesa la galería respetando la alineación por índice entre gallery[i] y galleryFiles[i].
+     * Cada fila resuelve su url de su propio archivo subido o de su url existente — un archivo
+     * nuevo nunca pisa la url de otra fila. Filas nuevas sin fila de texto previa se agregan al final.
+     */
+    private function procesarGaleria(Request $request, string $dir): array
+    {
+        $rawGallery = $request->input('gallery', []);
+        $files = $request->file('galleryFiles', []);
+        if (!is_array($rawGallery)) $rawGallery = [];
+        if (!is_array($files)) $files = [];
+
+        $items = [];
+        foreach ($rawGallery as $idx => $item) {
+            $caption = trim(is_array($item) ? ($item['caption'] ?? '') : '');
+            $url = trim(is_array($item) ? ($item['url'] ?? '') : (is_string($item) ? $item : ''));
+            $f = $files[$idx] ?? null;
+            if ($f && $f->isValid()) {
+                $url = ImageOptimizer::store($f, $dir);
+            }
+            if ($url !== '') $items[] = ['url' => $url, 'caption' => $caption];
+        }
+        // Archivos en índices que no figuran en rawGallery (filas nuevas) → append al final
+        foreach ($files as $idx => $f) {
+            if ($f && $f->isValid() && !array_key_exists($idx, $rawGallery)) {
+                $items[] = ['url' => ImageOptimizer::store($f, $dir), 'caption' => ''];
+            }
+        }
+        return array_values($items);
     }
 
     private static function syncCreadoresYLugares(Evento $evento)
