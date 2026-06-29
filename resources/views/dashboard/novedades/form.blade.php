@@ -51,6 +51,64 @@
             @error('body') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
+        <!-- BIOGRAFÍAS / CREADORES -->
+        <div class="col-span-1 md:col-span-2 mt-2">
+            @php
+                $biosNov = old('bios', $novedad->bios ?? []);
+                if (is_string($biosNov)) $biosNov = json_decode($biosNov, true) ?? [];
+                if (empty($biosNov)) $biosNov = [['nombre' => '', 'rol' => '', 'bio' => '', 'foto' => '']];
+                $rolesBio = ['Artista', 'Curador/a', 'Autor/a', 'Ilustrador/a', 'Traductor/a', 'Compilador/a', 'Prologuista', 'Músico/a', 'Director/a'];
+            @endphp
+            <div class="flex items-center justify-between mb-3">
+                <label class="dashboard-label">Biografías / Creadores</label>
+                <button type="button" onclick="agregarBio()" class="dashboard-button-outline text-sm">+ Agregar persona</button>
+            </div>
+            <div id="bios-container" class="space-y-4">
+                @foreach($biosNov as $i => $bio)
+                <div class="bio-item border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <label class="dashboard-label">Nombre</label>
+                            <input type="text" name="bios[{{ $i }}][nombre]" value="{{ $bio['nombre'] ?? '' }}" placeholder="Nombre completo" class="mt-1 block w-full dashboard-input">
+                        </div>
+                        <div>
+                            <label class="dashboard-label">Rol</label>
+                            <select name="bios[{{ $i }}][rol]" class="mt-1 block w-full dashboard-input">
+                                <option value="">Seleccionar...</option>
+                                @foreach($rolesBio as $rol)
+                                    <option value="{{ $rol }}" {{ ($bio['rol'] ?? '') == $rol ? 'selected' : '' }}>{{ $rol }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="dashboard-label">Foto</label>
+                            <div class="flex gap-2 items-center mt-1">
+                                <div class="flex-1">
+                                    <input type="file" name="bioFotos[{{ $i }}]" accept="image/*" class="block w-full dashboard-input p-1 text-xs" onchange="previewBioFoto(this, 'bio-foto-{{ $i }}')">
+                                    <input type="text" name="bios[{{ $i }}][foto]" value="{{ $bio['foto'] ?? '' }}" placeholder="O URL..." class="mt-1 block w-full dashboard-input text-xs">
+                                </div>
+                                @if(!empty($bio['foto']))
+                                    <img id="bio-foto-{{ $i }}" src="{{ str_starts_with($bio['foto'], 'http') ? $bio['foto'] : Storage::url($bio['foto']) }}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-gray-200">
+                                @else
+                                    <img id="bio-foto-{{ $i }}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-gray-200 hidden">
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="dashboard-label">Biografía</label>
+                        <textarea name="bios[{{ $i }}][bio]" rows="3" placeholder="Texto de la biografía..." class="mt-1 block w-full dashboard-input">{{ $bio['bio'] ?? '' }}</textarea>
+                    </div>
+                    @if($loop->index > 0)
+                    <div class="flex justify-end mt-2">
+                        <button type="button" onclick="this.closest('.bio-item').remove()" class="text-red-500 text-sm hover:text-red-700">× Eliminar</button>
+                    </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+
         <!-- 2. MULTIMEDIA -->
         <div class="col-span-1 md:col-span-2 mt-4">
             <h3 class="dashboard-section-title">Multimedia</h3>
@@ -322,6 +380,56 @@ function agregarImagenGaleriaNov() {
     document.getElementById("galeria-nov-container").insertAdjacentHTML("beforeend", html);
 }
 function previewGalNov(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.getElementById(previewId);
+            if (img) { img.src = e.target.result; img.classList.remove("hidden"); }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+let bioCount = {{ count($biosNov) }};
+function agregarBio() {
+    const i = bioCount++;
+    const roles = ['Artista','Curador/a','Autor/a','Ilustrador/a','Traductor/a','Compilador/a','Prologuista','Músico/a','Director/a'];
+    const html = `
+    <div class="bio-item border border-gray-200 rounded-lg p-4 bg-gray-50">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+            <div>
+                <label class="dashboard-label">Nombre</label>
+                <input type="text" name="bios[${i}][nombre]" placeholder="Nombre completo" class="mt-1 block w-full dashboard-input">
+            </div>
+            <div>
+                <label class="dashboard-label">Rol</label>
+                <select name="bios[${i}][rol]" class="mt-1 block w-full dashboard-input">
+                    <option value="">Seleccionar...</option>
+                    ${roles.map(r => `<option value="${r}">${r}</option>`).join('')}
+                </select>
+            </div>
+            <div>
+                <label class="dashboard-label">Foto</label>
+                <div class="flex gap-2 items-center mt-1">
+                    <div class="flex-1">
+                        <input type="file" name="bioFotos[${i}]" accept="image/*" class="block w-full dashboard-input p-1 text-xs" onchange="previewBioFoto(this, 'bio-foto-${i}')">
+                        <input type="text" name="bios[${i}][foto]" placeholder="O URL..." class="mt-1 block w-full dashboard-input text-xs">
+                    </div>
+                    <img id="bio-foto-${i}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-gray-200 hidden">
+                </div>
+            </div>
+        </div>
+        <div>
+            <label class="dashboard-label">Biografía</label>
+            <textarea name="bios[${i}][bio]" rows="3" placeholder="Texto de la biografía..." class="mt-1 block w-full dashboard-input"></textarea>
+        </div>
+        <div class="flex justify-end mt-2">
+            <button type="button" onclick="this.closest('.bio-item').remove()" class="text-red-500 text-sm hover:text-red-700">× Eliminar</button>
+        </div>
+    </div>`;
+    document.getElementById('bios-container').insertAdjacentHTML('beforeend', html);
+}
+function previewBioFoto(input, previewId) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = e => {

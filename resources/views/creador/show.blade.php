@@ -34,38 +34,39 @@
         </div>
     </div>
 
-    {{-- EVENTOS --}}
-    @if($eventos->count() > 0)
+    {{-- PARTICIPACIONES --}}
+    @if($participaciones->count() > 0)
     <section>
         <div class="my-8">
             <x-banner posicion="creador_post_bio" />
         </div>
         <h2 class="text-xs font-bold uppercase tracking-widest mb-6 border-l-4 border-gray-800 pl-3">Participaciones</h2>
         <div class="space-y-4">
-            @foreach($eventos as $evento)
+            @foreach($participaciones as $p)
             @php
-                $img = $evento->mainImage ? Storage::url($evento->mainImage) : ($evento->mainImageUrl ?: null);
-                $catColors = ['Artes Visuales'=>'#7B2D8B','Música'=>'#1A3A7C','Teatro'=>'#8B1A2D','Cine'=>'#E67E22','Literatura'=>'#2E8B57'];
-                $color = $catColors[$evento->category] ?? '#555';
-                $rolEnEvento = collect($evento->bios ?? [])->firstWhere('nombre', $creador->nombre)['rol'] ?? null;
+                $catColors = ['Artes Visuales'=>'#7B2D8B','Arte'=>'#7B2D8B','Música'=>'#1A3A7C','Teatro'=>'#8B1A2D','Cine'=>'#E67E22','Literatura'=>'#2E8B57'];
+                $color = $catColors[$p['categoria']] ?? '#555';
             @endphp
-            <a href="{{ route('evento.show', $evento->id) }}" class="flex gap-4 items-start p-4 rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-300">
-                @if($img)
-                <img src="{{ $img }}" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
+            <a href="{{ $p['url'] }}" class="flex gap-4 items-start p-4 rounded-xl border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                @if($p['imagen'])
+                <img src="{{ $p['imagen'] }}" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
                 @else
                 <div class="w-20 h-20 rounded-lg flex-shrink-0" style="background:#f3f3f3"></div>
                 @endif
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="text-xs font-bold uppercase tracking-wider" style="color:{{ $color }}">{{ $evento->category }}</span>
-                        @if($rolEnEvento)
-                        <span class="text-xs text-gray-400">· {{ $rolEnEvento }}</span>
+                        <span class="text-xs font-bold uppercase tracking-wider" style="color:{{ $color }}">{{ $p['categoria'] }}</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-400 border border-gray-200 rounded-full px-1.5 py-0.5">{{ $p['tipo'] === 'evento' ? 'Muestra' : 'Novedad' }}</span>
+                        @if($p['rol'])
+                        <span class="text-xs text-gray-400">· {{ $p['rol'] }}</span>
                         @endif
                     </div>
-                    <h3 class="font-bold text-gray-900 leading-snug">{{ $evento->title }}</h3>
-                    <p class="text-xs text-gray-400 mt-1">{{ $evento->locationName }}</p>
-                    @if($evento->startDate)
-                    <p class="text-xs text-gray-400">{{ $evento->startDate->locale('es')->isoFormat('D [de] MMMM, YYYY') }}</p>
+                    <h3 class="font-bold text-gray-900 leading-snug">{{ $p['titulo'] }}</h3>
+                    @if($p['lugar'])
+                    <p class="text-xs text-gray-400 mt-1">{{ $p['lugar'] }}</p>
+                    @endif
+                    @if($p['fechaFmt'])
+                    <p class="text-xs text-gray-400">{{ $p['fechaFmt'] }}</p>
                     @endif
                 </div>
             </a>
@@ -73,7 +74,7 @@
         </div>
     </section>
     @else
-    <p class="text-gray-400 text-center py-10">No hay eventos registrados aún.</p>
+    <p class="text-gray-400 text-center py-10">No hay participaciones registradas aún.</p>
     @endif
 
 </main>
