@@ -189,6 +189,9 @@ class EventoController extends Controller
         $reglaRaw = $request->input('funciones_regla');
         $regla = is_string($reglaRaw) ? json_decode($reglaRaw, true) : $reglaRaw;
         self::generarFunciones($evento, $regla);
+        if ($request->input('accion') === 'save') {
+            return redirect()->route('dashboard.eventos.edit', $evento->id)->with('success', 'Evento creado exitosamente.');
+        }
         return redirect()->route('dashboard.eventos.index')->with('success', 'Evento creado exitosamente.');
     }
 
@@ -205,6 +208,9 @@ class EventoController extends Controller
         $reglaRaw = $request->input('funciones_regla');
         $regla = is_string($reglaRaw) ? json_decode($reglaRaw, true) : $reglaRaw;
         self::generarFunciones($evento, $regla);
+        if ($request->input('accion') === 'save') {
+            return redirect()->route('dashboard.eventos.edit', $evento->id)->with('success', 'Evento actualizado exitosamente.');
+        }
         return redirect()->route('dashboard.eventos.index')->with('success', 'Evento actualizado exitosamente.');
     }
 

@@ -160,6 +160,9 @@ class NovedadController extends Controller
         $novedad = Novedad::create($data);
         $this->syncCreadores($novedad->bios ?? []);
 
+        if ($request->input('accion') === 'save') {
+            return redirect()->route('dashboard.novedades.edit', $novedad->id)->with('success', 'Novedad creada exitosamente.');
+        }
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad creada exitosamente.');
     }
 
@@ -281,6 +284,9 @@ class NovedadController extends Controller
         $novedad->update($data);
         $this->syncCreadores($novedad->bios ?? []);
 
+        if ($request->input('accion') === 'save') {
+            return redirect()->route('dashboard.novedades.edit', $novedad->id)->with('success', 'Novedad actualizada exitosamente.');
+        }
         return redirect()->route('dashboard.novedades.index')->with('success', 'Novedad actualizada exitosamente.');
     }
 
