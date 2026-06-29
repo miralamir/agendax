@@ -21,9 +21,9 @@
             </div>
             <!-- Imagen Principal con Overlay de Título -->
             @if ($novedad->image)
-                <div class="relative w-full h-96 bg-gray-200 rounded-lg overflow-hidden mb-8">
+                <div class="relative w-full h-96 bg-gray-200 rounded-lg overflow-hidden mb-8 cursor-zoom-in" onclick="openLightbox('{{ Storage::url($novedad->image) }}', '{{ addslashes($novedad->title) }}')">
                     <img src="{{ Storage::url($novedad->image) }}" alt="{{ $novedad->title }}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-8">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-8 pointer-events-none">
                         <div>
                             <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight">{{ $novedad->title }}</h1>
                         </div>
