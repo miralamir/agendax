@@ -115,8 +115,37 @@ class NovedadController extends Controller
             $data['pdf'] = $request->file('pdf')->store('novedades/pdfs', 'public');
         }
 
-        $data['gallery'] = json_encode(array_filter(preg_split('/\r\n|\r|\n|,/', $request->input('gallery', ''))));
-        $data['videos'] = json_encode(array_filter($request->input('videos', [])));
+        // Galería con estructura url+caption (igual que update); el cast 'array' del modelo hace el único json_encode
+        $rawGallery = $request->input('gallery', []);
+        $galleryItems = [];
+        if (is_array($rawGallery)) {
+            foreach ($rawGallery as $item) {
+                if (is_array($item)) {
+                    $url = trim($item['url'] ?? '');
+                    $caption = trim($item['caption'] ?? '');
+                    if ($url) $galleryItems[] = ['url' => $url, 'caption' => $caption];
+                } elseif (is_string($item) && trim($item)) {
+                    $galleryItems[] = ['url' => trim($item), 'caption' => ''];
+                }
+            }
+        }
+        // Archivos subidos desde el form
+        if ($request->hasFile('galleryFiles')) {
+            foreach ($request->file('galleryFiles') as $idx => $f) {
+                if ($f && $f->isValid()) {
+                    $path = ImageOptimizer::store($f, 'novedades/gallery');
+                    if (isset($galleryItems[$idx])) {
+                        $galleryItems[$idx]['url'] = $path;
+                    } else {
+                        $galleryItems[] = ['url' => $path, 'caption' => ''];
+                    }
+                }
+            }
+        }
+        $data['gallery'] = array_values($galleryItems);
+
+        $newVideos = array_filter($request->input('videos', []));
+        $data['videos'] = empty($newVideos) ? [] : array_values($newVideos);
 
         $data['isPublished'] = $request->has('isPublished') ? 1 : 0;
         $data['isFeatured'] = $request->has('isFeatured') ? 1 : 0;
