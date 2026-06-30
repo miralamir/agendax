@@ -103,15 +103,17 @@ class EventoController extends Controller
             'mainImageUrl' => 'nullable|string',
             'secondaryImageUrl' => 'nullable|string',
             'artistImageUrl' => 'nullable|string',
-            'mainImage' => 'nullable|image|max:5120',
-            'secondaryImage' => 'nullable|image|max:5120',
-            'artistImage' => 'nullable|image|max:5120',
+            'mainImage' => 'nullable|image|max:20480',
+            'secondaryImage' => 'nullable|image|max:20480',
+            'artistImage' => 'nullable|image|max:20480',
             'catalogPdfUrl' => 'nullable|string',
             'catalogPdf' => 'nullable|file|mimes:pdf|max:10240',
             'videos' => 'nullable|array',
             'videos.*' => 'nullable|url',
             'ticketUrl' => 'nullable|string',
             'gallery' => 'nullable|array',
+            'galleryFiles' => 'nullable|array',
+            'galleryFiles.*' => 'nullable|image|max:20480',
         ]);
 
         $validated['isPublished'] = $request->has('isPublished');
