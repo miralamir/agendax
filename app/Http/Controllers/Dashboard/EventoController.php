@@ -119,6 +119,14 @@ class EventoController extends Controller
         $validated['isPublished'] = $request->has('isPublished');
         $validated['isFeatured'] = $request->has('isFeatured');
 
+        // Descripción: contenido del editor WYSIWYG. Purificar (whitelist angosta) y
+        // autolinkear URLs/emails sueltos, una sola vez, antes de persistir.
+        if (!empty($validated['description'])) {
+            $validated['description'] = \App\Helpers\TextHelper::autoLinkHtml(
+                \Mews\Purifier\Facades\Purifier::clean($validated['description'], 'quill')
+            );
+        }
+
         // Galería: alineada por índice (cada fila usa su propio archivo o su url existente).
         $validated['gallery'] = $this->procesarGaleria($request, 'eventos/gallery');
 

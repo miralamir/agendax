@@ -107,8 +107,12 @@
 
     {{-- DESCRIPCIÓN --}}
     @if($evento->description)
-    <div class="mb-10 prose prose-lg max-w-none text-gray-700 leading-relaxed">
-        {!! \App\Helpers\TextHelper::autoLink($evento->description) !!}
+    <div class="mb-10 prose prose-lg max-w-none wysiwyg-content text-gray-700 leading-relaxed">
+        @if(\App\Helpers\TextHelper::looksLikeHtml($evento->description))
+            {!! $evento->description !!}
+        @else
+            {!! \App\Helpers\TextHelper::autoLink($evento->description) !!}
+        @endif
     </div>
     @endif
 

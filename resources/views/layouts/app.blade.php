@@ -30,6 +30,15 @@
         <!-- Custom Styles -->
         <style>
             [x-cloak] { display: none !important; }
+            /* Contenido del editor WYSIWYG: Tailwind Preflight resetea list-style/margenes de
+               p/ul/ol, y el plugin @tailwindcss/typography no esta instalado, asi que
+               restauramos lo minimo para que el HTML de Quill se vea legible. */
+            .wysiwyg-content p { margin-bottom: 1em; }
+            .wysiwyg-content p:last-child { margin-bottom: 0; }
+            .wysiwyg-content ul { list-style: disc; padding-left: 1.5em; margin-bottom: 1em; }
+            .wysiwyg-content ol { list-style: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+            .wysiwyg-content li { margin-bottom: 0.25em; }
+            .wysiwyg-content a { color: #2563eb; text-decoration: underline; }
             :root {
                 /* Gray Scale */
                 --gray-900: #111;

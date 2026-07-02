@@ -48,7 +48,21 @@
 
         <div class="col-span-1 md:col-span-2">
             <label for="body" class="dashboard-label">Cuerpo de la Novedad</label>
-            <textarea name="body" id="body" rows="10" class="mt-1 block w-full dashboard-input">{{ old('body', $novedad->body) }}</textarea>
+            @php
+                $bodyRaw = old('body', $novedad->body ?? '');
+                $bodyInitialHtml = \App\Helpers\TextHelper::toEditableHtml($bodyRaw);
+            @endphp
+            <div id="toolbar-body" class="flex flex-wrap gap-1 mb-1 border border-gray-300 border-b-0 rounded-t-md bg-gray-50 p-1">
+                <button type="button" class="ql-bold" title="Negrita"></button>
+                <button type="button" class="ql-italic" title="Itálica"></button>
+                <button type="button" class="ql-underline" title="Subrayado"></button>
+                <button type="button" class="ql-list" value="ordered" title="Lista numerada"></button>
+                <button type="button" class="ql-list" value="bullet" title="Lista con viñetas"></button>
+                <button type="button" class="ql-link" title="Hipervínculo"></button>
+                <button type="button" id="btn-uppercase-body" title="Mayúsculas/minúsculas" class="font-bold text-xs px-2">Aa</button>
+            </div>
+            <div id="quill-body" class="bg-white border border-gray-300 rounded-b-md" style="min-height:250px;">{!! $bodyInitialHtml !!}</div>
+            <input type="hidden" name="body" id="input-body" value="{{ old('body', $novedad->body) }}">
             @error('body') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
@@ -470,4 +484,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var quillBody = new Quill('#quill-body', {
+        theme: 'snow',
+        modules: { toolbar: '#toolbar-body' },
+        placeholder: 'Cuerpo de la novedad...'
+    });
+    var inputBody = document.getElementById('input-body');
+    quillBody.on('text-change', function () {
+        var html = quillBody.root.innerHTML;
+        inputBody.value = (html === '<p><br></p>') ? '' : html;
+        inputBody.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    document.getElementById('btn-uppercase-body').addEventListener('click', function () {
+        var range = quillBody.getSelection();
+        if (!range || range.length === 0) return;
+        var text = quillBody.getText(range.index, range.length);
+        var formats = quillBody.getFormat(range.index, range.length);
+        var isAllUpper = text === text.toUpperCase() && text !== text.toLowerCase();
+        var newText = isAllUpper ? text.toLowerCase() : text.toUpperCase();
+        quillBody.deleteText(range.index, range.length, 'user');
+        quillBody.insertText(range.index, newText, formats, 'user');
+        quillBody.setSelection(range.index, newText.length, 'silent');
+    });
+});
+</script>
+
 </x-dashboard-layout>

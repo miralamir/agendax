@@ -133,6 +133,14 @@ class NovedadController extends Controller
             $data['published_at'] = now();
         }
 
+        // Cuerpo: contenido del editor WYSIWYG. Purificar (whitelist angosta) y
+        // autolinkear URLs/emails sueltos, una sola vez, antes de persistir.
+        if (!empty($data['body'])) {
+            $data['body'] = \App\Helpers\TextHelper::autoLinkHtml(
+                \Mews\Purifier\Facades\Purifier::clean($data['body'], 'quill')
+            );
+        }
+
         $novedad = Novedad::create($data);
         $this->syncCreadores($novedad->bios ?? []);
 
@@ -231,6 +239,14 @@ class NovedadController extends Controller
 
         if ($data['isPublished'] && empty($data['published_at'])) {
             $data['published_at'] = now();
+        }
+
+        // Cuerpo: contenido del editor WYSIWYG. Purificar (whitelist angosta) y
+        // autolinkear URLs/emails sueltos, una sola vez, antes de persistir.
+        if (!empty($data['body'])) {
+            $data['body'] = \App\Helpers\TextHelper::autoLinkHtml(
+                \Mews\Purifier\Facades\Purifier::clean($data['body'], 'quill')
+            );
         }
 
         $novedad->update($data);

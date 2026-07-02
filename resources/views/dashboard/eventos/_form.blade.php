@@ -41,7 +41,21 @@
 
     <div class="col-span-1 md:col-span-2">
         <label for="description" class="dashboard-label">Descripción del Evento</label>
-        <textarea name="description" id="description" rows="5" class="mt-1 block w-full dashboard-input">{{ old('description', $evento->description) }}</textarea>
+        @php
+            $descRaw = old('description', $evento->description ?? '');
+            $descInitialHtml = \App\Helpers\TextHelper::toEditableHtml($descRaw);
+        @endphp
+        <div id="toolbar-description" class="flex flex-wrap gap-1 mb-1 border border-gray-300 border-b-0 rounded-t-md bg-gray-50 p-1">
+            <button type="button" class="ql-bold" title="Negrita"></button>
+            <button type="button" class="ql-italic" title="Itálica"></button>
+            <button type="button" class="ql-underline" title="Subrayado"></button>
+            <button type="button" class="ql-list" value="ordered" title="Lista numerada"></button>
+            <button type="button" class="ql-list" value="bullet" title="Lista con viñetas"></button>
+            <button type="button" class="ql-link" title="Hipervínculo"></button>
+            <button type="button" id="btn-uppercase-description" title="Mayúsculas/minúsculas" class="font-bold text-xs px-2">Aa</button>
+        </div>
+        <div id="quill-description" class="bg-white border border-gray-300 rounded-b-md" style="min-height:150px;">{!! $descInitialHtml !!}</div>
+        <input type="hidden" name="description" id="input-description" value="{{ old('description', $evento->description) }}">
     </div>
 
     <!-- BIOGRAFÍAS MÚLTIPLES -->
@@ -704,6 +718,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
             }
         });
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var quillDescription = new Quill('#quill-description', {
+        theme: 'snow',
+        modules: { toolbar: '#toolbar-description' },
+        placeholder: 'Descripción del evento...'
+    });
+    var inputDescription = document.getElementById('input-description');
+    quillDescription.on('text-change', function () {
+        var html = quillDescription.root.innerHTML;
+        inputDescription.value = (html === '<p><br></p>') ? '' : html;
+        // Disparar 'input' real para que el chequeo de "cambios sin guardar" (Cancelar) lo detecte
+        inputDescription.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    document.getElementById('btn-uppercase-description').addEventListener('click', function () {
+        var range = quillDescription.getSelection();
+        if (!range || range.length === 0) return;
+        var text = quillDescription.getText(range.index, range.length);
+        var formats = quillDescription.getFormat(range.index, range.length);
+        var isAllUpper = text === text.toUpperCase() && text !== text.toLowerCase();
+        var newText = isAllUpper ? text.toLowerCase() : text.toUpperCase();
+        quillDescription.deleteText(range.index, range.length, 'user');
+        quillDescription.insertText(range.index, newText, formats, 'user');
+        quillDescription.setSelection(range.index, newText.length, 'silent');
     });
 });
 </script>

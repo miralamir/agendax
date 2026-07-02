@@ -77,8 +77,12 @@
             </div>
             @endif
             <!-- Cuerpo del Artículo -->
-            <div class="prose prose-lg max-w-none mb-12 text-gray-800">
-                {!! \App\Helpers\TextHelper::autoLink($novedad->body) !!}
+            <div class="prose prose-lg max-w-none wysiwyg-content mb-12 text-gray-800">
+                @if(\App\Helpers\TextHelper::looksLikeHtml($novedad->body))
+                    {!! $novedad->body !!}
+                @else
+                    {!! \App\Helpers\TextHelper::autoLink($novedad->body) !!}
+                @endif
             </div>
 
             <!-- Videos Embebidos -->
