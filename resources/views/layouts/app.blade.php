@@ -29,6 +29,7 @@
         
         <!-- Custom Styles -->
         <style>
+            [x-cloak] { display: none !important; }
             :root {
                 /* Gray Scale */
                 --gray-900: #111;

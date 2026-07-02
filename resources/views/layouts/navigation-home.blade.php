@@ -19,11 +19,19 @@
 
             <!-- Search and Auth Buttons - solo desktop -->
             <div class="hidden lg:flex lg:items-center lg:ms-6">
-                 <button class="p-2 rounded-full text-gray-600 hover:text-gray-800">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
+                <div class="relative" x-data="{ buscando: false }" @click.outside="buscando = false">
+                    <button type="button" x-show="!buscando"
+                            @click="buscando = true; $nextTick(() => $refs.buscarInput.focus())"
+                            class="p-2 rounded-full text-gray-600 hover:text-gray-800">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                    <form action="{{ route('buscar') }}" method="GET" x-show="buscando" x-cloak class="flex items-center">
+                        <input x-ref="buscarInput" type="text" name="q" placeholder="Buscar..."
+                               class="border-b-2 border-gray-300 focus:outline-none focus:border-gray-800 text-sm px-1 py-1 w-32 sm:w-44">
+                    </form>
+                </div>
 
                 @guest
                     <a href="{{ route('login') }}" class="ml-4 px-4 py-2 border border-black text-black text-sm font-bold rounded-md hover:bg-gray-100 transition">Ingresar</a>

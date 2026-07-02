@@ -13,6 +13,7 @@ use App\Http\Controllers\MusicaController;
 use App\Http\Controllers\CineController;
 use App\Http\Controllers\TeatroController;
 use App\Http\Controllers\LiteraturaController;
+use App\Http\Controllers\BuscadorController;
 use App\Http\Controllers\EventoController as FrontendEventoController; // <-- Alias añadido
 use App\Http\Controllers\NovedadController as FrontendNovedadController; // <-- Nuevo alias para controlador público
 use App\Http\Controllers\Dashboard\NovedadController;
@@ -46,6 +47,8 @@ Route::get("/", function () {
     
     return view("welcome", compact('featuredEvents', 'allEvents', 'latestByCategory'));
 })->name("home"); // Se añade un nombre a la ruta principal
+
+Route::get('/buscar', [BuscadorController::class, 'index'])->name('buscar');
 
 // Ruta para el detalle del evento (con implicit model binding)
 Route::get('/evento/{event}', [FrontendEventoController::class, 'show'])->name('evento.show');
