@@ -153,6 +153,13 @@ class EventoController extends Controller
                     );
                 }
             }
+            // Reindexar (mismo patron que NovedadController::procesarBios): tras eliminar
+            // una fila del medio en el form, los indices quedan con huecos (ej. 0,2). Sin
+            // reindexar, el proximo "+ Agregar persona" (bioCount = count($bios)) podia
+            // colisionar con un indice ya usado. NO filtra por nombre (a diferencia de
+            // novedades) para no cambiar el comportamiento existente de eventos — solo
+            // arregla la reindexacion.
+            $validated['bios'] = array_values($validated['bios']);
         }
         // Manejar subida de imágenes con optimización
         $disks = ['mainImage', 'secondaryImage', 'artistImage'];
