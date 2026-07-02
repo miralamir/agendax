@@ -48,7 +48,21 @@
 
         <div class="col-span-1 md:col-span-2">
             <label for="body" class="dashboard-label">Cuerpo de la Novedad</label>
-            <textarea name="body" id="body" rows="10" class="mt-1 block w-full dashboard-input">{{ old('body', $novedad->body) }}</textarea>
+            @php
+                $bodyRaw = old('body', $novedad->body ?? '');
+                $bodyInitialHtml = \App\Helpers\TextHelper::toEditableHtml($bodyRaw);
+            @endphp
+            <div id="toolbar-body" class="flex flex-wrap gap-1 mb-1 border border-gray-300 border-b-0 rounded-t-md bg-gray-50 p-1">
+                <button type="button" class="ql-bold" title="Negrita"></button>
+                <button type="button" class="ql-italic" title="Itálica"></button>
+                <button type="button" class="ql-underline" title="Subrayado"></button>
+                <button type="button" class="ql-list" value="ordered" title="Lista numerada"></button>
+                <button type="button" class="ql-list" value="bullet" title="Lista con viñetas"></button>
+                <button type="button" class="ql-link" title="Hipervínculo"></button>
+                <button type="button" id="btn-uppercase-body" title="Mayúsculas/minúsculas" class="font-bold text-xs px-2">Aa</button>
+            </div>
+            <div id="quill-body" class="bg-white border border-gray-300 rounded-b-md" style="min-height:250px;">{!! $bodyInitialHtml !!}</div>
+            <input type="hidden" name="body" id="input-body" value="{{ old('body', $novedad->body) }}">
             @error('body') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
@@ -96,13 +110,24 @@
                             </div>
                         </div>
                     </div>
+                    @php $bioHtml = \App\Helpers\TextHelper::toEditableHtml($bio['bio'] ?? ''); @endphp
                     <div>
                         <label class="dashboard-label">Biografía</label>
-                        <textarea name="bios[{{ $i }}][bio]" rows="3" placeholder="Texto de la biografía..." class="mt-1 block w-full dashboard-input">{{ $bio['bio'] ?? '' }}</textarea>
+                        <div id="toolbar-bio-{{ $i }}" class="flex flex-wrap gap-1 mb-1 border border-gray-300 border-b-0 rounded-t-md bg-gray-50 p-1">
+                            <button type="button" class="ql-bold" title="Negrita"></button>
+                            <button type="button" class="ql-italic" title="Itálica"></button>
+                            <button type="button" class="ql-underline" title="Subrayado"></button>
+                            <button type="button" class="ql-list" value="ordered" title="Lista numerada"></button>
+                            <button type="button" class="ql-list" value="bullet" title="Lista con viñetas"></button>
+                            <button type="button" class="ql-link" title="Hipervínculo"></button>
+                            <button type="button" class="btn-uppercase-bio font-bold text-xs px-2" data-idx="{{ $i }}" title="Mayúsculas/minúsculas">Aa</button>
+                        </div>
+                        <div id="quill-bio-{{ $i }}" class="quill-bio-editor bg-white border border-gray-300 rounded-b-md" style="min-height:100px;">{!! $bioHtml !!}</div>
+                        <input type="hidden" name="bios[{{ $i }}][bio]" id="input-bio-{{ $i }}" value="{{ $bio['bio'] ?? '' }}">
                     </div>
                     @if($loop->index > 0)
                     <div class="flex justify-end mt-2">
-                        <button type="button" onclick="this.closest('.bio-item').remove()" class="text-red-500 text-sm hover:text-red-700">× Eliminar</button>
+                        <button type="button" onclick="eliminarBio(this, {{ $i }})" class="text-red-500 text-sm hover:text-red-700">× Eliminar</button>
                     </div>
                     @endif
                 </div>
@@ -433,13 +458,24 @@ function agregarBio() {
         </div>
         <div>
             <label class="dashboard-label">Biografía</label>
-            <textarea name="bios[${i}][bio]" rows="3" placeholder="Texto de la biografía..." class="mt-1 block w-full dashboard-input"></textarea>
+            <div id="toolbar-bio-${i}" class="flex flex-wrap gap-1 mb-1 border border-gray-300 border-b-0 rounded-t-md bg-gray-50 p-1">
+                <button type="button" class="ql-bold" title="Negrita"></button>
+                <button type="button" class="ql-italic" title="Itálica"></button>
+                <button type="button" class="ql-underline" title="Subrayado"></button>
+                <button type="button" class="ql-list" value="ordered" title="Lista numerada"></button>
+                <button type="button" class="ql-list" value="bullet" title="Lista con viñetas"></button>
+                <button type="button" class="ql-link" title="Hipervínculo"></button>
+                <button type="button" class="btn-uppercase-bio font-bold text-xs px-2" data-idx="${i}" title="Mayúsculas/minúsculas">Aa</button>
+            </div>
+            <div id="quill-bio-${i}" class="quill-bio-editor bg-white border border-gray-300 rounded-b-md" style="min-height:100px;"></div>
+            <input type="hidden" name="bios[${i}][bio]" id="input-bio-${i}">
         </div>
         <div class="flex justify-end mt-2">
-            <button type="button" onclick="this.closest('.bio-item').remove()" class="text-red-500 text-sm hover:text-red-700">× Eliminar</button>
+            <button type="button" onclick="eliminarBio(this, ${i})" class="text-red-500 text-sm hover:text-red-700">× Eliminar</button>
         </div>
     </div>`;
     document.getElementById('bios-container').insertAdjacentHTML('beforeend', html);
+    initBioQuill(i);
 }
 function previewBioFoto(input, previewId) {
     if (input.files && input.files[0]) {
@@ -470,4 +506,78 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var quillBody = new Quill('#quill-body', {
+        theme: 'snow',
+        modules: { toolbar: '#toolbar-body' },
+        placeholder: 'Cuerpo de la novedad...'
+    });
+    var inputBody = document.getElementById('input-body');
+    quillBody.on('text-change', function () {
+        var html = quillBody.root.innerHTML;
+        inputBody.value = (html === '<p><br></p>') ? '' : html;
+        inputBody.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    document.getElementById('btn-uppercase-body').addEventListener('click', function () {
+        var range = quillBody.getSelection();
+        if (!range || range.length === 0) return;
+        var text = quillBody.getText(range.index, range.length);
+        var formats = quillBody.getFormat(range.index, range.length);
+        var isAllUpper = text === text.toUpperCase() && text !== text.toLowerCase();
+        var newText = isAllUpper ? text.toLowerCase() : text.toUpperCase();
+        quillBody.deleteText(range.index, range.length, 'user');
+        quillBody.insertText(range.index, newText, formats, 'user');
+        quillBody.setSelection(range.index, newText.length, 'silent');
+    });
+});
+</script>
+
+<script>
+window.bioQuillInstances = {};
+
+function initBioQuill(idx) {
+    var quill = new Quill('#quill-bio-' + idx, {
+        theme: 'snow',
+        modules: { toolbar: '#toolbar-bio-' + idx },
+        placeholder: 'Biografía...'
+    });
+    window.bioQuillInstances[idx] = quill;
+    var input = document.getElementById('input-bio-' + idx);
+    quill.on('text-change', function () {
+        var html = quill.root.innerHTML;
+        input.value = (html === '<p><br></p>') ? '' : html;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+}
+
+function eliminarBio(btn, idx) {
+    delete window.bioQuillInstances[idx];
+    btn.closest('.bio-item').remove();
+}
+
+document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.btn-uppercase-bio');
+    if (!btn) return;
+    var quill = window.bioQuillInstances[btn.dataset.idx];
+    if (!quill) return;
+    var range = quill.getSelection();
+    if (!range || range.length === 0) return;
+    var text = quill.getText(range.index, range.length);
+    var formats = quill.getFormat(range.index, range.length);
+    var isAllUpper = text === text.toUpperCase() && text !== text.toLowerCase();
+    var newText = isAllUpper ? text.toLowerCase() : text.toUpperCase();
+    quill.deleteText(range.index, range.length, 'user');
+    quill.insertText(range.index, newText, formats, 'user');
+    quill.setSelection(range.index, newText.length, 'silent');
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.quill-bio-editor').forEach(function (el) {
+        initBioQuill(el.id.replace('quill-bio-', ''));
+    });
+});
+</script>
+
 </x-dashboard-layout>

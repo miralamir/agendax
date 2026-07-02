@@ -133,6 +133,17 @@ class NovedadController extends Controller
             $data['published_at'] = now();
         }
 
+        // Cuerpo: contenido del editor WYSIWYG. Purificar (whitelist angosta) y
+        // autolinkear URLs/emails sueltos, una sola vez, antes de persistir. Solo si YA
+        // es HTML nuevo (looksLikeHtml) — si el campo no se toco, Quill no reescribe el
+        // hidden input y sigue siendo texto plano viejo: NO debe pasar por este pipeline
+        // (evita perder contenido con "<..>" sueltos y el doble-encode de "&" en cada guardado).
+        if (!empty($data['body']) && \App\Helpers\TextHelper::looksLikeHtml($data['body'])) {
+            $data['body'] = \App\Helpers\TextHelper::autoLinkHtml(
+                \Mews\Purifier\Facades\Purifier::clean($data['body'], 'quill')
+            );
+        }
+
         $novedad = Novedad::create($data);
         $this->syncCreadores($novedad->bios ?? []);
 
@@ -233,6 +244,17 @@ class NovedadController extends Controller
             $data['published_at'] = now();
         }
 
+        // Cuerpo: contenido del editor WYSIWYG. Purificar (whitelist angosta) y
+        // autolinkear URLs/emails sueltos, una sola vez, antes de persistir. Solo si YA
+        // es HTML nuevo (looksLikeHtml) — si el campo no se toco, Quill no reescribe el
+        // hidden input y sigue siendo texto plano viejo: NO debe pasar por este pipeline
+        // (evita perder contenido con "<..>" sueltos y el doble-encode de "&" en cada guardado).
+        if (!empty($data['body']) && \App\Helpers\TextHelper::looksLikeHtml($data['body'])) {
+            $data['body'] = \App\Helpers\TextHelper::autoLinkHtml(
+                \Mews\Purifier\Facades\Purifier::clean($data['body'], 'quill')
+            );
+        }
+
         $novedad->update($data);
         $this->syncCreadores($novedad->bios ?? []);
 
@@ -287,6 +309,19 @@ class NovedadController extends Controller
                 if ($fotoFile && isset($bios[$idx])) {
                     $bios[$idx]['foto'] = ImageOptimizer::store($fotoFile, 'novedades/bios');
                 }
+            }
+        }
+
+        // Bio (WYSIWYG): purificar + autolinkear cada bios[].bio antes de guardar.
+        // Solo si YA es HTML nuevo (looksLikeHtml) — si el campo no se toco, Quill no
+        // reescribe el hidden input y sigue siendo texto plano viejo: NO debe pasar por
+        // este pipeline (evita perder contenido con "<..>" sueltos y el doble-encode de
+        // "&" en cada guardado).
+        foreach ($bios as $idx => $bio) {
+            if (!empty($bio['bio']) && \App\Helpers\TextHelper::looksLikeHtml($bio['bio'])) {
+                $bios[$idx]['bio'] = \App\Helpers\TextHelper::autoLinkHtml(
+                    \Mews\Purifier\Facades\Purifier::clean($bio['bio'], 'quill')
+                );
             }
         }
 

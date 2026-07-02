@@ -107,8 +107,12 @@
 
     {{-- DESCRIPCIÓN --}}
     @if($evento->description)
-    <div class="mb-10 prose prose-lg max-w-none text-gray-700 leading-relaxed">
-        {!! \App\Helpers\TextHelper::autoLink($evento->description) !!}
+    <div class="mb-10 prose prose-lg max-w-none wysiwyg-content text-gray-700 leading-relaxed">
+        @if(\App\Helpers\TextHelper::looksLikeHtml($evento->description))
+            {!! $evento->description !!}
+        @else
+            {!! \App\Helpers\TextHelper::autoLink($evento->description) !!}
+        @endif
     </div>
     @endif
 
@@ -193,7 +197,15 @@
                         <a href="{{ route('creador.show', \Illuminate\Support\Str::slug($bio['nombre'])) }}" class="font-bold text-gray-900 hover:underline">{{ $bio['nombre'] }}</a>
                         @if(!empty($bio['rol']))<span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="background:{{ $catLight }};color:{{ $catColor }}">{{ $bio['rol'] }}</span>@endif
                     </div>
-                    @if(!empty($bio['bio']))<p class="text-sm text-gray-600 leading-relaxed">{!! \App\Helpers\TextHelper::autoLink($bio['bio']) !!}</p>@endif
+                    @if(!empty($bio['bio']))
+                    <div class="text-sm text-gray-600 leading-relaxed wysiwyg-content">
+                        @if(\App\Helpers\TextHelper::looksLikeHtml($bio['bio']))
+                            {!! $bio['bio'] !!}
+                        @else
+                            {!! \App\Helpers\TextHelper::autoLink($bio['bio']) !!}
+                        @endif
+                    </div>
+                    @endif
                 </div>
             </div>
             @endif

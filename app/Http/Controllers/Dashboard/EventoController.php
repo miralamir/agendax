@@ -119,6 +119,17 @@ class EventoController extends Controller
         $validated['isPublished'] = $request->has('isPublished');
         $validated['isFeatured'] = $request->has('isFeatured');
 
+        // Descripción: contenido del editor WYSIWYG. Purificar (whitelist angosta) y
+        // autolinkear URLs/emails sueltos, una sola vez, antes de persistir. Solo si YA
+        // es HTML nuevo (looksLikeHtml) — si el campo no se toco, Quill no reescribe el
+        // hidden input y sigue siendo texto plano viejo: NO debe pasar por este pipeline
+        // (evita perder contenido con "<..>" sueltos y el doble-encode de "&" en cada guardado).
+        if (!empty($validated['description']) && \App\Helpers\TextHelper::looksLikeHtml($validated['description'])) {
+            $validated['description'] = \App\Helpers\TextHelper::autoLinkHtml(
+                \Mews\Purifier\Facades\Purifier::clean($validated['description'], 'quill')
+            );
+        }
+
         // Galería: alineada por índice (cada fila usa su propio archivo o su url existente).
         $validated['gallery'] = $this->procesarGaleria($request, 'eventos/gallery');
 
@@ -131,6 +142,24 @@ class EventoController extends Controller
                 }
             }
             $validated['bios'] = $bios;
+        }
+        // Bio (WYSIWYG): purificar + autolinkear cada bios[].bio antes de guardar.
+        // Solo si YA es HTML nuevo (looksLikeHtml) — ver comentario de "Descripción" arriba.
+        if (!empty($validated['bios'])) {
+            foreach ($validated['bios'] as $idx => $bio) {
+                if (!empty($bio['bio']) && \App\Helpers\TextHelper::looksLikeHtml($bio['bio'])) {
+                    $validated['bios'][$idx]['bio'] = \App\Helpers\TextHelper::autoLinkHtml(
+                        \Mews\Purifier\Facades\Purifier::clean($bio['bio'], 'quill')
+                    );
+                }
+            }
+            // Reindexar (mismo patron que NovedadController::procesarBios): tras eliminar
+            // una fila del medio en el form, los indices quedan con huecos (ej. 0,2). Sin
+            // reindexar, el proximo "+ Agregar persona" (bioCount = count($bios)) podia
+            // colisionar con un indice ya usado. NO filtra por nombre (a diferencia de
+            // novedades) para no cambiar el comportamiento existente de eventos — solo
+            // arregla la reindexacion.
+            $validated['bios'] = array_values($validated['bios']);
         }
         // Manejar subida de imágenes con optimización
         $disks = ['mainImage', 'secondaryImage', 'artistImage'];
