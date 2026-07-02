@@ -306,6 +306,15 @@ class NovedadController extends Controller
             }
         }
 
+        // Bio (WYSIWYG): purificar + autolinkear cada bios[].bio antes de guardar.
+        foreach ($bios as $idx => $bio) {
+            if (!empty($bio['bio'])) {
+                $bios[$idx]['bio'] = \App\Helpers\TextHelper::autoLinkHtml(
+                    \Mews\Purifier\Facades\Purifier::clean($bio['bio'], 'quill')
+                );
+            }
+        }
+
         // Descartar filas sin nombre
         $bios = array_values(array_filter($bios, fn($b) => !empty(trim($b['nombre'] ?? ''))));
 

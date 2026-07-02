@@ -140,6 +140,16 @@ class EventoController extends Controller
             }
             $validated['bios'] = $bios;
         }
+        // Bio (WYSIWYG): purificar + autolinkear cada bios[].bio antes de guardar.
+        if (!empty($validated['bios'])) {
+            foreach ($validated['bios'] as $idx => $bio) {
+                if (!empty($bio['bio'])) {
+                    $validated['bios'][$idx]['bio'] = \App\Helpers\TextHelper::autoLinkHtml(
+                        \Mews\Purifier\Facades\Purifier::clean($bio['bio'], 'quill')
+                    );
+                }
+            }
+        }
         // Manejar subida de imágenes con optimización
         $disks = ['mainImage', 'secondaryImage', 'artistImage'];
         foreach ($disks as $field) {

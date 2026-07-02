@@ -136,7 +136,15 @@
                         @endif
                         <div class="flex-1">
                             <a href="{{ route('creador.show', \Illuminate\Support\Str::slug($bio['nombre'])) }}" class="font-bold text-gray-900 hover:underline">{{ $bio['nombre'] }}</a>
-                            @if(!empty($bio['bio']))<p class="text-sm text-gray-600 leading-relaxed mt-1">{!! \App\Helpers\TextHelper::autoLink($bio['bio']) !!}</p>@endif
+                            @if(!empty($bio['bio']))
+                            <div class="text-sm text-gray-600 leading-relaxed mt-1 wysiwyg-content">
+                                @if(\App\Helpers\TextHelper::looksLikeHtml($bio['bio']))
+                                    {!! $bio['bio'] !!}
+                                @else
+                                    {!! \App\Helpers\TextHelper::autoLink($bio['bio']) !!}
+                                @endif
+                            </div>
+                            @endif
                         </div>
                     </div>
                     @endif
