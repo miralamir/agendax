@@ -19,4 +19,7 @@
     # Block access to .git directory
     RewriteRule ^\.git - [F,L]
     RedirectMatch 404 /\.git(/|$)
+
+    # Block access to shell scripts (deploy/sync helpers, no deben servirse por HTTP)
+    RewriteRule \.sh$ - [F,L]
 </IfModule>
