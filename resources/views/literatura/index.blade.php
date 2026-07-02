@@ -16,6 +16,11 @@
                     <a href="{{ request()->fullUrlWithQuery(['sub' => 'Novedades Editoriales']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Novedades Editoriales' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Novedades Editoriales' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Novedades Editoriales' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Novedades Editoriales</a>
                     <a href="{{ request()->fullUrlWithQuery(['sub' => 'Ferias']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Ferias' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Ferias' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Ferias' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Ferias</a>
                     <a href="{{ request()->fullUrlWithQuery(['sub' => 'Noticias']) }}" class="px-4 py-2 text-sm font-bold rounded-full border {{ request('sub') == 'Noticias' ? 'text-white' : '' }}" style="background-color: {{ request('sub') == 'Noticias' ? 'var(--color-literatura)' : 'transparent' }}; color: {{ request('sub') == 'Noticias' ? 'white' : 'var(--color-literatura)' }}; border-color: var(--color-literatura);">Noticias</a>
+                    <form method="GET" class="ml-auto flex items-center">
+                        @if($subCat)<input type="hidden" name="sub" value="{{ $subCat }}">@endif
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar en Literatura..."
+                               class="border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-gray-600 w-40 sm:w-64">
+                    </form>
                 </div>
                 </div>
             </div>

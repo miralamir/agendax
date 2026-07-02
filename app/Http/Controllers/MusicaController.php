@@ -11,6 +11,7 @@ class MusicaController extends Controller
     public function index()
     {
         $sub = request('sub');
+        $q = trim((string) request('q', ''));
         $categoryName = 'Música'; // Variable para la categoría actual
 
         $featEventos = \App\Models\Evento::where('category', $categoryName)
@@ -23,12 +24,18 @@ class MusicaController extends Controller
 
         $latestEvents = \App\Models\Evento::where('category', $categoryName)
             ->when($sub, fn($q) => $q->where('subCategory', $sub))
+            ->when($q, fn($qb) => $qb->where(function ($w) use ($q) {
+                $w->where('title', 'like', "%{$q}%")
+                  ->orWhere('locationName', 'like', "%{$q}%")
+                  ->orWhere('artist', 'like', "%{$q}%");
+            }))
             ->where('isPublished', 1)
             ->orderBy('startDate', 'desc')
             ->get();
 
         $latestNovedades = \App\Models\Novedad::where('category', $categoryName)
             ->when($sub, fn($q) => $q->where('subCategory', $sub))
+            ->when($q, fn($qb) => $qb->where('title', 'like', "%{$q}%"))
             ->where('isPublished', 1)
             ->orderBy('published_at', 'desc')
             ->get();
