@@ -25,6 +25,14 @@
         
         <!-- Custom Styles -->
         <style>
+            /* Quill (editor WYSIWYG): su propia hoja de estilos setea .ql-container y
+               .ql-editor a height:100%, pensado para vivir dentro de un contenedor con
+               altura fija. En este layout (grid de Tailwind) eso entra en conflicto con
+               un contenedor cuya altura definitiva depende circularmente del propio grid,
+               inflando el editor y solapando el contenido siguiente (ej. tapa el boton
+               "+ Agregar persona"). Forzamos altura automatica basada en el contenido real. */
+            .ql-container { height: auto !important; }
+            .ql-editor { height: auto !important; }
             :root {
                 /* Gray Scale */
                 --gray-900: #111;
