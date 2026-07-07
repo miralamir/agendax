@@ -453,28 +453,64 @@ function updateSubcats() {
 }
 updateSubcats();
 
+// Si la dirección no menciona ninguna localidad de esta lista, se asume CABA.
+// belgrano y san martín quedan afuera a propósito: en una dirección aparecen
+// más como nombre de calle que como localidad, y detectarlos de más saltearía
+// el agregado de CABA (agregar CABA a una dirección que ya tiene barrio es inocuo).
+const LOCALIDADES_CONOCIDAS = [
+    'caba', 'c.a.b.a', 'capital federal', 'ciudad autonoma', 'buenos aires',
+    'palermo', 'recoleta', 'san telmo', 'la boca', 'villa crespo', 'caballito',
+    'almagro', 'chacarita', 'colegiales', 'puerto madero', 'nunez', 'saavedra',
+    'villa urquiza', 'villa devoto', 'barracas', 'parque patricios', 'flores',
+    'san isidro', 'vicente lopez', 'olivos', 'martinez', 'tigre', 'avellaneda',
+    'quilmes', 'lanus', 'moron',
+    'la plata', 'rosario', 'cordoba', 'mendoza', 'mar del plata', 'salta',
+    'tucuman', 'santa fe', 'neuquen', 'bariloche'
+];
+
+function mencionaLocalidad(texto) {
+    const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return LOCALIDADES_CONOCIDAS.some(loc => t.includes(loc));
+}
+
+async function buscarCoordenadas(query) {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=ar&q=${encodeURIComponent(query)}&limit=1`, {
+        headers: { 'Accept-Language': 'es' }
+    });
+    return res.json();
+}
+
 async function geocodificar() {
     const addr = document.getElementById('venueAddress').value.trim();
     if (!addr) { alert('Ingresá una dirección primero.'); return; }
     const btn = event.target;
     btn.textContent = '⏳ Buscando...';
     btn.disabled = true;
+    let asumioCaba = false;
     try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`, {
-            headers: { 'Accept-Language': 'es', 'User-Agent': 'BAMARTE/1.0' }
-        });
-        const data = await res.json();
+        let data;
+        if (mencionaLocalidad(addr)) {
+            data = await buscarCoordenadas(addr);
+        } else {
+            asumioCaba = true;
+            data = await buscarCoordenadas(`${addr}, Ciudad Autónoma de Buenos Aires, Argentina`);
+            if (data.length === 0) {
+                // La dirección puede ser de otra localidad: reintento sin asumir CABA
+                asumioCaba = false;
+                data = await buscarCoordenadas(addr);
+            }
+        }
         if (data.length > 0) {
             document.getElementById('lat').value = parseFloat(data[0].lat).toFixed(7);
             document.getElementById('lng').value = parseFloat(data[0].lon).toFixed(7);
-            btn.textContent = '✅ Listo';
+            btn.textContent = asumioCaba ? '✅ Listo (asumí CABA)' : '✅ Listo';
         } else {
             btn.textContent = '❌ No encontrado';
         }
     } catch(e) {
         btn.textContent = '❌ Error';
     }
-    setTimeout(() => { btn.textContent = '📍 Geocodificar'; btn.disabled = false; }, 2000);
+    setTimeout(() => { btn.textContent = '📍 Geocodificar'; btn.disabled = false; }, asumioCaba ? 4000 : 2000);
 }
 
 let bioCount = {{ count($bios) }};
