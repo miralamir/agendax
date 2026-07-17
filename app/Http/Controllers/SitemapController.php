@@ -26,13 +26,19 @@ class SitemapController extends Controller
     /**
      * Secciones y sus subsecciones, tal como están declaradas en routes/web.php.
      * Se listan a mano porque son rutas fijas, no filas de una tabla.
+     *
+     * Faltan a propósito cinco subsecciones declaradas en routes/web.php que hoy
+     * responden 500 porque apuntan a métodos que no existen en su controlador:
+     * cine.estrenos, cine.festivales-ciclos, teatro.cartelera,
+     * literatura.novedades-editoriales y literatura.ferias. Cuando se
+     * implementen, sumarlas acá.
      */
     private const SECCIONES = [
         'arte' => ['arte.creadores', 'arte.ferias', 'arte.novedades'],
         'musica' => ['musica.lanzamientos', 'musica.festivales', 'musica.novedades'],
-        'cine' => ['cine.estrenos', 'cine.festivales-ciclos', 'cine.novedades'],
-        'teatro' => ['teatro.cartelera', 'teatro.festivales', 'teatro.novedades'],
-        'literatura' => ['literatura.novedades-editoriales', 'literatura.ferias', 'literatura.novedades'],
+        'cine' => ['cine.novedades'],
+        'teatro' => ['teatro.festivales', 'teatro.novedades'],
+        'literatura' => ['literatura.novedades'],
     ];
 
     public function index(): Response
