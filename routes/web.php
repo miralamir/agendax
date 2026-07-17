@@ -14,6 +14,7 @@ use App\Http\Controllers\CineController;
 use App\Http\Controllers\TeatroController;
 use App\Http\Controllers\LiteraturaController;
 use App\Http\Controllers\BuscadorController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\EventoController as FrontendEventoController; // <-- Alias añadido
 use App\Http\Controllers\NovedadController as FrontendNovedadController; // <-- Nuevo alias para controlador público
 use App\Http\Controllers\Dashboard\NovedadController;
@@ -47,6 +48,20 @@ Route::get("/", function () {
     
     return view("welcome", compact('featuredEvents', 'allEvents', 'latestByCategory'));
 })->name("home"); // Se añade un nombre a la ruta principal
+
+// robots.txt dinámico: solo producción es indexable. Va por ruta y no como
+// archivo estático porque el docroot de este sitio es public_html, no
+// public_html/public: nginx nunca llega a public/robots.txt y todo cae a PHP.
+Route::get('/robots.txt', function () {
+    $cuerpo = app()->isProduction()
+        ? "User-agent: *\nDisallow: /dashboard\n\nSitemap: " . route('sitemap') . "\n"
+        : "User-agent: *\nDisallow: /\n";
+
+    return response($cuerpo, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('robots');
+
+// Sitemap dinámico (se arma desde la base y se cachea 1h)
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/buscar', [BuscadorController::class, 'index'])->name('buscar');
 
