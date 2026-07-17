@@ -55,6 +55,12 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // A la home: quien se registra es un lector, y /dashboard es solo para
+        // admins, así que mandarlo ahí lo hacía rebotar contra el middleware
+        // para terminar igual en la home. De paso, esto deja el alta real y el
+        // rechazo del honeypot en la misma respuesta exacta.
+        // Cuando se active MustVerifyEmail, el destino pasa a ser
+        // verification.notice.
+        return redirect()->route('home');
     }
 }
