@@ -30,6 +30,15 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Honeypot anti-bots: el campo "sitio_web" está fuera de la pantalla y
+        // ningún humano lo ve, así que si viene con contenido es un bot. Se
+        // finge éxito (302 a la home, igual que un alta correcta) para no
+        // avisarle que lo detectamos: si devolviéramos un error, quien lo
+        // opera ajustaría el bot hasta esquivar la trampa.
+        if ($request->filled('sitio_web')) {
+            return redirect()->route('home');
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],

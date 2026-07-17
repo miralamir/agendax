@@ -15,17 +15,27 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Tope por IP para el alta de cuentas: un lector real se registra una vez,
+    // así que 5 por minuto no molesta a nadie y le corta el ritmo a los bots.
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:5,1');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    // LoginRequest ya limita los intentos fallidos por email+IP; esto suma un
+    // tope por IP que también cuenta los exitosos, contra el relleno masivo
+    // de credenciales desde una misma dirección.
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:10,1');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
+    // El alta de recuperación dispara mails: sin tope, sirve para bombardear
+    // la casilla de un tercero.
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:5,1')
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
