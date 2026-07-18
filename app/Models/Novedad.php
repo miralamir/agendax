@@ -30,6 +30,7 @@ class Novedad extends Model
         'seo_title',
         'seo_description',
         'published_at',
+        'instagram_post',
     ];
 
     protected $casts = [

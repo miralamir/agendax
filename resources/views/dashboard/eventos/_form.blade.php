@@ -428,6 +428,8 @@
         <button type="button" onclick="addEventoVideo()" class="mt-2 dashboard-button-outline text-sm">+ Agregar Video</button>
     </div>
 
+    @include('dashboard.partials.instagram-post', ['modelo' => $evento])
+
 </div>
 
 <script>

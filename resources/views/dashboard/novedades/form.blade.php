@@ -285,6 +285,8 @@
         </div>
     </div>
 
+    @include('dashboard.partials.instagram-post', ['modelo' => $novedad])
+
     <div class="mt-8 flex justify-end gap-2">
         <a href="{{ route('dashboard.novedades.index') }}" class="dashboard-button-outline btn-cancelar">Cancelar</a>
         <button type="submit" name="accion" value="save" class="dashboard-button-outline">Guardar</button>

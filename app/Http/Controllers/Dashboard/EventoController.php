@@ -111,6 +111,7 @@ class EventoController extends Controller
             'videos' => 'nullable|array',
             'videos.*' => 'nullable|url',
             'ticketUrl' => 'nullable|string',
+            'instagram_post' => 'nullable|string',
             'gallery' => 'nullable|array',
             'galleryFiles' => 'nullable|array',
             'galleryFiles.*' => 'nullable|image|max:20480',
